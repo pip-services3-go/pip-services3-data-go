@@ -12,5 +12,5 @@ type ILoader interface {
 	// Retruns []interface{}, error
 	// a list of data items or error.
 
-	load(correlation_id string) (items []interface{}, err error)
+	Load(correlation_id string) (items []interface{}, err error)
 }

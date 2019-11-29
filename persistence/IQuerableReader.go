@@ -18,5 +18,5 @@ type IQuerableReader interface {
 	// Returns []interface{}, error
 	// list of items or error.
 
-	getListByQuery(correlation_id string, query string, sort data.SortParams) (items []interface{}, err error)
+	GetListByQuery(correlation_id string, query string, sort data.SortParams) (items []interface{}, err error)
 }

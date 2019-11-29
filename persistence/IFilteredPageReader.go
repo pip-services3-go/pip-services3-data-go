@@ -20,5 +20,5 @@ type IFilteredPageReader interface {
 	// Retrun  interface{}, error
 	// list of items or error.
 
-	getPageByFilter(correlation_id string, filter data.FilterParams, paging data.PagingParams, sort data.SortParams) (page interface{}, err error)
+	GetPageByFilter(correlation_id string, filter data.FilterParams, paging data.PagingParams, sort data.SortParams) (page interface{}, err error)
 }
