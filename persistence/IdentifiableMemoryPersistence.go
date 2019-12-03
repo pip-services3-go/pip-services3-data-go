@@ -312,7 +312,7 @@ func (imp *IdentifiableMemoryPersistence) GetOneById(correlationId string, id in
  */
 func (imp *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (retItem interface{}, err error) {
 	copier.Copy(&retItem, &item)
-	if reflect.ValueOf(retItem).Elem().FieldByName("id").IsNil() {
+	if reflect.ValueOf(retItem).Elem().FieldByName("id").IsValid() {
 		refl.ObjectWriter.SetProperty(retItem, "id", cdata.IdGenerator.NextLong())
 	}
 
@@ -334,7 +334,7 @@ func (imp *IdentifiableMemoryPersistence) Set(correlationId string, item interfa
 
 	copier.Copy(&retItem, &item)
 
-	if reflect.ValueOf(retItem).Elem().FieldByName("id").IsNil() {
+	if reflect.ValueOf(retItem).Elem().FieldByName("id").IsValid() {
 		refl.ObjectWriter.SetProperty(retItem, "id", cdata.IdGenerator.NextLong())
 	}
 
