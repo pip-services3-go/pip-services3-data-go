@@ -38,8 +38,9 @@ type JsonFilePersister struct {
 // Parameters:
 //		- path  string
 //		(optional) a path to the file where data is stored.
-func (jfp *JsonFilePersister) NewJsonFilePersister(path string) {
-	jfp._path = path
+func NewJsonFilePersister(path string) (jfp *JsonFilePersister) {
+	jfp = &JsonFilePersister{_path: path}
+	return jfp
 }
 
 // Gets the file path where data is stored.

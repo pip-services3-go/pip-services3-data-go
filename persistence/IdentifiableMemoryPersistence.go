@@ -89,9 +89,11 @@ type IdentifiableMemoryPersistence struct {
  * - loader    (optional) a loader to load items from external datasource.
  * - saver     (optional) a saver to save items to external datasource.
  */
-func (imp *IdentifiableMemoryPersistence) NewEmptyIdentifiableMemoryPersistence() {
+func NewEmptyIdentifiableMemoryPersistence() (imp *IdentifiableMemoryPersistence) {
+	imp = &IdentifiableMemoryPersistence{}
 	imp._logger = *log.NewCompositeLogger()
 	imp._maxPageSize = 100
+	return imp
 }
 
 /**
@@ -100,11 +102,13 @@ func (imp *IdentifiableMemoryPersistence) NewEmptyIdentifiableMemoryPersistence(
  * - loader    (optional) a loader to load items from external datasource.
  * - saver     (optional) a saver to save items to external datasource.
  */
-func (imp *IdentifiableMemoryPersistence) NewIdentifiableMemoryPersistence(loader ILoader, saver ISaver) {
+func NewIdentifiableMemoryPersistence(loader ILoader, saver ISaver) (imp *IdentifiableMemoryPersistence) {
+	imp = &IdentifiableMemoryPersistence{}
 	imp._loader = loader
 	imp._saver = saver
 	imp._logger = *log.NewCompositeLogger()
 	imp._maxPageSize = 100
+	return imp
 }
 
 /**
@@ -125,12 +129,13 @@ func (imp *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) 
  * - correlationId     (optional) transaction id to trace execution through call chain.
  * - filter            (optional) a filter function to filter items
  * - paging            (optional) paging parameters
- * - sort              (optional) sorting parameters
+ * - sort              (optional) sorting parameters implements sort.Interface by providing Less and using the Len and
+// Swap methods
  * - select            (optional) projection parameters (not used yet)
  * - callback          callback function that receives a data page or error.
- */
+*/
 func (imp *IdentifiableMemoryPersistence) getPageByFilter(correlationId string, filter func(interface{}) bool,
-	paging cdata.PagingParams, sort interface{}, sel interface{}) (page cdata.DataPage, err error) {
+	paging cdata.PagingParams, sortWrapper interface{}, sel interface{}) (page cdata.DataPage, err error) {
 	var items []interface{}
 	// Filter and sort
 	if filter != nil {
@@ -140,11 +145,12 @@ func (imp *IdentifiableMemoryPersistence) getPageByFilter(correlationId string, 
 			}
 		}
 	} else {
-		items = imp._items
+		copier.Copy(items, imp._items)
 	}
 
-	if sort != nil {
+	if sortWrapper != nil {
 		//items = _.sortUniqBy(items, sort)
+		//sort.Sort(sortWrapper{items})
 	}
 	// Extract a page
 	if &paging == nil {
@@ -178,11 +184,12 @@ func (imp *IdentifiableMemoryPersistence) getPageByFilter(correlationId string, 
  * - correlationId    (optional) transaction id to trace execution through call chain.
  * - filter           (optional) a filter function to filter items
  * - paging           (optional) paging parameters
- * - sort             (optional) sorting parameters
+ * - sort             (optional) sorting parameters implements sort.Interface by providing Less and using the Len and
+// Swap methods
  * - select           (optional) projection parameters (not used yet)
  * - callback         callback function that receives a data list or error.
- */
-func (imp *IdentifiableMemoryPersistence) getListByFilter(correlationId string, filter func(interface{}) bool, sort interface{}, sel interface{}) (retItems []interface{}, err error) {
+*/
+func (imp *IdentifiableMemoryPersistence) getListByFilter(correlationId string, filter func(interface{}) bool, sortWrapper interface{}, sel interface{}) (retItems []interface{}, err error) {
 
 	// Apply filter
 	if filter != nil {
@@ -195,8 +202,9 @@ func (imp *IdentifiableMemoryPersistence) getListByFilter(correlationId string, 
 		retItems = imp._items
 	}
 	// Apply sorting
-	if sort != nil {
+	if sortWrapper != nil {
 		//items = _.sortUniqBy(items, sort);
+		//sort.Sort(sortWrapper{items})
 	}
 
 	imp._logger.Trace(correlationId, "Retrieved %d items", len(retItems))
@@ -324,13 +332,12 @@ func (imp *IdentifiableMemoryPersistence) Create(correlationId string, item inte
  */
 func (imp *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (retItem interface{}, err error) {
 
-	copier.Сopy(&retItem, &item)
+	copier.Copy(&retItem, &item)
 
 	if reflect.ValueOf(retItem).Elem().FieldByName("id").IsNil() {
 		refl.ObjectWriter.SetProperty(retItem, "id", cdata.IdGenerator.NextLong())
 	}
 
-	//index := imp._items.map((x) => { return x.id; }).indexOf(item.id);
 	var index int = -1
 	itemId := reflect.ValueOf(item).Elem().FieldByName("id")
 	for i, v := range imp._items {
@@ -376,7 +383,7 @@ func (imp *IdentifiableMemoryPersistence) Update(correlationId string, item inte
 		return nil, nil
 	}
 
-	cpier.Copy(&retItem, &item)
+	copier.Copy(&retItem, &item)
 	imp._items[index] = item
 	imp._logger.Trace(correlationId, "Updated item %s", reflect.ValueOf(item).Elem().FieldByName("id"))
 

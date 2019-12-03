@@ -58,8 +58,10 @@ type MemoryPersistence struct {
 }
 
 // Creates a new empty instance of the persistence.
-func (mp *MemoryPersistence) NewEmptyMemoryPersistence() {
+func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
+	mp = &MemoryPersistence{}
 	mp._logger = *log.NewCompositeLogger()
+	return mp
 }
 
 /*
@@ -68,10 +70,12 @@ func (mp *MemoryPersistence) NewEmptyMemoryPersistence() {
    - loader    (optional) a loader to load items from external datasource.
    - saver     (optional) a saver to save items to external datasource.
 */
-func (mp *MemoryPersistence) NewMemoryPersistence(loader ILoader, saver ISaver) {
+func NewMemoryPersistence(loader ILoader, saver ISaver) (mp *MemoryPersistence) {
+	mp = &MemoryPersistence{}
 	mp._loader = loader
 	mp._saver = saver
 	mp._logger = *log.NewCompositeLogger()
+	return mp
 }
 
 /*
