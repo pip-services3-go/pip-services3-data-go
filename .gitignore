@@ -4,3 +4,4 @@
 /data/device_configs.json
 /docker/id_rsa*
 *.exe
+/.vscode

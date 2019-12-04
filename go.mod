@@ -8,5 +8,6 @@ require (
 	github.com/pip-services3-go/pip-services3-commons-go v0.0.0-20191120184752-e90ca65ad1c9
 	github.com/pip-services3-go/pip-services3-components-go v0.0.0-20191121193353-fd649422216e
 	github.com/robpike/filter v0.0.0-20150108201509-2984852a2183
+	github.com/stretchr/testify v1.4.0
 	robpike.io/filter v0.0.0-20150108201509-2984852a2183
 )
