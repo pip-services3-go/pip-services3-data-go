@@ -423,12 +423,12 @@ func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, 
 	return item, errsave
 }
 
-/**
- * Deleted a data item by it's unique id.
- *
- * - correlation_id    (optional) transaction id to trace execution through call chain.
- * - id                an id of the item to be deleted
- * - callback          (optional) callback function that receives deleted item or error.
+/*
+  Deleted a data item by it's unique id.
+ 
+  - correlation_id    (optional) transaction id to trace execution through call chain.
+  - id                an id of the item to be deleted
+  - callback          (optional) callback function that receives deleted item or error.
  */
 func (imp *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (item interface{}, err error) {
 
