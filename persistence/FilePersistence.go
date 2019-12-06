@@ -62,21 +62,19 @@ type FilePersistence struct {
 
 // Creates a new instance of the persistence.
 // - persister    (optional) a persister component that loads and saves data from/to flat file.
-
-func NewFilePersistence(persister JsonFilePersister) (fp *FilePersistence) {
-	fp = &FilePersistence{}
+func NewFilePersistence(persister JsonFilePersister) *FilePersistence {
+	var c = &FilePersistence{}
 	if &persister == nil {
 		persister = *NewJsonFilePersister("")
 	}
-	fp._persister = persister
-	fp.MemoryPersistence = *NewMemoryPersistence(&persister, &persister)
-	return fp
+	c._persister = persister
+	c.MemoryPersistence = *NewMemoryPersistence(&persister, &persister)
+	return c
 }
 
 // Configures component by passing configuration parameters.
 //  *
 // - config    configuration parameters to be set.
-
-func (fp *FilePersistence) Configure(conf config.ConfigParams) {
-	fp._persister.Configure(conf)
+func (c *FilePersistence) Configure(conf config.ConfigParams) {
+	c._persister.Configure(conf)
 }

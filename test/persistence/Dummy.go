@@ -1,4 +1,4 @@
-package test
+package test_persistence
 
 type Dummy struct {
 	id      string

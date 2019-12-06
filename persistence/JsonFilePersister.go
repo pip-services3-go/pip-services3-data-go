@@ -38,31 +38,31 @@ type JsonFilePersister struct {
 // Parameters:
 //		- path  string
 //		(optional) a path to the file where data is stored.
-func NewJsonFilePersister(path string) (jfp *JsonFilePersister) {
-	jfp = &JsonFilePersister{_path: path}
-	return jfp
+func NewJsonFilePersister(path string) *JsonFilePersister {
+	var c = &JsonFilePersister{_path: path}
+	return c
 }
 
 // Gets the file path where data is stored.
 // Returns the file path where data is stored.
-func (jfp *JsonFilePersister) Path() string {
-	return jfp._path
+func (c *JsonFilePersister) Path() string {
+	return c._path
 }
 
 // Sets the file path where data is stored.
 // Parameters:
 //		- value  string
 //	    the file path where data is stored.
-func (jfp *JsonFilePersister) SetPath(value string) {
-	jfp._path = value
+func (c *JsonFilePersister) SetPath(value string) {
+	c._path = value
 }
 
 // Configures component by passing configuration parameters.
 // Parameters:
 //		- config  config.ConfigParams
 //		parameters to be set.
-func (jfp *JsonFilePersister) Configure(config config.ConfigParams) {
-	jfp._path = config.GetAsStringWithDefault("path", jfp._path)
+func (c *JsonFilePersister) Configure(config config.ConfigParams) {
+	c._path = config.GetAsStringWithDefault("path", c._path)
 }
 
 // Loads data items from external JSON file.
@@ -70,23 +70,23 @@ func (jfp *JsonFilePersister) Configure(config config.ConfigParams) {
 //		transaction id to trace execution through call chain.
 // Returns []interface{}, error
 // loaded items or error.
-func (jfp *JsonFilePersister) Load(correlation_id string) (data []interface{}, err error) {
-	if jfp._path == "" {
+func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err error) {
+	if c._path == "" {
 		data = nil
 		err = errors.NewConfigError("", "NO_PATH", "Data file path is not set")
 		return
 	}
 
-	_, fserr := os.Stat(jfp._path)
+	_, fserr := os.Stat(c._path)
 	if os.IsNotExist(fserr) {
 		data = nil
 		err = nil
 		return
 	}
 
-	json, jsonerr := ioutil.ReadFile(jfp._path)
+	json, jsonerr := ioutil.ReadFile(c._path)
 	if jsonerr != nil {
-		err = errors.NewFileError(correlation_id, "READ_FAILED", "Failed to read data file: "+jfp._path).WithCause(jsonerr)
+		err = errors.NewFileError(correlation_id, "READ_FAILED", "Failed to read data file: "+c._path).WithCause(jsonerr)
 		data = nil
 		return
 	}
@@ -104,15 +104,15 @@ func (jfp *JsonFilePersister) Load(correlation_id string) (data []interface{}, e
 //      list if data items to save
 //  Retruns error
 //  error or nil for success.
-func (jfp *JsonFilePersister) Save(correlation_id string, items []interface{}) error {
+func (c *JsonFilePersister) Save(correlationId string, items []interface{}) error {
 	json, jsonerr := convert.ToJson(items)
 	if jsonerr != nil {
-		err := errors.NewInternalError(correlation_id, "CANT CONVERT", "Failed convert to JSON")
+		err := errors.NewInternalError(correlationId, "CANT CONVERT", "Failed convert to JSON")
 		return err
 	}
-	werr := ioutil.WriteFile(jfp._path, ([]byte)(json), 0777)
+	werr := ioutil.WriteFile(c._path, ([]byte)(json), 0777)
 	if werr != nil {
-		err := errors.NewFileError(correlation_id, "WRITE_FAILED", "Failed to write data file: "+jfp._path).WithCause(werr)
+		err := errors.NewFileError(correlationId, "WRITE_FAILED", "Failed to write data file: "+c._path).WithCause(werr)
 		return err
 	}
 	return nil

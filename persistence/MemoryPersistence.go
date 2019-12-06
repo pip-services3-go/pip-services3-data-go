@@ -27,8 +27,8 @@ Example
         MemoryPersistence
 
     }
-     func (mmp * MyMemoryPersistence) GetByName(correlationId string, name string)(item interface{}, err error) {
-        for _, v := range mmp._items {
+     func (c * MyMemoryPersistence) GetByName(correlationId string, name string)(item interface{}, err error) {
+        for _, v := range c._items {
             if v.name == name {
                 item = v
                 break
@@ -37,10 +37,9 @@ Example
         return item, nil
     });
 
-    func (mmp * MyMemoryPersistence) Set(correlatonId: string, item: MyData, callback: (err) => void): void {
-
-        mmp._items = append(mmp._items, item);
-        mmp.Save(correlationId);
+    func (c * MyMemoryPersistence) Set(correlatonId: string, item: MyData, callback: (err) => void): void {
+        c._items = append(c._items, item);
+        c.Save(correlationId);
     }
 
     persistence := NewMyMemoryPersistence();
@@ -58,10 +57,10 @@ type MemoryPersistence struct {
 }
 
 // Creates a new empty instance of the persistence.
-func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
-	mp = &MemoryPersistence{}
-	mp._logger = *log.NewCompositeLogger()
-	return mp
+func NewEmptyMemoryPersistence() *MemoryPersistence {
+	var c = &MemoryPersistence{}
+	c._logger = *log.NewCompositeLogger()
+	return c
 }
 
 /*
@@ -70,12 +69,12 @@ func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
    - loader    (optional) a loader to load items from external datasource.
    - saver     (optional) a saver to save items to external datasource.
 */
-func NewMemoryPersistence(loader ILoader, saver ISaver) (mp *MemoryPersistence) {
-	mp = &MemoryPersistence{}
-	mp._loader = loader
-	mp._saver = saver
-	mp._logger = *log.NewCompositeLogger()
-	return mp
+func NewMemoryPersistence(loader ILoader, saver ISaver) *MemoryPersistence {
+	var c = &MemoryPersistence{}
+	c._loader = loader
+	c._saver = saver
+	c._logger = *log.NewCompositeLogger()
+	return c
 }
 
 /*
@@ -83,8 +82,8 @@ func NewMemoryPersistence(loader ILoader, saver ISaver) (mp *MemoryPersistence) 
 
 	- references 	references to locate the component dependencies.
 */
-func (mp *MemoryPersistence) SetReferences(references refer.IReferences) {
-	mp._logger.SetReferences(references)
+func (c *MemoryPersistence) SetReferences(references refer.IReferences) {
+	c._logger.SetReferences(references)
 }
 
 /*
@@ -92,8 +91,8 @@ func (mp *MemoryPersistence) SetReferences(references refer.IReferences) {
 
 	Returns true if the component has been opened and false otherwise.
 */
-func (mp *MemoryPersistence) IsOpen() bool {
-	return mp._opened
+func (c *MemoryPersistence) IsOpen() bool {
+	return c._opened
 }
 
 /*
@@ -102,23 +101,23 @@ func (mp *MemoryPersistence) IsOpen() bool {
 	- correlationId 	(optional) transaction id to trace execution through call chain.
     - callback 			callback function that receives error or null no errors occured.
 */
-func (mp *MemoryPersistence) Open(correlationId string) error {
-	err := mp.load(correlationId)
+func (c *MemoryPersistence) Open(correlationId string) error {
+	err := c.load(correlationId)
 	if err == nil {
-		mp._opened = true
+		c._opened = true
 	}
 	return err
 }
 
-func (mp *MemoryPersistence) load(correlationId string) error {
-	if mp._loader == nil {
+func (c *MemoryPersistence) load(correlationId string) error {
+	if c._loader == nil {
 		return nil
 	}
 
-	items, err := mp._loader.Load(correlationId)
+	items, err := c._loader.Load(correlationId)
 	if err == nil {
-		mp._items = items
-		mp._logger.Trace(correlationId, "Loaded %d items", len(mp._items))
+		c._items = items
+		c._logger.Trace(correlationId, "Loaded %d items", len(c._items))
 	}
 	return err
 }
@@ -129,9 +128,9 @@ func (mp *MemoryPersistence) load(correlationId string) error {
 	- correlationId 	(optional) transaction id to trace execution through call chain.
     - callback 			callback function that receives error or null no errors occured.
 */
-func (mp *MemoryPersistence) Close(correlationId string) error {
-	err := mp.Save(correlationId)
-	mp._opened = false
+func (c *MemoryPersistence) Close(correlationId string) error {
+	err := c.Save(correlationId)
+	c._opened = false
 	return err
 }
 
@@ -141,14 +140,14 @@ func (mp *MemoryPersistence) Close(correlationId string) error {
    - correlationId     (optional) transaction id to trace execution through call chain.
    - callback          (optional) callback function that receives error or null for success.
 */
-func (mp *MemoryPersistence) Save(correlationId string) error {
-	if mp._saver == nil {
+func (c *MemoryPersistence) Save(correlationId string) error {
+	if c._saver == nil {
 		return nil
 	}
 
-	err := mp._saver.Save(correlationId, mp._items)
+	err := c._saver.Save(correlationId, c._items)
 	if err == nil {
-		mp._logger.Trace(correlationId, "Saved %d items", len(mp._items))
+		c._logger.Trace(correlationId, "Saved %d items", len(c._items))
 	}
 	return err
 }
@@ -159,8 +158,8 @@ func (mp *MemoryPersistence) Save(correlationId string) error {
 	- correlationId 	(optional) transaction id to trace execution through call chain.
     - callback 			callback function that receives error or null no errors occured.
 */
-func (mp *MemoryPersistence) Clear(correlationId string) error {
-	mp._items = make([]interface{}, 0)
-	mp._logger.Trace(correlationId, "Cleared items")
-	return mp.Save(correlationId)
+func (c *MemoryPersistence) Clear(correlationId string) error {
+	c._items = make([]interface{}, 0)
+	c._logger.Trace(correlationId, "Cleared items")
+	return c.Save(correlationId)
 }
