@@ -9,6 +9,5 @@ require (
 	github.com/pip-services3-go/pip-services3-components-go v0.0.0-20191121193353-fd649422216e
 	github.com/robpike/filter v0.0.0-20150108201509-2984852a2183
 	github.com/stretchr/testify v1.4.0
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	robpike.io/filter v0.0.0-20150108201509-2984852a2183
 )
