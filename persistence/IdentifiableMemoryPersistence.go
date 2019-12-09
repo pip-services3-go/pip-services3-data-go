@@ -9,7 +9,6 @@ import (
 	"github.com/jinzhu/copier"
 
 	"math/rand"
-	"reflect"
 	"time"
 )
 
@@ -23,7 +22,7 @@ In basic scenarios child classes shall only override [[getPageByFilter]],
 All other operations can be used out of the box.
 
 In complex scenarios child classes can implement additional operations by
-accessing cached items via imp._items property and calling [[save]] method
+accessing cached items via c._items property and calling [[save]] method
 on updates.
 
 See [[MemoryPersistence]]
@@ -53,7 +52,7 @@ See [[MemoryPersistence]]
 
         func (imp* IdentifiableMemoryPersistence) getPageByFilter(correlationId: string, filter: FilterParams, paging: PagingParams,
                 callback: (err: any, page: DataPage<MyData>) => void): void {
-            super.getPageByFilter(correlationId, imp.composeFilter(filter), paging, null, null, callback);
+            super.getPageByFilter(correlationId, c.composeFilter(filter), paging, null, null, callback);
         }
 
     }
@@ -87,12 +86,12 @@ type IdentifiableMemoryPersistence struct {
 // - loader    (optional) a loader to load items from external datasource.
 // - saver     (optional) a saver to save items to external datasource.
 
-func NewEmptyIdentifiableMemoryPersistence() (imp *IdentifiableMemoryPersistence) {
-	imp = &IdentifiableMemoryPersistence{}
-	imp.MemoryPersistence = *NewEmptyMemoryPersistence()
-	imp._logger = *log.NewCompositeLogger()
-	imp._maxPageSize = 100
-	return imp
+func NewEmptyIdentifiableMemoryPersistence() (c *IdentifiableMemoryPersistence) {
+	c = &IdentifiableMemoryPersistence{}
+	c.MemoryPersistence = *NewEmptyMemoryPersistence()
+	c._logger = *log.NewCompositeLogger()
+	c._maxPageSize = 100
+	return c
 }
 
 // Creates a new instance of the persistence.
@@ -100,14 +99,14 @@ func NewEmptyIdentifiableMemoryPersistence() (imp *IdentifiableMemoryPersistence
 // - loader    (optional) a loader to load items from external datasource.
 // - saver     (optional) a saver to save items to external datasource.
 
-func NewIdentifiableMemoryPersistence(loader ILoader, saver ISaver) (imp *IdentifiableMemoryPersistence) {
-	imp = &IdentifiableMemoryPersistence{}
-	imp.MemoryPersistence = *NewEmptyMemoryPersistence()
-	imp._loader = loader
-	imp._saver = saver
-	imp._logger = *log.NewCompositeLogger()
-	imp._maxPageSize = 100
-	return imp
+func NewIdentifiableMemoryPersistence(loader ILoader, saver ISaver) (c *IdentifiableMemoryPersistence) {
+	c = &IdentifiableMemoryPersistence{}
+	c.MemoryPersistence = *NewEmptyMemoryPersistence()
+	c._loader = loader
+	c._saver = saver
+	c._logger = *log.NewCompositeLogger()
+	c._maxPageSize = 100
+	return c
 }
 
 // Configures component by passing configuration parameters.
@@ -118,7 +117,7 @@ func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
 }
 
 // Gets a page of data items retrieved by a given filter and sorted according to sort parameters.
-// imp method shall be called by a func (imp* IdentifiableMemoryPersistence) getPageByFilter method from child class that
+// cmethod shall be called by a func (imp* IdentifiableMemoryPersistence) getPageByFilter method from child class that
 // receives FilterParams and converts them into a filter function.
 // Parameters:
 // - correlationId     (optional) transaction id to trace execution through call chain.
@@ -130,7 +129,7 @@ func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
 // Return cdata.DataPage, error
 // data page or error.
 
-func (imp *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, filter func(interface{}) bool,
+func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, filter func(interface{}) bool,
 	paging cdata.PagingParams, sortWrapper interface{}, sel interface{}) (page cdata.DataPage, err error) {
 	var items []interface{}
 	// Filter and sort
@@ -141,8 +140,8 @@ func (imp *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, 
 			}
 		}
 	} else {
-		items = make([]interface{}, len(imp._items))
-		copier.Copy(items, imp._items)
+		items = make([]interface{}, len(c._items))
+		copier.Copy(items, c._items)
 	}
 
 	if sortWrapper != nil {
@@ -169,14 +168,14 @@ func (imp *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, 
 
 	c._logger.Trace(correlationId, "Retrieved %d items", len(items))
 
-	result = *cdata.NewDataPage(&total, items)
-	return result, nil
+	page = *cdata.NewDataPage(&total, items)
+	return page, nil
 }
 
 /*
 Gets a list of data items retrieved by a given filter and sorted according to sort parameters.
 
-imp method shall be called by a func (imp* IdentifiableMemoryPersistence) getListByFilter method from child class that
+cmethod shall be called by a func (imp* IdentifiableMemoryPersistence) getListByFilter method from child class that
 receives FilterParams and converts them into a filter function.
 
 - correlationId    (optional) transaction id to trace execution through call chain.
@@ -186,7 +185,7 @@ receives FilterParams and converts them into a filter function.
 - select           (optional) projection parameters (not used yet)
 - callback         callback function that receives a data list or error.
 */
-func (imp *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, filter func(interface{}) bool, sortWrapper interface{}, sel interface{}) (results []interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, filter func(interface{}) bool, sortWrapper interface{}, sel interface{}) (results []interface{}, err error) {
 
 	// Apply filter
 	if filter != nil {
@@ -196,14 +195,14 @@ func (imp *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, 
 			}
 		}
 	} else {
-		results = imp._items
+		results = c._items
 	}
 	// Apply sorting
 	if sortWrapper != nil {
 		//items = _.sortUniqBy(items, sort);
 	}
 
-	imp._logger.Trace(correlationId, "Retrieved %d items", len(results))
+	c._logger.Trace(correlationId, "Retrieved %d items", len(results))
 
 	return results, nil
 }
@@ -228,20 +227,20 @@ func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids [
 		}
 		return exist
 	}
-	return imp.GetListByFilter(correlationId, filter, nil, nil)
+	return c.GetListByFilter(correlationId, filter, nil, nil)
 }
 
 /*
 Gets a random item from items that match to a given filter.
 
-imp method shall be called by a func (imp* IdentifiableMemoryPersistence) getOneRandom method from child class that
+cmethod shall be called by a func (imp* IdentifiableMemoryPersistence) getOneRandom method from child class that
 receives FilterParams and converts them into a filter function.
 
 - correlationId     (optional) transaction id to trace execution through call chain.
 - filter            (optional) a filter function to filter items.
 - callback          callback function that receives a random item or error.
 */
-func (imp *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filter func(interface{}) bool) (item *interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filter func(interface{}) bool) (item *interface{}, err error) {
 
 	var items []interface{}
 	// Apply filter
@@ -261,12 +260,12 @@ func (imp *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, fil
 		item = &items[rand.Intn(len(items))]
 	}
 
-	if result != nil {
+	if item != nil {
 		c._logger.Trace(correlationId, "Retrieved a random item")
 	} else {
 		c._logger.Trace(correlationId, "Nothing to return as random item")
 	}
-	return result, nil
+	return item, nil
 }
 
 /*
@@ -276,10 +275,10 @@ Gets a data item by its unique id.
 - id                an id of data item to be retrieved.
 - callback          callback function that receives data item or error.
 */
-func (imp *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (item *interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (item *interface{}, err error) {
 
 	var items []interface{}
-	for _, v := range imp._items {
+	for _, v := range c._items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
 		if vId == id {
 			items = append(items, v)
@@ -290,13 +289,13 @@ func (imp *IdentifiableMemoryPersistence) GetOneById(correlationId string, id in
 		item = &items[0]
 	}
 
-	if result != nil {
+	if item != nil {
 		c._logger.Trace(correlationId, "Retrieved item %s", id)
 	} else {
 		c._logger.Trace(correlationId, "Cannot find item by %s", id)
 	}
 
-	return result, err
+	return item, err
 }
 
 /*
@@ -306,17 +305,17 @@ Creates a data item.
 - item              an item to be created.
 - callback          (optional) callback function that receives created item or error.
 */
-func (imp *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result *interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result *interface{}, err error) {
 	tmp := item
 	copier.Copy(tmp, item)
 	// Todo: need correct for add uniq id if not exist
-	if reflect.ValueOf(tmp).FieldByName("Id").IsValid() {
+	if refl.ObjectReader.GetProperty(tmp, "Id") == nil {
 		refl.ObjectWriter.SetProperty(tmp, "Id", cdata.IdGenerator.NextLong())
 	}
 	result = &tmp
-	imp._items = append(imp._items, tmp)
-	imp._logger.Trace(correlationId, "Created item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
-	errsave := imp.Save(correlationId)
+	c._items = append(c._items, tmp)
+	c._logger.Trace(correlationId, "Created item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
+	errsave := c.Save(correlationId)
 	return result, errsave
 }
 
@@ -328,17 +327,17 @@ otherwise it create a new data item.
 - item              a item to be set.
 - callback          (optional) callback function that receives updated item or error.
 */
-func (imp *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result *interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result *interface{}, err error) {
 	tmp := item
 	copier.Copy(tmp, item)
 	// ToDo: Need check
-	if reflect.ValueOf(tmp).Elem().FieldByName("Id").IsValid() {
+	if refl.ObjectReader.GetProperty(tmp, "Id") == nil {
 		refl.ObjectWriter.SetProperty(tmp, "Id", cdata.IdGenerator.NextLong())
 	}
 
 	var index int = -1
 	itemId := refl.ObjectReader.GetProperty(item, "Id")
-	for i, v := range imp._items {
+	for i, v := range c._items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
 		if itemId == vId {
 			index = i
@@ -347,14 +346,14 @@ func (imp *IdentifiableMemoryPersistence) Set(correlationId string, item interfa
 	}
 
 	if index < 0 {
-		imp._items = append(imp._items, tmp)
+		c._items = append(c._items, tmp)
 	} else {
-		imp._items[index] = tmp
+		c._items[index] = tmp
 	}
 
-	imp._logger.Trace(correlationId, "Set item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
+	c._logger.Trace(correlationId, "Set item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
 
-	errsav := imp.Save(correlationId)
+	errsav := c.Save(correlationId)
 	return &tmp, errsav
 }
 
@@ -365,10 +364,10 @@ Updates a data item.
 - item              an item to be updated.
 - callback          (optional) callback function that receives updated item or error.
 */
-func (imp *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (result *interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (result *interface{}, err error) {
 	var index int = -1
 	itemId := refl.ObjectReader.GetProperty(item, "Id")
-	for i, v := range imp._items {
+	for i, v := range c._items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
 		if itemId == vId {
 			index = i
@@ -377,15 +376,15 @@ func (imp *IdentifiableMemoryPersistence) Update(correlationId string, item inte
 	}
 
 	if index < 0 {
-		imp._logger.Trace(correlationId, "Item %s was not found", refl.ObjectReader.GetProperty(item, "Id"))
+		c._logger.Trace(correlationId, "Item %s was not found", refl.ObjectReader.GetProperty(item, "Id"))
 		return nil, nil
 	}
 	tmp := item
 	copier.Copy(tmp, item)
-	imp._items[index] = item
-	imp._logger.Trace(correlationId, "Updated item %s", refl.ObjectReader.GetProperty(item, "Id"))
+	c._items[index] = item
+	c._logger.Trace(correlationId, "Updated item %s", refl.ObjectReader.GetProperty(item, "Id"))
 
-	errsave := imp.Save(correlationId)
+	errsave := c.Save(correlationId)
 	return &tmp, errsave
 }
 
@@ -397,9 +396,9 @@ Updates only few selected fields in a data item.
 - data              a map with fields to be updated.
 - callback          callback function that receives updated item or error.
 */
-func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (item *interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (item *interface{}, err error) {
 	var index int = -1
-	for i, v := range imp._items {
+	for i, v := range c._items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
 		if vId == id {
 			index = i
@@ -411,15 +410,14 @@ func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, 
 		c._logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	}
-	tmp := imp._items[index]
-	copier.Copy(tmp, imp._items[index])
-	// need test!!!
-	refl.ObjectWriter.SetProperties(tmp, data.Value())
+	tmp := c._items[index]
+	copier.Copy(tmp, c._items[index])
+	refl.ObjectWriter.SetProperties(&tmp, data.Value())
+	copier.Copy(c._items[index], tmp)
+	c._items[index] = tmp
+	c._logger.Trace(correlationId, "Partially updated item %s", id)
 
-	copier.Copy(imp._items[index], tmp)
-	imp._logger.Trace(correlationId, "Partially updated item %s", id)
-
-	errsave := imp.Save(correlationId)
+	errsave := c.Save(correlationId)
 	return &tmp, errsave
 }
 
@@ -430,11 +428,11 @@ func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, 
   - id                an id of the item to be deleted
   - callback          (optional) callback function that receives deleted item or error.
 */
-func (imp *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (item *interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (item *interface{}, err error) {
 
 	var index int = -1
 
-	for i, v := range imp._items {
+	for i, v := range c._items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
 		if vId == id {
 			index = i
@@ -446,8 +444,8 @@ func (imp *IdentifiableMemoryPersistence) DeleteById(correlationId string, id in
 		c._logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	} else {
-		tmp := imp._items[index]
-		copier.Copy(tmp, imp._items[index])
+		tmp := c._items[index]
+		copier.Copy(tmp, c._items[index])
 		item = &tmp
 	}
 
@@ -455,20 +453,20 @@ func (imp *IdentifiableMemoryPersistence) DeleteById(correlationId string, id in
 	c._logger.Trace(correlationId, "Deleted item by %s", id)
 
 	errsave := c.Save(correlationId)
-	return result, errsave
+	return item, errsave
 }
 
 /**
 Deletes data items that match to a given filter.
  *
-imp method shall be called by a func (imp* IdentifiableMemoryPersistence) deleteByFilter method from child class that
+cmethod shall be called by a func (imp* IdentifiableMemoryPersistence) deleteByFilter method from child class that
 receives FilterParams and converts them into a filter function.
  *
 - correlationId     (optional) transaction id to trace execution through call chain.
 - filter            (optional) a filter function to filter items.
 - callback          (optional) callback function that receives error or null for success.
 */
-func (imp *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, filter func(interface{}) bool) (err error) {
+func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, filter func(interface{}) bool) (err error) {
 	deleted := 0
 	for i, v := range c._items {
 		if filter(v) {
@@ -508,5 +506,5 @@ func (c *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []
 		}
 		return exist
 	}
-	return imp.DeleteByFilter(correlationId, filter)
+	return c.DeleteByFilter(correlationId, filter)
 }
