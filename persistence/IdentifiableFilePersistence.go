@@ -54,8 +54,8 @@ Configuration parameters
             }
         }
 
-        func (ifp *MyFilePersistence ) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams)(page cdata.DataPage, err error){
-            return ifp.GetPageByFilter(correlationId, this.composeFilter(filter), paging, nil, nil)
+        func (c *MyFilePersistence ) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams)(page cdata.DataPage, err error){
+            return c.GetPageByFilter(correlationId, this.composeFilter(filter), paging, nil, nil)
         }
 
     persistence := NewMyFilePersistence("./data/data.json")
@@ -80,19 +80,19 @@ type IdentifiableFilePersistence struct {
 // Creates a new instance of the persistence.
 // - persister    (optional) a persister component that loads and saves data from/to flat file.
 
-func NewIdentifiableFilePersistence(persister JsonFilePersister) (ifp *IdentifiableFilePersistence) {
-	ifp = &IdentifiableFilePersistence{}
+func NewIdentifiableFilePersistence(persister JsonFilePersister) *IdentifiableFilePersistence {
+	var c = &IdentifiableFilePersistence{}
 	if &persister == nil {
 		persister = *NewJsonFilePersister("")
 	}
-	ifp.IdentifiableMemoryPersistence = *NewIdentifiableMemoryPersistence(&persister, &persister)
-	ifp._persister = persister
-	return ifp
+	c.IdentifiableMemoryPersistence = *NewIdentifiableMemoryPersistence(&persister, &persister)
+	c._persister = persister
+	return c
 }
 
 // Configures component by passing configuration parameters.
 // - config    configuration parameters to be set.
-func (ifp *IdentifiableFilePersistence) Configure(config config.ConfigParams) {
-	ifp.Configure(config)
-	ifp._persister.Configure(config)
+func (c *IdentifiableFilePersistence) Configure(config config.ConfigParams) {
+	c.Configure(config)
+	c._persister.Configure(config)
 }

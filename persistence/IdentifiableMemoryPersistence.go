@@ -113,9 +113,8 @@ func NewIdentifiableMemoryPersistence(loader ILoader, saver ISaver) (imp *Identi
 // Configures component by passing configuration parameters.
 // Parameters:
 // - config    configuration parameters to be set.
-
-func (imp *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
-	imp._maxPageSize = config.GetAsIntegerWithDefault("options.max_page_size", imp._maxPageSize)
+func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
+	c._maxPageSize = config.GetAsIntegerWithDefault("options.max_page_size", c._maxPageSize)
 }
 
 // Gets a page of data items retrieved by a given filter and sorted according to sort parameters.
@@ -136,7 +135,7 @@ func (imp *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, 
 	var items []interface{}
 	// Filter and sort
 	if filter != nil {
-		for _, v := range imp._items {
+		for _, v := range c._items {
 			if filter(v) {
 				items = append(items, v)
 			}
@@ -154,7 +153,7 @@ func (imp *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, 
 		paging = *cdata.NewEmptyPagingParams()
 	}
 	skip := paging.GetSkip(-1)
-	take := paging.GetTake((int64)(imp._maxPageSize))
+	take := paging.GetTake((int64)(c._maxPageSize))
 
 	var total int64
 	if paging.Total {
@@ -168,10 +167,10 @@ func (imp *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, 
 		items = items[:take]
 	}
 
-	imp._logger.Trace(correlationId, "Retrieved %d items", len(items))
+	c._logger.Trace(correlationId, "Retrieved %d items", len(items))
 
-	page = *cdata.NewDataPage(&total, items)
-	return page, nil
+	result = *cdata.NewDataPage(&total, items)
+	return result, nil
 }
 
 /*
@@ -191,7 +190,7 @@ func (imp *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, 
 
 	// Apply filter
 	if filter != nil {
-		for _, v := range imp._items {
+		for _, v := range c._items {
 			if filter(v) {
 				results = append(results, v)
 			}
@@ -216,7 +215,7 @@ Gets a list of data items retrieved by given unique ids.
 - ids               ids of data items to be retrieved
 - callback         callback function that receives a data list or error.
 */
-func (imp *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids []interface{}) (items []interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids []interface{}) (result []interface{}, err error) {
 	filter := func(item interface{}) bool {
 		var exist bool = false
 		itemId := refl.ObjectReader.GetProperty(item, "Id")
@@ -247,13 +246,13 @@ func (imp *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, fil
 	var items []interface{}
 	// Apply filter
 	if filter != nil {
-		for _, v := range imp._items {
+		for _, v := range c._items {
 			if filter(v) {
 				items = append(items, v)
 			}
 		}
 	} else {
-		items = imp._items
+		items = c._items
 	}
 
 	rand.Seed(time.Now().UnixNano())
@@ -262,12 +261,12 @@ func (imp *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, fil
 		item = &items[rand.Intn(len(items))]
 	}
 
-	if item != nil {
-		imp._logger.Trace(correlationId, "Retrieved a random item")
+	if result != nil {
+		c._logger.Trace(correlationId, "Retrieved a random item")
 	} else {
-		imp._logger.Trace(correlationId, "Nothing to return as random item")
+		c._logger.Trace(correlationId, "Nothing to return as random item")
 	}
-	return item, nil
+	return result, nil
 }
 
 /*
@@ -291,13 +290,13 @@ func (imp *IdentifiableMemoryPersistence) GetOneById(correlationId string, id in
 		item = &items[0]
 	}
 
-	if item != nil {
-		imp._logger.Trace(correlationId, "Retrieved item %s", id)
+	if result != nil {
+		c._logger.Trace(correlationId, "Retrieved item %s", id)
 	} else {
-		imp._logger.Trace(correlationId, "Cannot find item by %s", id)
+		c._logger.Trace(correlationId, "Cannot find item by %s", id)
 	}
 
-	return item, err
+	return result, err
 }
 
 /*
@@ -409,7 +408,7 @@ func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, 
 	}
 
 	if index < 0 {
-		imp._logger.Trace(correlationId, "Item %s was not found", id)
+		c._logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	}
 	tmp := imp._items[index]
@@ -444,7 +443,7 @@ func (imp *IdentifiableMemoryPersistence) DeleteById(correlationId string, id in
 	}
 
 	if index < 0 {
-		imp._logger.Trace(correlationId, "Item %s was not found", id)
+		c._logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	} else {
 		tmp := imp._items[index]
@@ -452,11 +451,11 @@ func (imp *IdentifiableMemoryPersistence) DeleteById(correlationId string, id in
 		item = &tmp
 	}
 
-	imp._items = append(imp._items[:index], imp._items[index+1:])
-	imp._logger.Trace(correlationId, "Deleted item by %s", id)
+	c._items = append(c._items[:index], c._items[index+1:])
+	c._logger.Trace(correlationId, "Deleted item by %s", id)
 
-	errsave := imp.Save(correlationId)
-	return item, errsave
+	errsave := c.Save(correlationId)
+	return result, errsave
 }
 
 /**
@@ -471,9 +470,9 @@ receives FilterParams and converts them into a filter function.
 */
 func (imp *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, filter func(interface{}) bool) (err error) {
 	deleted := 0
-	for i, v := range imp._items {
+	for i, v := range c._items {
 		if filter(v) {
-			imp._items = append(imp._items[:i], imp._items[i+1:])
+			c._items = append(c._items[:i], c._items[i+1:])
 			deleted++
 		}
 	}
@@ -482,9 +481,9 @@ func (imp *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, f
 		return nil
 	}
 
-	imp._logger.Trace(correlationId, "Deleted %s items", deleted)
+	c._logger.Trace(correlationId, "Deleted %s items", deleted)
 
-	errsave := imp.Save(correlationId)
+	errsave := c.Save(correlationId)
 	return errsave
 }
 
@@ -495,7 +494,7 @@ Deletes multiple data items by their unique ids.
 - ids               ids of data items to be deleted.
 - callback          (optional) callback function that receives error or null for success.
 */
-func (imp *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []interface{}) (err error) {
+func (c *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []interface{}) (err error) {
 	filter := func(item interface{}) bool {
 		var exist bool = false
 
