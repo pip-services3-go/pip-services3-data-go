@@ -11,6 +11,7 @@ github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/pip-services3-go/pip-services3-commons-go v0.0.0-20190804203000-6456cc90b324/go.mod h1:bcPnEp+IIvYa4zP4Qb6E6VYM9ByV7qcSSrq6yL2GQlo=
 github.com/pip-services3-go/pip-services3-commons-go v0.0.0-20191120184752-e90ca65ad1c9 h1:cXsSF2JEivf5eyV2w3WSvRR9+yuOnQNOXjYnqV/C6ew=
 github.com/pip-services3-go/pip-services3-commons-go v0.0.0-20191120184752-e90ca65ad1c9/go.mod h1:zuPMQBL05n7s1oEaEdMvJZy6bWnUhbV6LH9wq60+0VE=
+github.com/pip-services3-go/pip-services3-commons-go v0.0.0-20191204090830-11e4cec9d2ce h1:NKnAcbaWg757cc8yRm3FsVgoTNncG19uzFq4os0D+Cc=
 github.com/pip-services3-go/pip-services3-components-go v0.0.0-20191121193353-fd649422216e h1:j/rWy+ZKGMi+kWKWv0uAgWMAPku7fw3Nu4LaElljvwA=
 github.com/pip-services3-go/pip-services3-components-go v0.0.0-20191121193353-fd649422216e/go.mod h1:HXw/ZY1ptv0WEICtazRu6ZeWjtmn90maApMBGfzRj8I=
 github.com/pip-services3-go/pip-services3-data-go v0.0.0-20180713194412-9f038cb5441b h1:gH3MVkdLV+RZjZ7SzCifxUHxlY9oiqYo8BxUajDPKBk=

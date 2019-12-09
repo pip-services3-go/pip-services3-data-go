@@ -13,5 +13,5 @@ type ISetter interface {
 	// 		- item  interface{}
 	//      a item to be set.
 	// Retruns updated item or error.
-	Set(correlation_id string, item interface{}) (value interface{}, err error)
+	Set(correlation_id string, item interface{}) (value *interface{}, err error)
 }

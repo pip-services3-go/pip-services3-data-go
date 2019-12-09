@@ -14,7 +14,7 @@ type IWriter interface {
 	// Returns  interface{}, error
 	// created item or error.
 
-	Create(correlation_id string, item interface{}) (value interface{}, err error)
+	Create(correlation_id string, item interface{}) (value *interface{}, err error)
 
 	// Updates a data item.
 	// Parameters:
@@ -25,7 +25,7 @@ type IWriter interface {
 	// Returns: interface{}, error
 	// updated item or error.
 
-	Update(correlation_id string, item interface{}) (value interface{}, err error)
+	Update(correlation_id string, item interface{}) (value *interface{}, err error)
 
 	//  Deleted a data item by it's unique id.
 	//	Parameters:
@@ -36,5 +36,5 @@ type IWriter interface {
 	//  Returns: interface{}, error
 	//  deleted item or error.
 
-	DeleteById(correlation_id string, id interface{}) (value interface{}, err error)
+	DeleteById(correlation_id string, id interface{}) (value *interface{}, err error)
 }

@@ -12,5 +12,5 @@ type IGetter interface {
 	//  - id                an id of item to be retrieved.
 	//  Return
 	// item or error
-	GetOneById(correlation_id string, id interface{}) (item interface{}, err error)
+	GetOneById(correlation_id string, id interface{}) (item *interface{}, err error)
 }

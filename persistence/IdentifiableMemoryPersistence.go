@@ -79,8 +79,7 @@ See [[MemoryPersistence]]
 
 type IdentifiableMemoryPersistence struct {
 	MemoryPersistence
-	_maxPageSize int         // = 100
-	id           interface{} //?
+	_maxPageSize int
 }
 
 // Creates a new instance of the persistence.
@@ -90,6 +89,7 @@ type IdentifiableMemoryPersistence struct {
 
 func NewEmptyIdentifiableMemoryPersistence() (imp *IdentifiableMemoryPersistence) {
 	imp = &IdentifiableMemoryPersistence{}
+	imp.MemoryPersistence = *NewEmptyMemoryPersistence()
 	imp._logger = *log.NewCompositeLogger()
 	imp._maxPageSize = 100
 	return imp
@@ -102,6 +102,7 @@ func NewEmptyIdentifiableMemoryPersistence() (imp *IdentifiableMemoryPersistence
 
 func NewIdentifiableMemoryPersistence(loader ILoader, saver ISaver) (imp *IdentifiableMemoryPersistence) {
 	imp = &IdentifiableMemoryPersistence{}
+	imp.MemoryPersistence = *NewEmptyMemoryPersistence()
 	imp._loader = loader
 	imp._saver = saver
 	imp._logger = *log.NewCompositeLogger()
@@ -130,7 +131,7 @@ func (imp *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) 
 // Return cdata.DataPage, error
 // data page or error.
 
-func (imp *IdentifiableMemoryPersistence) getPageByFilter(correlationId string, filter func(interface{}) bool,
+func (imp *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, filter func(interface{}) bool,
 	paging cdata.PagingParams, sortWrapper interface{}, sel interface{}) (page cdata.DataPage, err error) {
 	var items []interface{}
 	// Filter and sort
@@ -141,6 +142,7 @@ func (imp *IdentifiableMemoryPersistence) getPageByFilter(correlationId string, 
 			}
 		}
 	} else {
+		items = make([]interface{}, len(imp._items))
 		copier.Copy(items, imp._items)
 	}
 
@@ -162,7 +164,9 @@ func (imp *IdentifiableMemoryPersistence) getPageByFilter(correlationId string, 
 	if skip > 0 {
 		items = items[skip:]
 	}
-	items = items[:take]
+	if (int64)(len(items)) >= take {
+		items = items[:take]
+	}
 
 	imp._logger.Trace(correlationId, "Retrieved %d items", len(items))
 
@@ -183,26 +187,26 @@ receives FilterParams and converts them into a filter function.
 - select           (optional) projection parameters (not used yet)
 - callback         callback function that receives a data list or error.
 */
-func (imp *IdentifiableMemoryPersistence) getListByFilter(correlationId string, filter func(interface{}) bool, sortWrapper interface{}, sel interface{}) (retItems []interface{}, err error) {
+func (imp *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, filter func(interface{}) bool, sortWrapper interface{}, sel interface{}) (results []interface{}, err error) {
 
 	// Apply filter
 	if filter != nil {
 		for _, v := range imp._items {
 			if filter(v) {
-				retItems = append(retItems, v)
+				results = append(results, v)
 			}
 		}
 	} else {
-		retItems = imp._items
+		results = imp._items
 	}
 	// Apply sorting
 	if sortWrapper != nil {
 		//items = _.sortUniqBy(items, sort);
 	}
 
-	imp._logger.Trace(correlationId, "Retrieved %d items", len(retItems))
+	imp._logger.Trace(correlationId, "Retrieved %d items", len(results))
 
-	return retItems, nil
+	return results, nil
 }
 
 /*
@@ -215,17 +219,17 @@ Gets a list of data items retrieved by given unique ids.
 func (imp *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids []interface{}) (items []interface{}, err error) {
 	filter := func(item interface{}) bool {
 		var exist bool = false
-		itemId := reflect.ValueOf(item).Elem().FieldByName("id")
+		itemId := refl.ObjectReader.GetProperty(item, "Id")
 		for _, v := range ids {
-			vId := reflect.ValueOf(v).Elem().FieldByName("id")
-			if reflect.DeepEqual(itemId, vId) {
+			vId := refl.ObjectReader.GetValue(v)
+			if itemId == vId {
 				exist = true
 				break
 			}
 		}
 		return exist
 	}
-	return imp.getListByFilter(correlationId, filter, nil, nil)
+	return imp.GetListByFilter(correlationId, filter, nil, nil)
 }
 
 /*
@@ -238,7 +242,7 @@ receives FilterParams and converts them into a filter function.
 - filter            (optional) a filter function to filter items.
 - callback          callback function that receives a random item or error.
 */
-func (imp *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filter func(interface{}) bool) (item interface{}, err error) {
+func (imp *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filter func(interface{}) bool) (item *interface{}, err error) {
 
 	var items []interface{}
 	// Apply filter
@@ -255,7 +259,7 @@ func (imp *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, fil
 	rand.Seed(time.Now().UnixNano())
 
 	if len(items) > 0 {
-		item = items[rand.Intn(len(items))]
+		item = &items[rand.Intn(len(items))]
 	}
 
 	if item != nil {
@@ -273,18 +277,18 @@ Gets a data item by its unique id.
 - id                an id of data item to be retrieved.
 - callback          callback function that receives data item or error.
 */
-func (imp *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (item interface{}, err error) {
+func (imp *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (item *interface{}, err error) {
 
 	var items []interface{}
 	for _, v := range imp._items {
-		vId := reflect.ValueOf(v).Elem().FieldByName("id")
-		if reflect.DeepEqual(vId, id) {
+		vId := refl.ObjectReader.GetProperty(v, "Id")
+		if vId == id {
 			items = append(items, v)
 		}
 	}
 
 	if len(items) > 0 {
-		item = items[0]
+		item = &items[0]
 	}
 
 	if item != nil {
@@ -303,16 +307,18 @@ Creates a data item.
 - item              an item to be created.
 - callback          (optional) callback function that receives created item or error.
 */
-func (imp *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (retItem interface{}, err error) {
-	copier.Copy(&retItem, &item)
-	if reflect.ValueOf(retItem).Elem().FieldByName("id").IsValid() {
-		refl.ObjectWriter.SetProperty(retItem, "id", cdata.IdGenerator.NextLong())
+func (imp *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result *interface{}, err error) {
+	tmp := item
+	copier.Copy(tmp, item)
+	// Todo: need correct for add uniq id if not exist
+	if reflect.ValueOf(tmp).FieldByName("Id").IsValid() {
+		refl.ObjectWriter.SetProperty(tmp, "Id", cdata.IdGenerator.NextLong())
 	}
-
-	imp._items = append(imp._items, retItem)
-	imp._logger.Trace(correlationId, "Created item %s", reflect.ValueOf(retItem).Elem().FieldByName("id"))
+	result = &tmp
+	imp._items = append(imp._items, tmp)
+	imp._logger.Trace(correlationId, "Created item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
 	errsave := imp.Save(correlationId)
-	return retItem, errsave
+	return result, errsave
 }
 
 /*
@@ -323,34 +329,34 @@ otherwise it create a new data item.
 - item              a item to be set.
 - callback          (optional) callback function that receives updated item or error.
 */
-func (imp *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (retItem interface{}, err error) {
-
-	copier.Copy(&retItem, &item)
-
-	if reflect.ValueOf(retItem).Elem().FieldByName("id").IsValid() {
-		refl.ObjectWriter.SetProperty(retItem, "id", cdata.IdGenerator.NextLong())
+func (imp *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result *interface{}, err error) {
+	tmp := item
+	copier.Copy(tmp, item)
+	// ToDo: Need check
+	if reflect.ValueOf(tmp).Elem().FieldByName("Id").IsValid() {
+		refl.ObjectWriter.SetProperty(tmp, "Id", cdata.IdGenerator.NextLong())
 	}
 
 	var index int = -1
-	itemId := reflect.ValueOf(item).Elem().FieldByName("id")
+	itemId := refl.ObjectReader.GetProperty(item, "Id")
 	for i, v := range imp._items {
-		vId := reflect.ValueOf(v).Elem().FieldByName("id")
-		if reflect.DeepEqual(itemId, vId) {
+		vId := refl.ObjectReader.GetProperty(v, "Id")
+		if itemId == vId {
 			index = i
 			break
 		}
 	}
 
 	if index < 0 {
-		imp._items = append(imp._items, retItem)
+		imp._items = append(imp._items, tmp)
 	} else {
-		imp._items[index] = retItem
+		imp._items[index] = tmp
 	}
 
-	imp._logger.Trace(correlationId, "Set item %s", reflect.ValueOf(retItem).Elem().FieldByName("id"))
+	imp._logger.Trace(correlationId, "Set item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
 
 	errsav := imp.Save(correlationId)
-	return retItem, errsav
+	return &tmp, errsav
 }
 
 /*
@@ -360,28 +366,28 @@ Updates a data item.
 - item              an item to be updated.
 - callback          (optional) callback function that receives updated item or error.
 */
-func (imp *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (retItem interface{}, err error) {
+func (imp *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (result *interface{}, err error) {
 	var index int = -1
-	itemId := reflect.ValueOf(item).Elem().FieldByName("id")
+	itemId := refl.ObjectReader.GetProperty(item, "Id")
 	for i, v := range imp._items {
-		vId := reflect.ValueOf(v).Elem().FieldByName("id")
-		if reflect.DeepEqual(itemId, vId) {
+		vId := refl.ObjectReader.GetProperty(v, "Id")
+		if itemId == vId {
 			index = i
 			break
 		}
 	}
 
 	if index < 0 {
-		imp._logger.Trace(correlationId, "Item %s was not found", reflect.ValueOf(item).Elem().FieldByName("id"))
+		imp._logger.Trace(correlationId, "Item %s was not found", refl.ObjectReader.GetProperty(item, "Id"))
 		return nil, nil
 	}
-
-	copier.Copy(&retItem, &item)
+	tmp := item
+	copier.Copy(tmp, item)
 	imp._items[index] = item
-	imp._logger.Trace(correlationId, "Updated item %s", reflect.ValueOf(item).Elem().FieldByName("id"))
+	imp._logger.Trace(correlationId, "Updated item %s", refl.ObjectReader.GetProperty(item, "Id"))
 
 	errsave := imp.Save(correlationId)
-	return retItem, errsave
+	return &tmp, errsave
 }
 
 /*
@@ -392,11 +398,11 @@ Updates only few selected fields in a data item.
 - data              a map with fields to be updated.
 - callback          callback function that receives updated item or error.
 */
-func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (item interface{}, err error) {
+func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (item *interface{}, err error) {
 	var index int = -1
 	for i, v := range imp._items {
-		vId := reflect.ValueOf(v).Elem().FieldByName("id")
-		if reflect.DeepEqual(vId, id) {
+		vId := refl.ObjectReader.GetProperty(v, "Id")
+		if vId == id {
 			index = i
 			break
 		}
@@ -406,16 +412,16 @@ func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, 
 		imp._logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	}
-
-	item = imp._items[index]
+	tmp := imp._items[index]
+	copier.Copy(tmp, imp._items[index])
 	// need test!!!
-	refl.ObjectWriter.SetProperties(item, data.Value())
+	refl.ObjectWriter.SetProperties(tmp, data.Value())
 
-	imp._items[index] = item
+	copier.Copy(imp._items[index], tmp)
 	imp._logger.Trace(correlationId, "Partially updated item %s", id)
 
 	errsave := imp.Save(correlationId)
-	return item, errsave
+	return &tmp, errsave
 }
 
 /*
@@ -425,22 +431,25 @@ func (imp *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, 
   - id                an id of the item to be deleted
   - callback          (optional) callback function that receives deleted item or error.
 */
-func (imp *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (item interface{}, err error) {
+func (imp *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (item *interface{}, err error) {
 
 	var index int = -1
 
 	for i, v := range imp._items {
-		vId := reflect.ValueOf(v).Elem().FieldByName("id")
-		if reflect.DeepEqual(vId, id) {
+		vId := refl.ObjectReader.GetProperty(v, "Id")
+		if vId == id {
 			index = i
 			break
 		}
 	}
-	item = imp._items[index]
 
 	if index < 0 {
 		imp._logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
+	} else {
+		tmp := imp._items[index]
+		copier.Copy(tmp, imp._items[index])
+		item = &tmp
 	}
 
 	imp._items = append(imp._items[:index], imp._items[index+1:])
@@ -460,7 +469,7 @@ receives FilterParams and converts them into a filter function.
 - filter            (optional) a filter function to filter items.
 - callback          (optional) callback function that receives error or null for success.
 */
-func (imp *IdentifiableMemoryPersistence) deleteByFilter(correlationId string, filter func(interface{}) bool) (err error) {
+func (imp *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, filter func(interface{}) bool) (err error) {
 	deleted := 0
 	for i, v := range imp._items {
 		if filter(v) {
@@ -490,15 +499,15 @@ func (imp *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids 
 	filter := func(item interface{}) bool {
 		var exist bool = false
 
-		itemId := reflect.ValueOf(item).Elem().FieldByName("id")
+		itemId := refl.ObjectReader.GetProperty(item, "Id")
 		for _, v := range ids {
-			vId := reflect.ValueOf(v).Elem().FieldByName("id")
-			if reflect.DeepEqual(vId, itemId) {
+			vId := refl.ObjectReader.GetProperty(v, "Id")
+			if vId == itemId {
 				exist = true
 				break
 			}
 		}
 		return exist
 	}
-	return imp.deleteByFilter(correlationId, filter)
+	return imp.DeleteByFilter(correlationId, filter)
 }

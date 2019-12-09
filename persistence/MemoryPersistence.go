@@ -61,6 +61,7 @@ type MemoryPersistence struct {
 func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
 	mp = &MemoryPersistence{}
 	mp._logger = *log.NewCompositeLogger()
+	mp._items = make([]interface{}, 0, 10)
 	return mp
 }
 
@@ -72,6 +73,7 @@ func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
 */
 func NewMemoryPersistence(loader ILoader, saver ISaver) (mp *MemoryPersistence) {
 	mp = &MemoryPersistence{}
+	mp._items = make([]interface{}, 0, 5)
 	mp._loader = loader
 	mp._saver = saver
 	mp._logger = *log.NewCompositeLogger()
