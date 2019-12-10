@@ -9,6 +9,7 @@ import (
 	"github.com/jinzhu/copier"
 	"math/rand"
 	"reflect"
+	"sort"
 	"time"
 )
 
@@ -74,7 +75,7 @@ See [[MemoryPersistence]]
         )
     });
 */
-//<T extends IIdentifiable<K>, K> extends MemoryPersistence  implements IConfigurable, IWriter<T, K>, IGetter<T, K>, ISetter {
+//  extends MemoryPersistence  implements IConfigurable, IWriter, IGetter, ISetter
 
 type IdentifiableMemoryPersistence struct {
 	MemoryPersistence
@@ -123,8 +124,7 @@ func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
 // - correlationId     (optional) transaction id to trace execution through call chain.
 // - filter            (optional) a filter function to filter items
 // - paging            (optional) paging parameters
-// - sort              (optional) sorting parameters implements sort.Interface by providing Less and using the Len and
-//  Swap methods
+// - sort              (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
 // - select            (optional) projection parameters (not used yet)
 // Return cdata.DataPage, error
 // data page or error.
@@ -145,7 +145,10 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 	}
 
 	if sortWrapper != nil {
-		//items = _.sortUniqBy(items, sort)
+		if sortWrapper != nil && reflect.TypeOf(sortWrapper).Kind() == reflect.Func {
+			localSort := sorter{items: items, compFunc: sortWrapper}
+			sort.Sort(localSort)
+		}
 	}
 	// Extract a page
 	if &paging == nil {
@@ -181,7 +184,7 @@ receives FilterParams and converts them into a filter function.
 - correlationId    (optional) transaction id to trace execution through call chain.
 - filter           (optional) a filter function to filter items
 - paging           (optional) paging parameters
-- sort             (optional) sorting parameters
+- sort             (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
 - select           (optional) projection parameters (not used yet)
 - callback         callback function that receives a data list or error.
 */
@@ -198,10 +201,10 @@ func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, fi
 		copy(results, c._items)
 	}
 	// Apply sorting
-	if sortWrapper != nil {
-		//items = _.sortUniqBy(items, sort);
+	if sortWrapper != nil && reflect.TypeOf(sortWrapper).Kind() == reflect.Func {
+		localSort := sorter{items: results, compFunc: sortWrapper}
+		sort.Sort(localSort)
 	}
-
 	c._logger.Trace(correlationId, "Retrieved %d items", len(results))
 
 	return results, nil

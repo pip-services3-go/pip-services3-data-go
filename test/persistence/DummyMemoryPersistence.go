@@ -105,5 +105,10 @@ func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter cd
 			return false
 		}
 		return true
-	}, paging, nil, nil)
+	}, paging,
+		func(a, b interface{}) bool {
+			_a, _ := a.(Dummy)
+			_b, _ := b.(Dummy)
+			return len(_a.Key) < len(_b.Key)
+		}, nil)
 }
