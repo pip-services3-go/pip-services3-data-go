@@ -72,7 +72,7 @@ func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
 */
 func NewMemoryPersistence(loader ILoader, saver ISaver) (mp *MemoryPersistence) {
 	mp = &MemoryPersistence{}
-	mp._items = make([]interface{}, 0, 5)
+	mp._items = make([]interface{}, 0, 10)
 	mp._loader = loader
 	mp._saver = saver
 	mp._logger = *log.NewCompositeLogger()
@@ -119,7 +119,8 @@ func (c *MemoryPersistence) load(correlationId string) error {
 	items, err := c._loader.Load(correlationId)
 	if err == nil {
 		c._items = items
-		c._logger.Trace(correlationId, "Loaded %d items", len(c._items))
+		length := len(c._items)
+		c._logger.Trace(correlationId, "Loaded %d items", length)
 	}
 	return err
 }
@@ -149,7 +150,8 @@ func (c *MemoryPersistence) Save(correlationId string) error {
 
 	err := c._saver.Save(correlationId, c._items)
 	if err == nil {
-		c._logger.Trace(correlationId, "Saved %d items", len(c._items))
+		length := len(c._items)
+		c._logger.Trace(correlationId, "Saved %d items", length)
 	}
 	return err
 }
@@ -161,7 +163,7 @@ func (c *MemoryPersistence) Save(correlationId string) error {
     - callback 			callback function that receives error or null no errors occured.
 */
 func (c *MemoryPersistence) Clear(correlationId string) error {
-	c._items = make([]interface{}, 0)
+	c._items = make([]interface{}, 0, 5)
 	c._logger.Trace(correlationId, "Cleared items")
 	return c.Save(correlationId)
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/pip-services3-go/pip-services3-components-go/log"
 
 	"github.com/jinzhu/copier"
-
 	"math/rand"
+	"reflect"
 	"time"
 )
 
@@ -141,7 +141,7 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 		}
 	} else {
 		items = make([]interface{}, len(c._items))
-		copier.Copy(items, c._items)
+		copy(items, c._items)
 	}
 
 	if sortWrapper != nil {
@@ -195,7 +195,7 @@ func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, fi
 			}
 		}
 	} else {
-		results = c._items
+		copy(results, c._items)
 	}
 	// Apply sorting
 	if sortWrapper != nil {
@@ -251,7 +251,7 @@ func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filte
 			}
 		}
 	} else {
-		items = c._items
+		copy(items, c._items)
 	}
 
 	rand.Seed(time.Now().UnixNano())
@@ -308,9 +308,18 @@ Creates a data item.
 func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result *interface{}, err error) {
 	tmp := item
 	copier.Copy(tmp, item)
-	// Todo: need correct for add uniq id if not exist
-	if refl.ObjectReader.GetProperty(tmp, "Id") == nil {
-		refl.ObjectWriter.SetProperty(tmp, "Id", cdata.IdGenerator.NextLong())
+
+	idField := refl.ObjectReader.GetProperty(tmp, "Id")
+	if idField != nil {
+		if reflect.ValueOf(idField).IsZero() {
+			typePointer := reflect.New(reflect.TypeOf(tmp))
+			typePointer.Elem().Set(reflect.ValueOf(tmp))
+			interfacePointer := typePointer.Interface()
+			refl.ObjectWriter.SetProperty(interfacePointer, "Id", cdata.IdGenerator.NextLong())
+			tmp = reflect.ValueOf(interfacePointer).Elem().Interface()
+		}
+	} else {
+		panic("IdentifiableMemoryPersistence.Create Error Id field doesn't exist")
 	}
 	result = &tmp
 	c._items = append(c._items, tmp)
@@ -330,9 +339,18 @@ otherwise it create a new data item.
 func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result *interface{}, err error) {
 	tmp := item
 	copier.Copy(tmp, item)
-	// ToDo: Need check
-	if refl.ObjectReader.GetProperty(tmp, "Id") == nil {
-		refl.ObjectWriter.SetProperty(tmp, "Id", cdata.IdGenerator.NextLong())
+
+	idField := refl.ObjectReader.GetProperty(tmp, "Id")
+	if idField != nil {
+		if reflect.ValueOf(idField).IsZero() {
+			typePointer := reflect.New(reflect.TypeOf(tmp))
+			typePointer.Elem().Set(reflect.ValueOf(tmp))
+			interfacePointer := typePointer.Interface()
+			refl.ObjectWriter.SetProperty(interfacePointer, "Id", cdata.IdGenerator.NextLong())
+			tmp = reflect.ValueOf(interfacePointer).Elem().Interface()
+		}
+	} else {
+		panic("IdentifiableMemoryPersistence.Set Error Id field doesn't exist")
 	}
 
 	var index int = -1
@@ -412,11 +430,16 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 	}
 	tmp := c._items[index]
 	copier.Copy(tmp, c._items[index])
-	refl.ObjectWriter.SetProperties(&tmp, data.Value())
-	copier.Copy(c._items[index], tmp)
-	c._items[index] = tmp
-	c._logger.Trace(correlationId, "Partially updated item %s", id)
 
+	objPointer := reflect.New(reflect.TypeOf(tmp))
+	objPointer.Elem().Set(reflect.ValueOf(tmp))
+	intPointer := objPointer.Interface()
+	refl.ObjectWriter.SetProperties(intPointer, data.Value())
+	tmp = reflect.ValueOf(intPointer).Elem().Interface()
+
+	c._items[index] = tmp
+	copier.Copy(c._items[index], tmp)
+	c._logger.Trace(correlationId, "Partially updated item %s", id)
 	errsave := c.Save(correlationId)
 	return &tmp, errsave
 }

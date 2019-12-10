@@ -14,8 +14,8 @@ type DummyPersistenceFixture struct {
 
 func NewDummyPersistenceFixture(persistence IDummyPersistence) *DummyPersistenceFixture {
 	c := DummyPersistenceFixture{}
-	c._dummy1 = Dummy{Id: "id1", Key: "Key 1", Content: "Content 1"}
-	c._dummy2 = Dummy{Id: "id2", Key: "Key 2", Content: "Content 2"}
+	c._dummy1 = Dummy{Id: "", Key: "Key 1", Content: "Content 1"}
+	c._dummy2 = Dummy{Id: "", Key: "Key 2", Content: "Content 2"}
 	c._persistence = persistence
 	return &c
 }
