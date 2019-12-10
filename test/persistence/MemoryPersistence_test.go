@@ -12,7 +12,7 @@ func TestMemoryPersistence(t *testing.T) {
 
 	fixture := NewDummyPersistenceFixture(persister)
 
-	t.Run("MemoryPersistence", fixture.TestCrudOperations)
-	t.Run("MemoryPersistence", fixture.TestBatchOperations)
+	t.Run("MemoryPersistence:CRUD", fixture.TestCrudOperations)
+	t.Run("MemoryPersistence:Batch", fixture.TestBatchOperations)
 
 }
