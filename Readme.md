@@ -4,15 +4,15 @@ This framework is a part of the [Pip.Services](https://github.com/pip-services/p
 This package contains various design patterns for working with data and provides implementation of 
 reusable data processing and persistence components:
 
-- [MemoryPersistence](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go)
-- [IdentifiableMemoryPersistence](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go)
-- [FilePersistence](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go)
-- [IdentifiableFilePersistence](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go)
+- [MemoryPersistence](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go/persistence)
+- [IdentifiableMemoryPersistence](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go/persistence)
+- [FilePersistence](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go/persistence)
+- [IdentifiableFilePersistence](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go/persistence)
 
 Quick Links:
 
 * [Downloads](https://github.com/pip-services3-go/pip-services3-data-go/blob/master/docs/Downloads.md)
-* [API Reference](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go)
+* [API Reference](https://godoc.org/github.com/pip-services3-go/pip-services3-data-go/persistence)
 * [Building and Testing](https://github.com/pip-services3-go/pip-services3-data-go/blob/master/docs/Development.md)
 * [Contributing](https://github.com/pip-services3-go/pip-services3-data-go/blob/master/docs/Development.md#contrib)
 
