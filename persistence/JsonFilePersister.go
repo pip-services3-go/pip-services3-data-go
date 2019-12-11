@@ -90,7 +90,13 @@ func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err
 		data = nil
 		return
 	}
-	list := convert.JsonConverter.ToNullableMap((string)(json))
+	list, err := convert.FromJson((string)(json))
+	//list := convert.JsonConverter.ToNullableMap((string)(json))
+	if list == nil {
+		data = nil
+		return
+	}
+	//data = *convert.ArrayConverter.ToNullableArray(list)
 	data = convert.ArrayConverter.ListToArray(list)
 	err = nil
 	return

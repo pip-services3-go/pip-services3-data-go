@@ -1,7 +1,7 @@
 package test_persistence
 
 type Dummy struct {
-	Id      string
-	Key     string
-	Content string
+	Id      string `json:"id"`
+	Key     string `json:"key"`
+	Content string `json:"content"`
 }

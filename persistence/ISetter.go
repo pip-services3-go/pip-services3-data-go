@@ -12,6 +12,7 @@ type ISetter interface {
 	//	    transaction id to trace execution through call chain.
 	// 		- item  interface{}
 	//      a item to be set.
-	// Retruns updated item or error.
+	// Retruns *interface{}, error
+	// updated item or error.
 	Set(correlation_id string, item interface{}) (value *interface{}, err error)
 }

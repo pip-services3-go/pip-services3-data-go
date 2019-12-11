@@ -16,7 +16,7 @@ type IPartialUpdater interface {
 	//      an id of data item to be updated.
 	//		- data data.AnyValueMap
 	//      a map with fields to be updated.
-	// Returns interface{}, error
+	// Returns *interface{}, error
 	// updated item or error.
 	UpdatePartially(correlation_id string, id interface{}, data data.AnyValueMap) (item *interface{}, err error)
 }

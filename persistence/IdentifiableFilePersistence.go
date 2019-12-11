@@ -13,7 +13,7 @@ GetListByFilter or DeleteByFilter operations with specific filter function.
 All other operations can be used out of the box.
 
 In complex scenarios child classes can implement additional operations by
-accessing cached items via this._items property and calling Save method
+accessing cached items via IdentifiableFilePersistence._items property and calling Save method
 on updates.
 
 See JsonFilePersister
@@ -30,48 +30,46 @@ Configuration parameters
 - *:logger:*:*:1.0      (optional)  ILogger components to pass log messages
 
  Examples
-// extends IdentifiableFilePersistence<MyData, string> {
-    type MyFilePersistence  struct {
-		IdentifiableFilePersistence
-	}
+type MyFilePersistence  struct {
+	IdentifiableFilePersistence
+}
+    func NewMyFilePersistence(path string)(mfp *MyFilePersistence) {
+		mfp = MyFilePersistence{}
+		mfp.IdentifiableFilePersistence = *NewJsonPersister(path)
+		return mfp
+    }
 
-        func NewMyFilePersistence(path string)(mfp *MyFilePersistence) {
-			mfp = MyFilePersistence{}
-			mfp.IdentifiableFilePersistence = *NewJsonPersister(path)
-			return mfp
-        }
-
-        func composeFilter(filter cdata.FilterParams)(func (item interface{})bool) {
-			if &filter == nil {
-				filter = NewFilterParams()
+    func composeFilter(filter cdata.FilterParams)(func (item interface{})bool) {
+		if &filter == nil {
+			filter = NewFilterParams()
+		}
+        name := filter.GetAsNullableString("name");
+        return func (item interface) bool {
+            dummy, ok := item.(Dummy)
+			if *name != "" && ok && dummy.Name != *name {
+				return false
 			}
-            name := filter.GetAsNullableString("name");
-            return func (item interface) bool {
-                if name != nil && item.name != name {
-					return false
-				}
-                return true
-            }
+            return true
         }
+    }
 
-        func (c *MyFilePersistence ) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams)(page cdata.DataPage, err error){
-            return c.GetPageByFilter(correlationId, this.composeFilter(filter), paging, nil, nil)
-        }
+    func (c *MyFilePersistence ) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams)(page cdata.DataPage, err error){
+        return c.GetPageByFilter(correlationId, this.composeFilter(filter), paging, nil, nil)
+    }
 
     persistence := NewMyFilePersistence("./data/data.json")
 
-	_, errc := persistence.Create("123", { id: "1", name: "ABC" })
+	_, errc := persistence.Create("123", { Id: "1", Name: "ABC" })
 	if (errc != nil) {
 		panic()
 	}
-    page, errg := persistence.GetPageByFilter("123", NewFilterParamsFromTuples("name", "ABC"), nil)
+    page, errg := persistence.GetPageByFilter("123", NewFilterParamsFromTuples("Name", "ABC"), nil)
     if errg != nil {
-		panic()
+		panic("Error")
 	}
-    fmt.Println(page.Data)         // Result: { id: "1", name: "ABC" )
+    fmt.Println(page.Data)         // Result: { Id: "1", Name: "ABC" )
     persistence.DeleteById("123", "1")
 */
-//  IIdentifiable extends IdentifiableMemoryPersistence
 type IdentifiableFilePersistence struct {
 	IdentifiableMemoryPersistence
 	_persister JsonFilePersister
@@ -79,7 +77,8 @@ type IdentifiableFilePersistence struct {
 
 // Creates a new instance of the persistence.
 // - persister    (optional) a persister component that loads and saves data from/to flat file.
-
+// Return *IdentifiableFilePersistence
+// pointer on new IdentifiableFilePersistence
 func NewIdentifiableFilePersistence(persister JsonFilePersister) *IdentifiableFilePersistence {
 	var c = &IdentifiableFilePersistence{}
 	if &persister == nil {

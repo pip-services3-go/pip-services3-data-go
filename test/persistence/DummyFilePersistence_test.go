@@ -1,13 +1,22 @@
 package test_persistence
 
 import (
+	"os"
 	"testing"
 
 	cconf "github.com/pip-services3-go/pip-services3-commons-go/config"
 )
 
 func TestDummyFilePersistence(t *testing.T) {
-	persistence := NewDummyFilePersistence("../../data/dummies.json")
+	filename := "../../data/dummies.json"
+	// cleaning file before testing
+	f, err := os.Create(filename)
+	if err != nil {
+		t.Error("Can't clean file: ", filename)
+	}
+	f.Close()
+
+	persistence := NewDummyFilePersistence(filename)
 	persistence.Configure(*cconf.NewEmptyConfigParams())
 
 	defer persistence.Close("")

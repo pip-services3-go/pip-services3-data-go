@@ -56,7 +56,9 @@ type MemoryPersistence struct {
 	_opened bool
 }
 
-// Creates a new empty instance of the persistence.
+// Creates a new empty instance of the MemoryPersistence
+// Return *MemoryPersistence
+// empty MemoryPersistence
 func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
 	mp = &MemoryPersistence{}
 	mp._logger = *log.NewCompositeLogger()
@@ -64,12 +66,14 @@ func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
 	return mp
 }
 
-/*
-   Creates a new instance of the persistence.
-
-   - loader    (optional) a loader to load items from external datasource.
-   - saver     (optional) a saver to save items to external datasource.
-*/
+// Creates a new instance of the persistence.
+// Parameters:
+//    - loader ILoader
+//    (optional) a loader to load items from external datasource.
+//    - saver  ISaver
+//    (optional) a saver to save items to external datasource.
+// Return *MemoryPersistence
+//  MemoryPersistence
 func NewMemoryPersistence(loader ILoader, saver ISaver) (mp *MemoryPersistence) {
 	mp = &MemoryPersistence{}
 	mp._items = make([]interface{}, 0, 10)
@@ -79,30 +83,25 @@ func NewMemoryPersistence(loader ILoader, saver ISaver) (mp *MemoryPersistence) 
 	return mp
 }
 
-/*
-	Sets references to dependent components.
-
-	- references 	references to locate the component dependencies.
-*/
+//  Sets references to dependent components.
+//  Parameters:
+// 	- references refer.IReferences
+//	references to locate the component dependencies.
 func (c *MemoryPersistence) SetReferences(references refer.IReferences) {
 	c._logger.SetReferences(references)
 }
 
-/*
-	Checks if the component is opened.
-
-	Returns true if the component has been opened and false otherwise.
-*/
+//  Checks if the component is opened.
+//  Returns true if the component has been opened and false otherwise.
 func (c *MemoryPersistence) IsOpen() bool {
 	return c._opened
 }
 
-/*
-	Opens the component.
-
-	- correlationId 	(optional) transaction id to trace execution through call chain.
-    - callback 			callback function that receives error or null no errors occured.
-*/
+// Opens the component.
+// Parameters:
+// 		- correlationId  string
+// 		(optional) transaction id to trace execution through call chain.
+// Returns  error or null no errors occured.
 func (c *MemoryPersistence) Open(correlationId string) error {
 	err := c.load(correlationId)
 	if err == nil {
@@ -117,7 +116,7 @@ func (c *MemoryPersistence) load(correlationId string) error {
 	}
 
 	items, err := c._loader.Load(correlationId)
-	if err == nil {
+	if err == nil && items != nil {
 		c._items = items
 		length := len(c._items)
 		c._logger.Trace(correlationId, "Loaded %d items", length)
@@ -125,24 +124,21 @@ func (c *MemoryPersistence) load(correlationId string) error {
 	return err
 }
 
-/*
-	Closes component and frees used resources.
+// Closes component and frees used resources.
+// Parameters:
+// 	- correlationId 	(optional) transaction id to trace execution through call chain.
+// Retruns: error or null no errors occured.
 
-	- correlationId 	(optional) transaction id to trace execution through call chain.
-    - callback 			callback function that receives error or null no errors occured.
-*/
 func (c *MemoryPersistence) Close(correlationId string) error {
 	err := c.Save(correlationId)
 	c._opened = false
 	return err
 }
 
-/*
-   Saves items to external data source using configured saver component.
-
-   - correlationId     (optional) transaction id to trace execution through call chain.
-   - callback          (optional) callback function that receives error or null for success.
-*/
+// Saves items to external data source using configured saver component.
+//    - correlationId string
+//     (optional) transaction id to trace execution through call chain.
+// Return error or null for success.
 func (c *MemoryPersistence) Save(correlationId string) error {
 	if c._saver == nil {
 		return nil
@@ -156,12 +152,10 @@ func (c *MemoryPersistence) Save(correlationId string) error {
 	return err
 }
 
-/*
-	Clears component state.
+// Clears component state.
+// 	- correlationId 	(optional) transaction id to trace execution through call chain.
+//  Returns error or null no errors occured.
 
-	- correlationId 	(optional) transaction id to trace execution through call chain.
-    - callback 			callback function that receives error or null no errors occured.
-*/
 func (c *MemoryPersistence) Clear(correlationId string) error {
 	c._items = make([]interface{}, 0, 5)
 	c._logger.Trace(correlationId, "Cleared items")

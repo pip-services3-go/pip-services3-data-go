@@ -10,7 +10,7 @@ type IGetter interface {
 	//  Parameters:
 	//  - correlation_id    (optional) transaction id to trace execution through call chain.
 	//  - id                an id of item to be retrieved.
-	//  Return
+	//  Return *interface{}, error
 	// item or error
 	GetOneById(correlation_id string, id interface{}) (item *interface{}, err error)
 }

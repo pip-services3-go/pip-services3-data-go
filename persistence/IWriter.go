@@ -33,7 +33,7 @@ type IWriter interface {
 	//		    transaction id to trace execution through call chain.
 	//  		- id interface{}
 	//			 an id of the item to be deleted
-	//  Returns: interface{}, error
+	//  Returns: *interface{}, error
 	//  deleted item or error.
 
 	DeleteById(correlation_id string, id interface{}) (value *interface{}, err error)

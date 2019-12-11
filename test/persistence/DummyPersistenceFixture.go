@@ -51,7 +51,8 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 	}
 	assert.NotNil(t, page)
 	assert.Len(t, page.Data, 2)
-	// Testing default sorting by Key field len
+	//Testing default sorting by Key field len
+
 	item1 := page.Data[0].(Dummy)
 	assert.Equal(t, item1.Key, dummy2.Key)
 	item2 := page.Data[1].(Dummy)
@@ -156,7 +157,6 @@ func (c *DummyPersistenceFixture) TestBatchOperations(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetListByIds method error %v", err)
 	}
-	//assert.isArray(items)
 	assert.NotNil(t, items)
 	assert.Len(t, items, 0)
 

@@ -11,6 +11,5 @@ type ILoader interface {
 	//   	transaction id to trace execution through call chain.
 	// Retruns []interface{}, error
 	// a list of data items or error.
-
 	Load(correlation_id string) (items []interface{}, err error)
 }
