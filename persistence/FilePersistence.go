@@ -1,6 +1,10 @@
 package persistence
 
-import "github.com/pip-services3-go/pip-services3-commons-go/config"
+import (
+	"reflect"
+
+	"github.com/pip-services3-go/pip-services3-commons-go/config"
+)
 
 /*
 Abstract persistence component that stores data in flat files
@@ -61,13 +65,13 @@ type FilePersistence struct {
 // - persister    (optional) a persister component that loads and saves data from/to flat file.
 // Return *FilePersistence
 // Pointer on new FilePersistence instance
-func NewFilePersistence(persister JsonFilePersister) *FilePersistence {
+func NewFilePersistence(prototype reflect.Type, persister JsonFilePersister) *FilePersistence {
 	var c = &FilePersistence{}
 	if &persister == nil {
 		persister = *NewJsonFilePersister("")
 	}
 	c._persister = persister
-	c.MemoryPersistence = *NewMemoryPersistence(&persister, &persister)
+	c.MemoryPersistence = *NewMemoryPersistence(prototype, &persister, &persister)
 	return c
 }
 

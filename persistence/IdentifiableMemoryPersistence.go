@@ -1,12 +1,12 @@
 package persistence
 
 import (
+	"github.com/jinzhu/copier"
 	"github.com/pip-services3-go/pip-services3-commons-go/config"
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
+	"github.com/pip-services3-go/pip-services3-commons-go/errors"
 	refl "github.com/pip-services3-go/pip-services3-commons-go/reflect"
 	"github.com/pip-services3-go/pip-services3-components-go/log"
-
-	"github.com/jinzhu/copier"
 	"math/rand"
 	"reflect"
 	"sort"
@@ -79,12 +79,44 @@ type IdentifiableMemoryPersistence struct {
 	_maxPageSize int
 }
 
+// ================================= Service methods ====================================
+// Generate new id if "Id" field in item is zero or empty
+// result saves in item
+func setIdIfEmpty(correlationId string, item *interface{}) error {
+	value := *item
+	idField := refl.ObjectReader.GetProperty(value, "Id")
+	if idField != nil {
+		if reflect.ValueOf(idField).IsZero() {
+			typePointer := reflect.New(reflect.TypeOf(value))
+			typePointer.Elem().Set(reflect.ValueOf(value))
+			interfacePointer := typePointer.Interface()
+			refl.ObjectWriter.SetProperty(interfacePointer, "Id", cdata.IdGenerator.NextLong())
+			*item = reflect.ValueOf(interfacePointer).Elem().Interface()
+		}
+	} else {
+		return errors.NewInternalError(correlationId, "ID_FIELD_NOT_EXIST", "Id field doesn't exist")
+	}
+	return nil
+}
+
+func (c *IdentifiableMemoryPersistence) getIndexById(id interface{}) int {
+	var index int = -1
+	for i, v := range c._items {
+		vId := refl.ObjectReader.GetProperty(v, "Id")
+		if vId == id {
+			index = i
+			break
+		}
+	}
+	return index
+}
+
 // Creates a new empty instance of the persistence.
 // Return * IdentifiableMemoryPersistence
 // created empty IdentifiableMemoryPersistence
-func NewEmptyIdentifiableMemoryPersistence() (c *IdentifiableMemoryPersistence) {
+func NewEmptyIdentifiableMemoryPersistence(prototype reflect.Type) (c *IdentifiableMemoryPersistence) {
 	c = &IdentifiableMemoryPersistence{}
-	c.MemoryPersistence = *NewEmptyMemoryPersistence()
+	c.MemoryPersistence = *NewEmptyMemoryPersistence(prototype)
 	c._logger = *log.NewCompositeLogger()
 	c._maxPageSize = 100
 	return c
@@ -98,9 +130,9 @@ func NewEmptyIdentifiableMemoryPersistence() (c *IdentifiableMemoryPersistence) 
 //		a saver to save items to external datasource.
 // Return * IdentifiableMemoryPersistence
 // created empty IdentifiableMemoryPersistence
-func NewIdentifiableMemoryPersistence(loader ILoader, saver ISaver) (c *IdentifiableMemoryPersistence) {
+func NewIdentifiableMemoryPersistence(prototype reflect.Type, loader ILoader, saver ISaver) (c *IdentifiableMemoryPersistence) {
 	c = &IdentifiableMemoryPersistence{}
-	c.MemoryPersistence = *NewEmptyMemoryPersistence()
+	c.MemoryPersistence = *NewEmptyMemoryPersistence(prototype)
 	c._loader = loader
 	c._saver = saver
 	c._logger = *log.NewCompositeLogger()
@@ -135,6 +167,10 @@ func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
 func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, filter func(interface{}) bool,
 	paging cdata.PagingParams, sortWrapper func(a, b interface{}) bool, sel interface{}) (page cdata.DataPage, err error) {
 	var items []interface{}
+
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
+
 	// Filter and sort
 	if filter != nil {
 		for _, v := range c._items {
@@ -195,6 +231,9 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, filter func(interface{}) bool,
 	sortWrapper func(a, b interface{}) bool, sel interface{}) (results []interface{}, err error) {
 
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
+
 	// Apply filter
 	if filter != nil {
 		for _, v := range c._items {
@@ -223,8 +262,8 @@ func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, fi
 //      ids of data items to be retrieved
 // Returns  []interface{}, error
 // data list or error.
-
 func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids []interface{}) (result []interface{}, err error) {
+
 	filter := func(item interface{}) bool {
 		var exist bool = false
 		itemId := refl.ObjectReader.GetProperty(item, "Id")
@@ -250,8 +289,10 @@ func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids [
 //     (optional) a filter function to filter items.
 // Returns: *interface{}, error
 // random item or error.
-
 func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filter func(interface{}) bool) (item *interface{}, err error) {
+
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
 
 	var items []interface{}
 	// Apply filter
@@ -289,6 +330,9 @@ func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filte
 // data item or error.
 func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (item *interface{}, err error) {
 
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
+
 	var items []interface{}
 	for _, v := range c._items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
@@ -319,23 +363,22 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 // Returns:  *interface{}, error
 // created item or error.
 func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result *interface{}, err error) {
+
+	c._lockMutex.Lock()
+
 	tmp := item
 	copier.Copy(tmp, item)
 
-	idField := refl.ObjectReader.GetProperty(tmp, "Id")
-	if idField != nil {
-		if reflect.ValueOf(idField).IsZero() {
-			typePointer := reflect.New(reflect.TypeOf(tmp))
-			typePointer.Elem().Set(reflect.ValueOf(tmp))
-			interfacePointer := typePointer.Interface()
-			refl.ObjectWriter.SetProperty(interfacePointer, "Id", cdata.IdGenerator.NextLong())
-			tmp = reflect.ValueOf(interfacePointer).Elem().Interface()
-		}
-	} else {
-		panic("IdentifiableMemoryPersistence.Create Error Id field doesn't exist")
+	err = setIdIfEmpty(correlationId, &tmp)
+	if err != nil {
+		return nil, err
 	}
+
 	result = &tmp
 	c._items = append(c._items, tmp)
+
+	c._lockMutex.Unlock()
+
 	c._logger.Trace(correlationId, "Created item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
 	errsave := c.Save(correlationId)
 	return result, errsave
@@ -351,20 +394,15 @@ func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interf
 // Returns:  *interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result *interface{}, err error) {
+
+	c._lockMutex.Lock()
+
 	tmp := item
 	copier.Copy(tmp, item)
 
-	idField := refl.ObjectReader.GetProperty(tmp, "Id")
-	if idField != nil {
-		if reflect.ValueOf(idField).IsZero() {
-			typePointer := reflect.New(reflect.TypeOf(tmp))
-			typePointer.Elem().Set(reflect.ValueOf(tmp))
-			interfacePointer := typePointer.Interface()
-			refl.ObjectWriter.SetProperty(interfacePointer, "Id", cdata.IdGenerator.NextLong())
-			tmp = reflect.ValueOf(interfacePointer).Elem().Interface()
-		}
-	} else {
-		panic("IdentifiableMemoryPersistence.Set Error Id field doesn't exist")
+	err = setIdIfEmpty(correlationId, &tmp)
+	if err != nil {
+		return nil, err
 	}
 
 	var index int = -1
@@ -383,6 +421,8 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 		c._items[index] = tmp
 	}
 
+	c._lockMutex.Unlock()
+
 	c._logger.Trace(correlationId, "Set item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
 
 	errsav := c.Save(correlationId)
@@ -398,15 +438,11 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 // Returns:   *interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (result *interface{}, err error) {
-	var index int = -1
-	itemId := refl.ObjectReader.GetProperty(item, "Id")
-	for i, v := range c._items {
-		vId := refl.ObjectReader.GetProperty(v, "Id")
-		if itemId == vId {
-			index = i
-			break
-		}
-	}
+
+	c._lockMutex.Lock()
+
+	id := refl.ObjectReader.GetProperty(item, "Id")
+	index := c.getIndexById(id)
 
 	if index < 0 {
 		c._logger.Trace(correlationId, "Item %s was not found", refl.ObjectReader.GetProperty(item, "Id"))
@@ -415,8 +451,10 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 	tmp := item
 	copier.Copy(tmp, item)
 	c._items[index] = item
-	c._logger.Trace(correlationId, "Updated item %s", refl.ObjectReader.GetProperty(item, "Id"))
 
+	c._lockMutex.Unlock()
+
+	c._logger.Trace(correlationId, "Updated item %s", refl.ObjectReader.GetProperty(item, "Id"))
 	errsave := c.Save(correlationId)
 	return &tmp, errsave
 }
@@ -431,16 +469,11 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 //      a map with fields to be updated.
 // Returns: *interface{}, error
 // updated item or error.
-
 func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (item *interface{}, err error) {
-	var index int = -1
-	for i, v := range c._items {
-		vId := refl.ObjectReader.GetProperty(v, "Id")
-		if vId == id {
-			index = i
-			break
-		}
-	}
+
+	c._lockMutex.Lock()
+
+	index := c.getIndexById(id)
 
 	if index < 0 {
 		c._logger.Trace(correlationId, "Item %s was not found", id)
@@ -457,6 +490,9 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 
 	c._items[index] = tmp
 	copier.Copy(c._items[index], tmp)
+
+	c._lockMutex.Unlock()
+
 	c._logger.Trace(correlationId, "Partially updated item %s", id)
 	errsave := c.Save(correlationId)
 	return &tmp, errsave
@@ -471,6 +507,9 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 // Retruns:
 // deleted item or error.
 func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (item *interface{}, err error) {
+
+	c._lockMutex.Lock()
+
 	var index int = -1
 	for i, v := range c._items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
@@ -494,6 +533,9 @@ func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id inte
 	} else {
 		c._items = append(c._items[:index], c._items[index+1:]...)
 	}
+
+	c._lockMutex.Unlock()
+
 	c._logger.Trace(correlationId, "Deleted item by %s", id)
 
 	errsave := c.Save(correlationId)
@@ -510,8 +552,10 @@ func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id inte
 //      (optional) a filter function to filter items.
 // Retruns: error
 // error or nil for success.
-
 func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, filter func(interface{}) bool) (err error) {
+
+	c._lockMutex.Lock()
+
 	deleted := 0
 	for i, v := range c._items {
 		if filter(v) {
@@ -528,8 +572,9 @@ func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, fil
 		return nil
 	}
 
-	c._logger.Trace(correlationId, "Deleted %s items", deleted)
+	c._lockMutex.Unlock()
 
+	c._logger.Trace(correlationId, "Deleted %s items", deleted)
 	errsave := c.Save(correlationId)
 	return errsave
 }
@@ -542,7 +587,6 @@ func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, fil
 //     	ids of data items to be deleted.
 // Returns: error
 // error or null for success.
-
 func (c *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []interface{}) (err error) {
 	filter := func(item interface{}) bool {
 		var exist bool = false
