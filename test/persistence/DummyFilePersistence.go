@@ -9,13 +9,11 @@ import (
 type DummyFilePersistence struct {
 	DummyMemoryPersistence
 	_persister cpersist.JsonFilePersister
-	//_persister DummyJsonFilePersister
 }
 
 func NewDummyFilePersistence(path string) *DummyFilePersistence {
 	c := DummyFilePersistence{}
 	persister := cpersist.NewJsonFilePersister(path)
-	//persister := NewDummyJsonFilePersister(path)
 	c._persister = *persister
 	c.DummyMemoryPersistence = *NewDummyMemoryPersistence(persister, persister)
 	return &c
