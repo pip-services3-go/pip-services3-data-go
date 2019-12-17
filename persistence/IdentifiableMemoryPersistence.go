@@ -1,12 +1,12 @@
 package persistence
 
 import (
+	"github.com/jinzhu/copier"
 	"github.com/pip-services3-go/pip-services3-commons-go/config"
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
+	"github.com/pip-services3-go/pip-services3-commons-go/errors"
 	refl "github.com/pip-services3-go/pip-services3-commons-go/reflect"
 	"github.com/pip-services3-go/pip-services3-components-go/log"
-
-	"github.com/jinzhu/copier"
 	"math/rand"
 	"reflect"
 	"sort"
@@ -79,12 +79,78 @@ type IdentifiableMemoryPersistence struct {
 	_maxPageSize int
 }
 
+// ================================= Service methods ====================================
+// Generate new id if "Id" field in item is zero or empty
+// result saves in item
+func setIdIfEmpty(correlationId string, item *interface{}) error {
+	value := *item
+	idField := refl.ObjectReader.GetProperty(value, "Id")
+	if idField != nil {
+		if reflect.ValueOf(idField).IsZero() {
+			if reflect.ValueOf(value).Kind() == reflect.Map {
+				refl.ObjectWriter.SetProperty(value, "Id", cdata.IdGenerator.NextLong())
+			} else {
+				typePointer := reflect.New(reflect.TypeOf(value))
+				typePointer.Elem().Set(reflect.ValueOf(value))
+				interfacePointer := typePointer.Interface()
+				refl.ObjectWriter.SetProperty(interfacePointer, "Id", cdata.IdGenerator.NextLong())
+				*item = reflect.ValueOf(interfacePointer).Elem().Interface()
+			}
+		}
+	} else {
+		return errors.NewInternalError(correlationId, "ID_FIELD_NOT_EXIST", "Id field doesn't exist")
+	}
+	return nil
+}
+
+// Get index by "Id" field
+// return index number
+func (c *IdentifiableMemoryPersistence) getIndexById(id interface{}) int {
+	var index int = -1
+	for i, v := range c._items {
+		vId := refl.ObjectReader.GetProperty(v, "Id")
+		if vId == id {
+			index = i
+			break
+		}
+	}
+	return index
+}
+
+// Clone object
+// Parameters:
+//		- dst *interface{}
+// 		- src *interface{}
+func cloneObject(dst *interface{}, src *interface{}) {
+	if reflect.ValueOf(*src).Kind() == reflect.Map {
+		itemType := reflect.TypeOf(*src)
+		itemValue := reflect.ValueOf(*src)
+		mapType := reflect.MapOf(itemType.Key(), itemType.Elem())
+		newMap := reflect.MakeMap(mapType)
+		for _, k := range itemValue.MapKeys() {
+			v := itemValue.MapIndex(k)
+			newMap.SetMapIndex(k, v)
+		}
+		// inflate map
+		typePointer := reflect.New(itemType)
+		typePointer.Elem().Set(newMap)
+		interfacePointer := typePointer.Interface()
+		*dst = reflect.ValueOf(interfacePointer).Elem().Interface()
+
+	} else {
+		copier.Copy(dst, src)
+	}
+}
+
 // Creates a new empty instance of the persistence.
+// Parameters:
+// 		- prototype reflect.Type
+//		data type of contains items
 // Return * IdentifiableMemoryPersistence
 // created empty IdentifiableMemoryPersistence
-func NewEmptyIdentifiableMemoryPersistence() (c *IdentifiableMemoryPersistence) {
+func NewEmptyIdentifiableMemoryPersistence(prototype reflect.Type) (c *IdentifiableMemoryPersistence) {
 	c = &IdentifiableMemoryPersistence{}
-	c.MemoryPersistence = *NewEmptyMemoryPersistence()
+	c.MemoryPersistence = *NewEmptyMemoryPersistence(prototype)
 	c._logger = *log.NewCompositeLogger()
 	c._maxPageSize = 100
 	return c
@@ -92,15 +158,17 @@ func NewEmptyIdentifiableMemoryPersistence() (c *IdentifiableMemoryPersistence) 
 
 // Creates a new instance of the persistence.
 // Parameters:
+// 		- prototype reflect.Type
+//		data type of contains items
 // 		- loader ILoader
 //	    a loader to load items from external datasource.
 // 		- saver  ISaver
 //		a saver to save items to external datasource.
 // Return * IdentifiableMemoryPersistence
 // created empty IdentifiableMemoryPersistence
-func NewIdentifiableMemoryPersistence(loader ILoader, saver ISaver) (c *IdentifiableMemoryPersistence) {
+func NewIdentifiableMemoryPersistence(prototype reflect.Type, loader ILoader, saver ISaver) (c *IdentifiableMemoryPersistence) {
 	c = &IdentifiableMemoryPersistence{}
-	c.MemoryPersistence = *NewEmptyMemoryPersistence()
+	c.MemoryPersistence = *NewEmptyMemoryPersistence(prototype)
 	c._loader = loader
 	c._saver = saver
 	c._logger = *log.NewCompositeLogger()
@@ -126,15 +194,17 @@ func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
 //      (optional) a filter function to filter items
 // 		- paging cdata.PagingParams
 //      (optional) paging parameters
-// 		- sortWrapper func(a, b interface{}) bool
+// 		- sortFunc func(a, b interface{}) bool
 //      (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
-// 		- sel interface{}
-//      (optional) projection parameters (not used yet)
+// 		- selectFunc func(in interface{}) (out interface{})
+//      (optional) projection parameters
 // Return cdata.DataPage, error
 // data page or error.
 func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, filter func(interface{}) bool,
-	paging cdata.PagingParams, sortWrapper func(a, b interface{}) bool, sel interface{}) (page cdata.DataPage, err error) {
+	paging cdata.PagingParams, sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (page cdata.DataPage, err error) {
 	var items []interface{}
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
 	// Filter and sort
 	if filter != nil {
 		for _, v := range c._items {
@@ -146,10 +216,9 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 		items = make([]interface{}, len(c._items))
 		copy(items, c._items)
 	}
-
-	if sortWrapper != nil {
-		if sortWrapper != nil {
-			localSort := sorter{items: items, compFunc: sortWrapper}
+	if sortFunc != nil {
+		if sortFunc != nil {
+			localSort := sorter{items: items, compFunc: sortFunc}
 			sort.Sort(localSort)
 		}
 	}
@@ -159,21 +228,23 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 	}
 	skip := paging.GetSkip(-1)
 	take := paging.GetTake((int64)(c._maxPageSize))
-
 	var total int64
 	if paging.Total {
 		total = (int64)(len(items))
 	}
-
 	if skip > 0 {
 		items = items[skip:]
 	}
 	if (int64)(len(items)) >= take {
 		items = items[:take]
 	}
-
+	// Get projection
+	if selectFunc != nil {
+		for i, v := range items {
+			items[i] = selectFunc(v)
+		}
+	}
 	c._logger.Trace(correlationId, "Retrieved %d items", len(items))
-
 	page = *cdata.NewDataPage(&total, items)
 	return page, nil
 }
@@ -186,15 +257,16 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 //      (optional) transaction id to trace execution through call chain.
 // 		- filter func(interface{}) bool
 //      (optional) a filter function to filter items
-// 		- sortWrapper func(a, b interface{}) bool
+// 		- sortFunc func(a, b interface{}) bool
 //      (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
-// 		- sel interface{}
-//      (optional) projection parameters (not used yet)
+// 		- selectFunc func(in interface{}) (out interface{})
+//      (optional) projection parameters
 // Returns  []interface{},  error
 // array of items and error
 func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, filter func(interface{}) bool,
-	sortWrapper func(a, b interface{}) bool, sel interface{}) (results []interface{}, err error) {
-
+	sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (results []interface{}, err error) {
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
 	// Apply filter
 	if filter != nil {
 		for _, v := range c._items {
@@ -206,12 +278,17 @@ func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, fi
 		copy(results, c._items)
 	}
 	// Apply sorting
-	if sortWrapper != nil {
-		localSort := sorter{items: results, compFunc: sortWrapper}
+	if sortFunc != nil {
+		localSort := sorter{items: results, compFunc: sortFunc}
 		sort.Sort(localSort)
 	}
+	// Get projection
+	if selectFunc != nil {
+		for i, v := range results {
+			results[i] = selectFunc(v)
+		}
+	}
 	c._logger.Trace(correlationId, "Retrieved %d items", len(results))
-
 	return results, nil
 }
 
@@ -223,7 +300,6 @@ func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, fi
 //      ids of data items to be retrieved
 // Returns  []interface{}, error
 // data list or error.
-
 func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids []interface{}) (result []interface{}, err error) {
 	filter := func(item interface{}) bool {
 		var exist bool = false
@@ -250,9 +326,9 @@ func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids [
 //     (optional) a filter function to filter items.
 // Returns: *interface{}, error
 // random item or error.
-
 func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filter func(interface{}) bool) (item *interface{}, err error) {
-
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
 	var items []interface{}
 	// Apply filter
 	if filter != nil {
@@ -264,13 +340,10 @@ func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filte
 	} else {
 		copy(items, c._items)
 	}
-
 	rand.Seed(time.Now().UnixNano())
-
 	if len(items) > 0 {
 		item = &items[rand.Intn(len(items))]
 	}
-
 	if item != nil {
 		c._logger.Trace(correlationId, "Retrieved a random item")
 	} else {
@@ -288,7 +361,8 @@ func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filte
 // Returns:  *interface{}, error
 // data item or error.
 func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (item *interface{}, err error) {
-
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
 	var items []interface{}
 	for _, v := range c._items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
@@ -296,17 +370,14 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 			items = append(items, v)
 		}
 	}
-
 	if len(items) > 0 {
 		item = &items[0]
 	}
-
 	if item != nil {
 		c._logger.Trace(correlationId, "Retrieved item %s", id)
 	} else {
 		c._logger.Trace(correlationId, "Cannot find item by %s", id)
 	}
-
 	return item, err
 }
 
@@ -319,23 +390,16 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 // Returns:  *interface{}, error
 // created item or error.
 func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result *interface{}, err error) {
-	tmp := item
-	copier.Copy(tmp, item)
-
-	idField := refl.ObjectReader.GetProperty(tmp, "Id")
-	if idField != nil {
-		if reflect.ValueOf(idField).IsZero() {
-			typePointer := reflect.New(reflect.TypeOf(tmp))
-			typePointer.Elem().Set(reflect.ValueOf(tmp))
-			interfacePointer := typePointer.Interface()
-			refl.ObjectWriter.SetProperty(interfacePointer, "Id", cdata.IdGenerator.NextLong())
-			tmp = reflect.ValueOf(interfacePointer).Elem().Interface()
-		}
-	} else {
-		panic("IdentifiableMemoryPersistence.Create Error Id field doesn't exist")
+	c._lockMutex.Lock()
+	var tmp interface{}
+	cloneObject(&tmp, &item)
+	err = setIdIfEmpty(correlationId, &tmp)
+	if err != nil {
+		return nil, err
 	}
 	result = &tmp
 	c._items = append(c._items, tmp)
+	c._lockMutex.Unlock()
 	c._logger.Trace(correlationId, "Created item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
 	errsave := c.Save(correlationId)
 	return result, errsave
@@ -351,42 +415,27 @@ func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interf
 // Returns:  *interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result *interface{}, err error) {
-	tmp := item
-	copier.Copy(tmp, item)
-
-	idField := refl.ObjectReader.GetProperty(tmp, "Id")
-	if idField != nil {
-		if reflect.ValueOf(idField).IsZero() {
-			typePointer := reflect.New(reflect.TypeOf(tmp))
-			typePointer.Elem().Set(reflect.ValueOf(tmp))
-			interfacePointer := typePointer.Interface()
-			refl.ObjectWriter.SetProperty(interfacePointer, "Id", cdata.IdGenerator.NextLong())
-			tmp = reflect.ValueOf(interfacePointer).Elem().Interface()
-		}
-	} else {
-		panic("IdentifiableMemoryPersistence.Set Error Id field doesn't exist")
+	c._lockMutex.Lock()
+	var tmp interface{}
+	cloneObject(&tmp, &item)
+	err = setIdIfEmpty(correlationId, &tmp)
+	if err != nil {
+		return nil, err
 	}
-
-	var index int = -1
-	itemId := refl.ObjectReader.GetProperty(item, "Id")
-	for i, v := range c._items {
-		vId := refl.ObjectReader.GetProperty(v, "Id")
-		if itemId == vId {
-			index = i
-			break
-		}
-	}
-
+	id := refl.ObjectReader.GetProperty(item, "Id")
+	index := c.getIndexById(id)
 	if index < 0 {
 		c._items = append(c._items, tmp)
 	} else {
-		c._items[index] = tmp
+		//c._items[index] = tmp
+		cloneObject(&c._items[index], &tmp)
 	}
-
+	c._lockMutex.Unlock()
 	c._logger.Trace(correlationId, "Set item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
-
 	errsav := c.Save(correlationId)
-	return &tmp, errsav
+	result = new(interface{})
+	cloneObject(result, &tmp)
+	return result, errsav
 }
 
 // Updates a data item.
@@ -398,30 +447,23 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 // Returns:   *interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (result *interface{}, err error) {
-	var index int = -1
-	itemId := refl.ObjectReader.GetProperty(item, "Id")
-	for i, v := range c._items {
-		vId := refl.ObjectReader.GetProperty(v, "Id")
-		if itemId == vId {
-			index = i
-			break
-		}
-	}
-
+	c._lockMutex.Lock()
+	id := refl.ObjectReader.GetProperty(item, "Id")
+	index := c.getIndexById(id)
 	if index < 0 {
 		c._logger.Trace(correlationId, "Item %s was not found", refl.ObjectReader.GetProperty(item, "Id"))
 		return nil, nil
 	}
-	tmp := item
-	copier.Copy(tmp, item)
-	c._items[index] = item
+	var tmp interface{}
+	cloneObject(&tmp, &item)
+	cloneObject(&c._items[index], &item)
+	c._lockMutex.Unlock()
 	c._logger.Trace(correlationId, "Updated item %s", refl.ObjectReader.GetProperty(item, "Id"))
-
 	errsave := c.Save(correlationId)
 	return &tmp, errsave
 }
 
-// Updates only few selected fields in a data item.
+// Updates only few selectFuncected fields in a data item.
 // Parameters:
 // 		- correlation_id string
 //    	(optional) transaction id to trace execution through call chain.
@@ -431,32 +473,26 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 //      a map with fields to be updated.
 // Returns: *interface{}, error
 // updated item or error.
-
 func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (item *interface{}, err error) {
-	var index int = -1
-	for i, v := range c._items {
-		vId := refl.ObjectReader.GetProperty(v, "Id")
-		if vId == id {
-			index = i
-			break
-		}
-	}
-
+	c._lockMutex.Lock()
+	index := c.getIndexById(id)
 	if index < 0 {
 		c._logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	}
-	tmp := c._items[index]
-	copier.Copy(tmp, c._items[index])
-
-	objPointer := reflect.New(reflect.TypeOf(tmp))
-	objPointer.Elem().Set(reflect.ValueOf(tmp))
-	intPointer := objPointer.Interface()
-	refl.ObjectWriter.SetProperties(intPointer, data.Value())
-	tmp = reflect.ValueOf(intPointer).Elem().Interface()
-
-	c._items[index] = tmp
-	copier.Copy(c._items[index], tmp)
+	var tmp interface{}
+	cloneObject(&tmp, &c._items[index])
+	if reflect.ValueOf(tmp).Kind() == reflect.Map {
+		refl.ObjectWriter.SetProperties(tmp, data.Value())
+	} else {
+		objPointer := reflect.New(reflect.TypeOf(tmp))
+		objPointer.Elem().Set(reflect.ValueOf(tmp))
+		intPointer := objPointer.Interface()
+		refl.ObjectWriter.SetProperties(intPointer, data.Value())
+		tmp = reflect.ValueOf(intPointer).Elem().Interface()
+	}
+	cloneObject(&c._items[index], &tmp)
+	c._lockMutex.Unlock()
 	c._logger.Trace(correlationId, "Partially updated item %s", id)
 	errsave := c.Save(correlationId)
 	return &tmp, errsave
@@ -471,31 +507,23 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 // Retruns:
 // deleted item or error.
 func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (item *interface{}, err error) {
-	var index int = -1
-	for i, v := range c._items {
-		vId := refl.ObjectReader.GetProperty(v, "Id")
-		if vId == id {
-			index = i
-			break
-		}
-	}
-
+	c._lockMutex.Lock()
+	index := c.getIndexById(id)
 	if index < 0 {
 		c._logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	} else {
-		tmp := c._items[index]
-		copier.Copy(tmp, c._items[index])
+		var tmp interface{}
+		cloneObject(&tmp, &c._items[index])
 		item = &tmp
 	}
-
 	if index == len(c._items) {
 		c._items = c._items[:index-1]
 	} else {
 		c._items = append(c._items[:index], c._items[index+1:]...)
 	}
+	c._lockMutex.Unlock()
 	c._logger.Trace(correlationId, "Deleted item by %s", id)
-
 	errsave := c.Save(correlationId)
 	return item, errsave
 }
@@ -510,26 +538,27 @@ func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id inte
 //      (optional) a filter function to filter items.
 // Retruns: error
 // error or nil for success.
-
 func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, filter func(interface{}) bool) (err error) {
+	c._lockMutex.Lock()
 	deleted := 0
-	for i, v := range c._items {
-		if filter(v) {
-			if i == len(c._items) {
-				c._items = c._items[:i-1]
+
+	for i := 0; i < len(c._items); {
+		if filter(c._items[i]) {
+			if i == len(c._items)-1 {
+				c._items = c._items[:i]
 			} else {
 				c._items = append(c._items[:i], c._items[i+1:]...)
 			}
 			deleted++
+		} else {
+			i++
 		}
 	}
-
 	if deleted == 0 {
 		return nil
 	}
-
+	c._lockMutex.Unlock()
 	c._logger.Trace(correlationId, "Deleted %s items", deleted)
-
 	errsave := c.Save(correlationId)
 	return errsave
 }
@@ -542,11 +571,9 @@ func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, fil
 //     	ids of data items to be deleted.
 // Returns: error
 // error or null for success.
-
 func (c *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []interface{}) (err error) {
 	filter := func(item interface{}) bool {
 		var exist bool = false
-
 		itemId := refl.ObjectReader.GetProperty(item, "Id")
 		for _, v := range ids {
 			if v == itemId {
