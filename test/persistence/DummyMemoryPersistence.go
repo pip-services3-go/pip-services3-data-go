@@ -3,7 +3,6 @@ package test_persistence
 import (
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
 	cpersist "github.com/pip-services3-go/pip-services3-data-go/persistence"
-	"reflect"
 )
 
 // extends IdentifiableMemoryPersistence<Dummy, string>
@@ -13,13 +12,11 @@ type DummyMemoryPersistence struct {
 }
 
 func NewEmptyDummyMemoryPersistence() *DummyMemoryPersistence {
-	proto := reflect.TypeOf(Dummy{})
-	return &DummyMemoryPersistence{*cpersist.NewEmptyIdentifiableMemoryPersistence(proto)}
+	return &DummyMemoryPersistence{*cpersist.NewEmptyIdentifiableMemoryPersistence()}
 }
 
 func NewDummyMemoryPersistence(loader cpersist.ILoader, saver cpersist.ISaver) *DummyMemoryPersistence {
-	proto := reflect.TypeOf(Dummy{})
-	return &DummyMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto, loader, saver)}
+	return &DummyMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(loader, saver)}
 }
 
 func (c *DummyMemoryPersistence) Create(correlationId string, item Dummy) (result *Dummy, err error) {
@@ -29,7 +26,7 @@ func (c *DummyMemoryPersistence) Create(correlationId string, item Dummy) (resul
 		val, _ := (*value).(Dummy)
 		result = &val
 	}
-	return result, err
+	return
 }
 
 func (c *DummyMemoryPersistence) GetListByIds(correlationId string, ids []string) (items []Dummy, err error) {
@@ -43,7 +40,7 @@ func (c *DummyMemoryPersistence) GetListByIds(correlationId string, ids []string
 		val, _ := v.(Dummy)
 		items[i] = val
 	}
-	return items, err
+	return
 }
 
 func (c *DummyMemoryPersistence) GetOneById(correlationId string, id string) (item *Dummy, err error) {
@@ -53,7 +50,7 @@ func (c *DummyMemoryPersistence) GetOneById(correlationId string, id string) (it
 		val, _ := (*result).(Dummy)
 		item = &val
 	}
-	return item, err
+	return
 }
 
 func (c *DummyMemoryPersistence) Update(correlationId string, item Dummy) (result *Dummy, err error) {
@@ -63,7 +60,7 @@ func (c *DummyMemoryPersistence) Update(correlationId string, item Dummy) (resul
 		val, _ := (*value).(Dummy)
 		result = &val
 	}
-	return result, err
+	return
 }
 
 func (c *DummyMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item *Dummy, err error) {
@@ -73,7 +70,7 @@ func (c *DummyMemoryPersistence) UpdatePartially(correlationId string, id string
 		val, _ := (*result).(Dummy)
 		item = &val
 	}
-	return item, err
+	return
 }
 
 func (c *DummyMemoryPersistence) DeleteById(correlationId string, id string) (item *Dummy, err error) {
@@ -83,7 +80,7 @@ func (c *DummyMemoryPersistence) DeleteById(correlationId string, id string) (it
 		val, _ := (*result).(Dummy)
 		item = &val
 	}
-	return item, err
+	return
 }
 
 func (c *DummyMemoryPersistence) DeleteByIds(correlationId string, ids []string) (err error) {

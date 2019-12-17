@@ -17,5 +17,6 @@ type IFilteredReader interface {
 	//			sort parameters
 	// Returns []interfcace{}, error
 	// receives list of items or error.
+
 	GetListByFilter(correlation_id string, filter data.FilterParams, sort data.SortParams) (items []interface{}, err error)
 }

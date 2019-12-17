@@ -19,5 +19,6 @@ type IQuerablePageReader interface {
 	//			 sort parameters
 	// Returns interface{}, error
 	// receives list of items or error.
+
 	GetPageByQuery(correlation_id string, query string, paging data.PagingParams, sort data.SortParams) (page interface{}, err error)
 }

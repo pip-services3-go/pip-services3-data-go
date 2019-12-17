@@ -3,7 +3,9 @@ package persistence
 /*
 Helper type for sorting data in memory persistence
 */
+
 //------------- Sorter -----------------------
+
 type sorter struct {
 	items    []interface{}
 	compFunc func(a, b interface{}) bool
