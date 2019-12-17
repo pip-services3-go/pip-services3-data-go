@@ -74,32 +74,32 @@ func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err
 	if c._path == "" {
 		data = nil
 		err = errors.NewConfigError("", "NO_PATH", "Data file path is not set")
-		return data, err
+		return
 	}
 
 	_, fserr := os.Stat(c._path)
 	if os.IsNotExist(fserr) {
 		data = nil
 		err = nil
-		return data, err
+		return
 	}
 
 	json, jsonerr := ioutil.ReadFile(c._path)
 	if jsonerr != nil {
 		err = errors.NewFileError(correlation_id, "READ_FAILED", "Failed to read data file: "+c._path).WithCause(jsonerr)
 		data = nil
-		return data, err
+		return
 	}
 	list, err := convert.FromJson((string)(json))
 	//list := convert.JsonConverter.ToNullableMap((string)(json))
 	if list == nil {
 		data = nil
-		return data, err
+		return
 	}
 	//data = *convert.ArrayConverter.ToNullableArray(list)
 	data = convert.ArrayConverter.ListToArray(list)
 	err = nil
-	return data, err
+	return
 }
 
 //Saves given data items to external JSON file.
@@ -113,7 +113,7 @@ func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err
 func (c *JsonFilePersister) Save(correlationId string, items []interface{}) error {
 	json, jsonerr := convert.ToJson(items)
 	if jsonerr != nil {
-		err := errors.NewInternalError(correlationId, "CAN'T_CONVERT", "Failed convert to JSON")
+		err := errors.NewInternalError(correlationId, "CANT CONVERT", "Failed convert to JSON")
 		return err
 	}
 	werr := ioutil.WriteFile(c._path, ([]byte)(json), 0777)

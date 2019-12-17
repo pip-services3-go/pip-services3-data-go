@@ -9,8 +9,7 @@ import (
 
 func TestDummyFilePersistence(t *testing.T) {
 	filename := "../../data/dummies.json"
-
-	//cleaning file before testing
+	// cleaning file before testing
 	f, err := os.Create(filename)
 	if err != nil {
 		t.Error("Can't clean file: ", filename)
