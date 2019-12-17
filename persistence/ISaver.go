@@ -12,6 +12,5 @@ type ISaver interface {
 	// 		- items []interface{}
 	//      a list of items to save.
 	// Retuirns error or nil for success.
-
 	Save(correlation_id string, items []interface{}) error
 }

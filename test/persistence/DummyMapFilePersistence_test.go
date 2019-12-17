@@ -7,8 +7,8 @@ import (
 	cconf "github.com/pip-services3-go/pip-services3-commons-go/config"
 )
 
-func TestDummyFilePersistence(t *testing.T) {
-	filename := "../../data/dummies.json"
+func TestDummyMapFilePersistence(t *testing.T) {
+	filename := "../../data/dummies_map.json"
 
 	//cleaning file before testing
 	f, err := os.Create(filename)
@@ -17,15 +17,15 @@ func TestDummyFilePersistence(t *testing.T) {
 	}
 	f.Close()
 
-	persistence := NewDummyFilePersistence(filename)
+	persistence := NewDummyMapFilePersistence(filename)
 	persistence.Configure(*cconf.NewEmptyConfigParams())
 
 	defer persistence.Close("")
 
-	fixture := NewDummyPersistenceFixture(persistence)
+	fixture := NewDummyMapPersistenceFixture(persistence)
 	persistence.Open("")
 
-	t.Run("DummyFilePersistence:CRUD", fixture.TestCrudOperations)
-	t.Run("DummyFilePersistence:Batch", fixture.TestBatchOperations)
+	t.Run("DummyMapFilePersistence:CRUD", fixture.TestCrudOperations)
+	t.Run("DummyMapFilePersistence:Batch", fixture.TestBatchOperations)
 
 }

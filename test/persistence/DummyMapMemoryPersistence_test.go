@@ -6,11 +6,11 @@ import (
 	cconf "github.com/pip-services3-go/pip-services3-commons-go/config"
 )
 
-func TestMemoryPersistence(t *testing.T) {
-	persister := NewEmptyDummyMemoryPersistence()
+func TestDummyMapMemoryPersistence(t *testing.T) {
+	persister := NewEmptyDummyMapMemoryPersistence()
 	persister.Configure(*cconf.NewEmptyConfigParams())
 
-	fixture := NewDummyPersistenceFixture(persister)
+	fixture := NewDummyMapPersistenceFixture(persister)
 
 	t.Run("MemoryPersistence:CRUD", fixture.TestCrudOperations)
 	t.Run("MemoryPersistence:Batch", fixture.TestBatchOperations)

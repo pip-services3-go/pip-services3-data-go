@@ -1,8 +1,12 @@
 package persistence
 
 import (
+	"encoding/json"
+	"github.com/pip-services3-go/pip-services3-commons-go/convert"
 	"github.com/pip-services3-go/pip-services3-commons-go/refer"
 	"github.com/pip-services3-go/pip-services3-components-go/log"
+	"reflect"
+	"sync"
 )
 
 /*
@@ -49,18 +53,24 @@ Example
 */
 // implements IReferenceable, IOpenable, ICleanable
 type MemoryPersistence struct {
-	_logger log.CompositeLogger
-	_items  []interface{}
-	_loader ILoader
-	_saver  ISaver
-	_opened bool
+	_logger    log.CompositeLogger
+	_items     []interface{}
+	_loader    ILoader
+	_saver     ISaver
+	_opened    bool
+	_prototype reflect.Type
+	_lockMutex sync.RWMutex
 }
 
 // Creates a new empty instance of the MemoryPersistence
 // Return *MemoryPersistence
 // empty MemoryPersistence
-func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
+func NewEmptyMemoryPersistence(prototype reflect.Type) (mp *MemoryPersistence) {
+	if prototype == nil {
+		return nil
+	}
 	mp = &MemoryPersistence{}
+	mp._prototype = prototype
 	mp._logger = *log.NewCompositeLogger()
 	mp._items = make([]interface{}, 0, 10)
 	return mp
@@ -73,8 +83,11 @@ func NewEmptyMemoryPersistence() (mp *MemoryPersistence) {
 //    - saver  ISaver
 //    (optional) a saver to save items to external datasource.
 // Return *MemoryPersistence
-//  MemoryPersistence
-func NewMemoryPersistence(loader ILoader, saver ISaver) (mp *MemoryPersistence) {
+// MemoryPersistence
+func NewMemoryPersistence(prototype reflect.Type, loader ILoader, saver ISaver) (mp *MemoryPersistence) {
+	if prototype == nil {
+		return nil
+	}
 	mp = &MemoryPersistence{}
 	mp._items = make([]interface{}, 0, 10)
 	mp._loader = loader
@@ -103,6 +116,8 @@ func (c *MemoryPersistence) IsOpen() bool {
 // 		(optional) transaction id to trace execution through call chain.
 // Returns  error or null no errors occured.
 func (c *MemoryPersistence) Open(correlationId string) error {
+	c._lockMutex.Lock()
+	defer c._lockMutex.Unlock()
 	err := c.load(correlationId)
 	if err == nil {
 		c._opened = true
@@ -117,7 +132,17 @@ func (c *MemoryPersistence) load(correlationId string) error {
 
 	items, err := c._loader.Load(correlationId)
 	if err == nil && items != nil {
-		c._items = items
+		c._items = make([]interface{}, len(items))
+		for i, v := range items {
+			item := convert.MapConverter.ToNullableMap(v)
+			jsonMarshalStr, errJson := json.Marshal(item)
+			if errJson != nil {
+				panic("MemoryPersistence.Load Error can't convert from Json to any type")
+			}
+			value := reflect.New(c._prototype).Interface()
+			json.Unmarshal(jsonMarshalStr, value)
+			c._items[i] = reflect.ValueOf(value).Elem().Interface()
+		}
 		length := len(c._items)
 		c._logger.Trace(correlationId, "Loaded %d items", length)
 	}
@@ -128,7 +153,6 @@ func (c *MemoryPersistence) load(correlationId string) error {
 // Parameters:
 // 	- correlationId 	(optional) transaction id to trace execution through call chain.
 // Retruns: error or null no errors occured.
-
 func (c *MemoryPersistence) Close(correlationId string) error {
 	err := c.Save(correlationId)
 	c._opened = false
@@ -140,6 +164,9 @@ func (c *MemoryPersistence) Close(correlationId string) error {
 //     (optional) transaction id to trace execution through call chain.
 // Return error or null for success.
 func (c *MemoryPersistence) Save(correlationId string) error {
+	c._lockMutex.RLock()
+	defer c._lockMutex.RUnlock()
+
 	if c._saver == nil {
 		return nil
 	}
@@ -155,8 +182,10 @@ func (c *MemoryPersistence) Save(correlationId string) error {
 // Clears component state.
 // 	- correlationId 	(optional) transaction id to trace execution through call chain.
 //  Returns error or null no errors occured.
-
 func (c *MemoryPersistence) Clear(correlationId string) error {
+	c._lockMutex.Lock()
+	defer c._lockMutex.Unlock()
+
 	c._items = make([]interface{}, 0, 5)
 	c._logger.Trace(correlationId, "Cleared items")
 	return c.Save(correlationId)
