@@ -79,7 +79,10 @@ type IdentifiableFilePersistence struct {
 }
 
 // Creates a new instance of the persistence.
-// - persister    (optional) a persister component that loads and saves data from/to flat file.
+// Parameters:
+// 		- prototype reflect.Type
+//    	type of contained data
+//  	- persister    (optional) a persister component that loads and saves data from/to flat file.
 // Return *IdentifiableFilePersistence
 // pointer on new IdentifiableFilePersistence
 func NewIdentifiableFilePersistence(prototype reflect.Type, persister JsonFilePersister) *IdentifiableFilePersistence {

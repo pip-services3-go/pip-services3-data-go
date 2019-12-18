@@ -63,6 +63,9 @@ type MemoryPersistence struct {
 }
 
 // Creates a new empty instance of the MemoryPersistence
+// Parameters:
+// 	- prototype reflect.Type
+//    type of contained data
 // Return *MemoryPersistence
 // empty MemoryPersistence
 func NewEmptyMemoryPersistence(prototype reflect.Type) (mp *MemoryPersistence) {
@@ -78,6 +81,8 @@ func NewEmptyMemoryPersistence(prototype reflect.Type) (mp *MemoryPersistence) {
 
 // Creates a new instance of the persistence.
 // Parameters:
+// 	  - prototype reflect.Type
+//    type of contained data
 //    - loader ILoader
 //    (optional) a loader to load items from external datasource.
 //    - saver  ISaver
