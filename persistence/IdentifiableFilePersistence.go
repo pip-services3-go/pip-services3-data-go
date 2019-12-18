@@ -75,7 +75,7 @@ type MyFilePersistence  struct {
 */
 type IdentifiableFilePersistence struct {
 	IdentifiableMemoryPersistence
-	_persister JsonFilePersister
+	Persister JsonFilePersister
 }
 
 // Creates a new instance of the persistence.
@@ -91,7 +91,7 @@ func NewIdentifiableFilePersistence(prototype reflect.Type, persister JsonFilePe
 		persister = *NewJsonFilePersister("")
 	}
 	c.IdentifiableMemoryPersistence = *NewIdentifiableMemoryPersistence(prototype, &persister, &persister)
-	c._persister = persister
+	c.Persister = persister
 	return c
 }
 
@@ -99,5 +99,5 @@ func NewIdentifiableFilePersistence(prototype reflect.Type, persister JsonFilePe
 // - config    configuration parameters to be set.
 func (c *IdentifiableFilePersistence) Configure(config config.ConfigParams) {
 	c.Configure(config)
-	c._persister.Configure(config)
+	c.Persister.Configure(config)
 }

@@ -23,7 +23,7 @@ GetListByFilter or DeleteByFilter operations with specific filter function.
 All other operations can be used out of the box.
 
 In complex scenarios child structes can implement additional operations by
-accessing cached items via c._items property and calling Save method
+accessing cached items via c.Items property and calling Save method
 on updates.
 
 See MemoryPersistence
@@ -73,7 +73,6 @@ type MyMemoryPersistence struct{
 
 */
 //  extends MemoryPersistence  implements IConfigurable, IWriter, IGetter, ISetter
-
 type IdentifiableMemoryPersistence struct {
 	MemoryPersistence
 	_maxPageSize int
@@ -107,7 +106,7 @@ func setIdIfEmpty(correlationId string, item *interface{}) error {
 // return index number
 func (c *IdentifiableMemoryPersistence) getIndexById(id interface{}) int {
 	var index int = -1
-	for i, v := range c._items {
+	for i, v := range c.Items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
 		if vId == id {
 			index = i
@@ -155,7 +154,7 @@ func cloneObject(dst *interface{}, src interface{}) {
 func NewEmptyIdentifiableMemoryPersistence(prototype reflect.Type) (c *IdentifiableMemoryPersistence) {
 	c = &IdentifiableMemoryPersistence{}
 	c.MemoryPersistence = *NewEmptyMemoryPersistence(prototype)
-	c._logger = *log.NewCompositeLogger()
+	c.Logger = *log.NewCompositeLogger()
 	c._maxPageSize = 100
 	return c
 }
@@ -173,9 +172,9 @@ func NewEmptyIdentifiableMemoryPersistence(prototype reflect.Type) (c *Identifia
 func NewIdentifiableMemoryPersistence(prototype reflect.Type, loader ILoader, saver ISaver) (c *IdentifiableMemoryPersistence) {
 	c = &IdentifiableMemoryPersistence{}
 	c.MemoryPersistence = *NewEmptyMemoryPersistence(prototype)
-	c._loader = loader
-	c._saver = saver
-	c._logger = *log.NewCompositeLogger()
+	c.Loader = loader
+	c.Saver = saver
+	c.Logger = *log.NewCompositeLogger()
 	c._maxPageSize = 100
 	return c
 }
@@ -207,18 +206,18 @@ func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
 func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, filter func(interface{}) bool,
 	paging cdata.PagingParams, sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (page cdata.DataPage, err error) {
 	var items []interface{}
-	c._lockMutex.RLock()
-	defer c._lockMutex.RUnlock()
+	c.Lock.RLock()
+	defer c.Lock.RUnlock()
 	// Filter and sort
 	if filter != nil {
-		for _, v := range c._items {
+		for _, v := range c.Items {
 			if filter(v) {
 				items = append(items, v)
 			}
 		}
 	} else {
-		items = make([]interface{}, len(c._items))
-		copy(items, c._items)
+		items = make([]interface{}, len(c.Items))
+		copy(items, c.Items)
 	}
 	if sortFunc != nil {
 		if sortFunc != nil {
@@ -248,7 +247,7 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 			items[i] = selectFunc(v)
 		}
 	}
-	c._logger.Trace(correlationId, "Retrieved %d items", len(items))
+	c.Logger.Trace(correlationId, "Retrieved %d items", len(items))
 	page = *cdata.NewDataPage(&total, items)
 	return page, nil
 }
@@ -269,17 +268,17 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 // array of items and error
 func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, filter func(interface{}) bool,
 	sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (results []interface{}, err error) {
-	c._lockMutex.RLock()
-	defer c._lockMutex.RUnlock()
+	c.Lock.RLock()
+	defer c.Lock.RUnlock()
 	// Apply filter
 	if filter != nil {
-		for _, v := range c._items {
+		for _, v := range c.Items {
 			if filter(v) {
 				results = append(results, v)
 			}
 		}
 	} else {
-		copy(results, c._items)
+		copy(results, c.Items)
 	}
 	// Apply sorting
 	if sortFunc != nil {
@@ -292,7 +291,7 @@ func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, fi
 			results[i] = selectFunc(v)
 		}
 	}
-	c._logger.Trace(correlationId, "Retrieved %d items", len(results))
+	c.Logger.Trace(correlationId, "Retrieved %d items", len(results))
 	return results, nil
 }
 
@@ -331,27 +330,27 @@ func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids [
 // Returns: *interface{}, error
 // random item or error.
 func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filter func(interface{}) bool) (item interface{}, err error) {
-	c._lockMutex.RLock()
-	defer c._lockMutex.RUnlock()
+	c.Lock.RLock()
+	defer c.Lock.RUnlock()
 	var items []interface{}
 	// Apply filter
 	if filter != nil {
-		for _, v := range c._items {
+		for _, v := range c.Items {
 			if filter(v) {
 				items = append(items, v)
 			}
 		}
 	} else {
-		copy(items, c._items)
+		copy(items, c.Items)
 	}
 	rand.Seed(time.Now().UnixNano())
 	if len(items) > 0 {
 		item = items[rand.Intn(len(items))]
 	}
 	if item != nil {
-		c._logger.Trace(correlationId, "Retrieved a random item")
+		c.Logger.Trace(correlationId, "Retrieved a random item")
 	} else {
-		c._logger.Trace(correlationId, "Nothing to return as random item")
+		c.Logger.Trace(correlationId, "Nothing to return as random item")
 	}
 	return item, nil
 }
@@ -365,10 +364,10 @@ func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filte
 // Returns:  *interface{}, error
 // data item or error.
 func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (item interface{}, err error) {
-	c._lockMutex.RLock()
-	defer c._lockMutex.RUnlock()
+	c.Lock.RLock()
+	defer c.Lock.RUnlock()
 	var items []interface{}
-	for _, v := range c._items {
+	for _, v := range c.Items {
 		vId := refl.ObjectReader.GetProperty(v, "Id")
 		if vId == id {
 			items = append(items, v)
@@ -378,9 +377,9 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 		item = items[0]
 	}
 	if item != nil {
-		c._logger.Trace(correlationId, "Retrieved item %s", id)
+		c.Logger.Trace(correlationId, "Retrieved item %s", id)
 	} else {
-		c._logger.Trace(correlationId, "Cannot find item by %s", id)
+		c.Logger.Trace(correlationId, "Cannot find item by %s", id)
 	}
 	return item, err
 }
@@ -394,7 +393,7 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 // Returns:  *interface{}, error
 // created item or error.
 func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result interface{}, err error) {
-	c._lockMutex.Lock()
+	c.Lock.Lock()
 	var tmp interface{}
 	cloneObject(&tmp, item)
 	err = setIdIfEmpty(correlationId, &tmp)
@@ -403,9 +402,9 @@ func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interf
 	}
 	//result = tmp
 	cloneObject(&result, tmp)
-	c._items = append(c._items, tmp)
-	c._lockMutex.Unlock()
-	c._logger.Trace(correlationId, "Created item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
+	c.Items = append(c.Items, tmp)
+	c.Lock.Unlock()
+	c.Logger.Trace(correlationId, "Created item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
 	errsave := c.Save(correlationId)
 	return result, errsave
 }
@@ -420,7 +419,7 @@ func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interf
 // Returns:  *interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result interface{}, err error) {
-	c._lockMutex.Lock()
+	c.Lock.Lock()
 	var tmp interface{}
 	cloneObject(&tmp, item)
 	err = setIdIfEmpty(correlationId, &tmp)
@@ -430,13 +429,13 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 	id := refl.ObjectReader.GetProperty(item, "Id")
 	index := c.getIndexById(id)
 	if index < 0 {
-		c._items = append(c._items, tmp)
+		c.Items = append(c.Items, tmp)
 	} else {
-		//c._items[index] = tmp
-		cloneObject(&c._items[index], tmp)
+		//c.Items[index] = tmp
+		cloneObject(&c.Items[index], tmp)
 	}
-	c._lockMutex.Unlock()
-	c._logger.Trace(correlationId, "Set item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
+	c.Lock.Unlock()
+	c.Logger.Trace(correlationId, "Set item %s", refl.ObjectReader.GetProperty(tmp, "Id"))
 	errsav := c.Save(correlationId)
 	//result = new(interface{})
 	cloneObject(&result, tmp)
@@ -452,18 +451,18 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 // Returns:   *interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (result interface{}, err error) {
-	c._lockMutex.Lock()
+	c.Lock.Lock()
 	id := refl.ObjectReader.GetProperty(item, "Id")
 	index := c.getIndexById(id)
 	if index < 0 {
-		c._logger.Trace(correlationId, "Item %s was not found", refl.ObjectReader.GetProperty(item, "Id"))
+		c.Logger.Trace(correlationId, "Item %s was not found", refl.ObjectReader.GetProperty(item, "Id"))
 		return nil, nil
 	}
 	var tmp interface{}
 	cloneObject(&tmp, item)
-	cloneObject(&c._items[index], item)
-	c._lockMutex.Unlock()
-	c._logger.Trace(correlationId, "Updated item %s", refl.ObjectReader.GetProperty(item, "Id"))
+	cloneObject(&c.Items[index], item)
+	c.Lock.Unlock()
+	c.Logger.Trace(correlationId, "Updated item %s", refl.ObjectReader.GetProperty(item, "Id"))
 	errsave := c.Save(correlationId)
 	return tmp, errsave
 }
@@ -479,14 +478,14 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 // Returns: *interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (item interface{}, err error) {
-	c._lockMutex.Lock()
+	c.Lock.Lock()
 	index := c.getIndexById(id)
 	if index < 0 {
-		c._logger.Trace(correlationId, "Item %s was not found", id)
+		c.Logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	}
 	var tmp interface{}
-	cloneObject(&tmp, c._items[index])
+	cloneObject(&tmp, c.Items[index])
 	if reflect.ValueOf(tmp).Kind() == reflect.Map {
 		refl.ObjectWriter.SetProperties(tmp, data.Value())
 	} else {
@@ -496,9 +495,9 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 		refl.ObjectWriter.SetProperties(intPointer, data.Value())
 		tmp = reflect.ValueOf(intPointer).Elem().Interface()
 	}
-	cloneObject(&c._items[index], tmp)
-	c._lockMutex.Unlock()
-	c._logger.Trace(correlationId, "Partially updated item %s", id)
+	cloneObject(&c.Items[index], tmp)
+	c.Lock.Unlock()
+	c.Logger.Trace(correlationId, "Partially updated item %s", id)
 	errsave := c.Save(correlationId)
 	return tmp, errsave
 }
@@ -512,23 +511,23 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 // Retruns:
 // deleted item or error.
 func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (item interface{}, err error) {
-	c._lockMutex.Lock()
+	c.Lock.Lock()
 	index := c.getIndexById(id)
 	if index < 0 {
-		c._logger.Trace(correlationId, "Item %s was not found", id)
+		c.Logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	} else {
 		//var tmp interface{}
-		cloneObject(&item, c._items[index])
+		cloneObject(&item, c.Items[index])
 		//item = &tmp
 	}
-	if index == len(c._items) {
-		c._items = c._items[:index-1]
+	if index == len(c.Items) {
+		c.Items = c.Items[:index-1]
 	} else {
-		c._items = append(c._items[:index], c._items[index+1:]...)
+		c.Items = append(c.Items[:index], c.Items[index+1:]...)
 	}
-	c._lockMutex.Unlock()
-	c._logger.Trace(correlationId, "Deleted item by %s", id)
+	c.Lock.Unlock()
+	c.Logger.Trace(correlationId, "Deleted item by %s", id)
 	errsave := c.Save(correlationId)
 	return item, errsave
 }
@@ -544,15 +543,15 @@ func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id inte
 // Retruns: error
 // error or nil for success.
 func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, filter func(interface{}) bool) (err error) {
-	c._lockMutex.Lock()
+	c.Lock.Lock()
 	deleted := 0
 
-	for i := 0; i < len(c._items); {
-		if filter(c._items[i]) {
-			if i == len(c._items)-1 {
-				c._items = c._items[:i]
+	for i := 0; i < len(c.Items); {
+		if filter(c.Items[i]) {
+			if i == len(c.Items)-1 {
+				c.Items = c.Items[:i]
 			} else {
-				c._items = append(c._items[:i], c._items[i+1:]...)
+				c.Items = append(c.Items[:i], c.Items[i+1:]...)
 			}
 			deleted++
 		} else {
@@ -562,8 +561,8 @@ func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, fil
 	if deleted == 0 {
 		return nil
 	}
-	c._lockMutex.Unlock()
-	c._logger.Trace(correlationId, "Deleted %s items", deleted)
+	c.Lock.Unlock()
+	c.Logger.Trace(correlationId, "Deleted %s items", deleted)
 	errsave := c.Save(correlationId)
 	return errsave
 }

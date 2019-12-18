@@ -58,7 +58,7 @@ type MyJsonFilePersistence struct {
 //extends MemoryPersistence implements IConfigurable
 type FilePersistence struct {
 	MemoryPersistence
-	_persister JsonFilePersister
+	Persister JsonFilePersister
 }
 
 // Creates a new instance of the persistence.
@@ -70,7 +70,7 @@ func NewFilePersistence(prototype reflect.Type, persister JsonFilePersister) *Fi
 	if &persister == nil {
 		persister = *NewJsonFilePersister("")
 	}
-	c._persister = persister
+	c.Persister = persister
 	c.MemoryPersistence = *NewMemoryPersistence(prototype, &persister, &persister)
 	return c
 }
@@ -78,5 +78,5 @@ func NewFilePersistence(prototype reflect.Type, persister JsonFilePersister) *Fi
 // Configures component by passing configuration parameters.
 // - config    configuration parameters to be set.
 func (c *FilePersistence) Configure(conf config.ConfigParams) {
-	c._persister.Configure(conf)
+	c.Persister.Configure(conf)
 }

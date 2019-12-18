@@ -31,7 +31,7 @@ It is used by FilePersistence, but can be useful on its own.
 */
 // implements ILoader, ISaver, IConfigurable
 type JsonFilePersister struct {
-	_path string
+	path string
 }
 
 // Creates a new instance of the persistence.
@@ -39,14 +39,14 @@ type JsonFilePersister struct {
 //		- path  string
 //		(optional) a path to the file where data is stored.
 func NewJsonFilePersister(path string) *JsonFilePersister {
-	var c = &JsonFilePersister{_path: path}
+	var c = &JsonFilePersister{path: path}
 	return c
 }
 
 // Gets the file path where data is stored.
 // Returns the file path where data is stored.
 func (c *JsonFilePersister) Path() string {
-	return c._path
+	return c.path
 }
 
 // Sets the file path where data is stored.
@@ -54,7 +54,7 @@ func (c *JsonFilePersister) Path() string {
 //		- value  string
 //	    the file path where data is stored.
 func (c *JsonFilePersister) SetPath(value string) {
-	c._path = value
+	c.path = value
 }
 
 // Configures component by passing configuration parameters.
@@ -62,7 +62,7 @@ func (c *JsonFilePersister) SetPath(value string) {
 //		- config  config.ConfigParams
 //		parameters to be set.
 func (c *JsonFilePersister) Configure(config config.ConfigParams) {
-	c._path = config.GetAsStringWithDefault("path", c._path)
+	c.path = config.GetAsStringWithDefault("path", c.path)
 }
 
 // Loads data items from external JSON file.
@@ -71,22 +71,22 @@ func (c *JsonFilePersister) Configure(config config.ConfigParams) {
 // Returns []interface{}, error
 // loaded items or error.
 func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err error) {
-	if c._path == "" {
+	if c.path == "" {
 		data = nil
-		err = errors.NewConfigError("", "NO_PATH", "Data file path is not set")
+		err = errors.NewConfigError("", "NOpath", "Data file path is not set")
 		return data, err
 	}
 
-	_, fserr := os.Stat(c._path)
+	_, fserr := os.Stat(c.path)
 	if os.IsNotExist(fserr) {
 		data = nil
 		err = nil
 		return data, err
 	}
 
-	json, jsonerr := ioutil.ReadFile(c._path)
+	json, jsonerr := ioutil.ReadFile(c.path)
 	if jsonerr != nil {
-		err = errors.NewFileError(correlation_id, "READ_FAILED", "Failed to read data file: "+c._path).WithCause(jsonerr)
+		err = errors.NewFileError(correlation_id, "READ_FAILED", "Failed to read data file: "+c.path).WithCause(jsonerr)
 		data = nil
 		return data, err
 	}
@@ -116,9 +116,9 @@ func (c *JsonFilePersister) Save(correlationId string, items []interface{}) erro
 		err := errors.NewInternalError(correlationId, "CAN'T_CONVERT", "Failed convert to JSON")
 		return err
 	}
-	werr := ioutil.WriteFile(c._path, ([]byte)(json), 0777)
+	werr := ioutil.WriteFile(c.path, ([]byte)(json), 0777)
 	if werr != nil {
-		err := errors.NewFileError(correlationId, "WRITE_FAILED", "Failed to write data file: "+c._path).WithCause(werr)
+		err := errors.NewFileError(correlationId, "WRITE_FAILED", "Failed to write data file: "+c.path).WithCause(werr)
 		return err
 	}
 	return nil

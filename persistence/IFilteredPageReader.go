@@ -3,7 +3,8 @@ package persistence
 import "github.com/pip-services3-go/pip-services3-commons-go/data"
 
 /*
-  Interface for data processing components that can retrieve a page of data items by a filter.
+IFilteredPageReader is
+interface for data processing components that can retrieve a page of data items by a filter.
 */
 type IFilteredPageReader interface {
 
