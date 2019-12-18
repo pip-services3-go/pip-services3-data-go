@@ -28,18 +28,18 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 	if err != nil {
 		t.Errorf("Create method error %v", err)
 	}
-	dummy1 = *result
+	dummy1 = result
 	assert.NotNil(t, dummy1)
 	assert.NotNil(t, dummy1.Id)
 	assert.Equal(t, c._dummy1.Key, dummy1.Key)
 	assert.Equal(t, c._dummy1.Content, dummy1.Content)
 
-	// Create another dummy
-	result, err = c._persistence.Create("", c._dummy2)
+	// Create another dummy by send pointer
+	result, err = c._persistence.Create("", &c._dummy2)
 	if err != nil {
 		t.Errorf("Create method error %v", err)
 	}
-	dummy2 = *result
+	dummy2 = result
 	assert.NotNil(t, dummy2)
 	assert.NotNil(t, dummy2.Id)
 	assert.Equal(t, c._dummy2.Key, dummy2.Key)
@@ -106,8 +106,9 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetOneById method error %v", err)
 	}
-	// Try to get item
-	assert.Nil(t, result)
+	// Try to get item, must be an empty Dummy struct
+	temp := Dummy{}
+	assert.Equal(t, temp, result)
 }
 
 func (c *DummyPersistenceFixture) TestBatchOperations(t *testing.T) {
@@ -119,7 +120,7 @@ func (c *DummyPersistenceFixture) TestBatchOperations(t *testing.T) {
 	if err != nil {
 		t.Errorf("Create method error %v", err)
 	}
-	dummy1 = *result
+	dummy1 = result
 	assert.NotNil(t, dummy1)
 	assert.NotNil(t, dummy1.Id)
 	assert.Equal(t, c._dummy1.Key, dummy1.Key)
@@ -130,7 +131,7 @@ func (c *DummyPersistenceFixture) TestBatchOperations(t *testing.T) {
 	if err != nil {
 		t.Errorf("Create method error %v", err)
 	}
-	dummy2 = *result
+	dummy2 = result
 	assert.NotNil(t, dummy2)
 	assert.NotNil(t, dummy2.Id)
 	assert.Equal(t, c._dummy2.Key, dummy2.Key)

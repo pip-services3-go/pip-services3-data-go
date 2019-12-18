@@ -6,10 +6,10 @@ import cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
 type IDummyMapPersistence interface {
 	GetPageByFilter(correlationId string, filter cdata.FilterParams, paging cdata.PagingParams) (page cdata.DataPage, err error)
 	GetListByIds(correlationId string, ids []string) (items []DummyMap, err error)
-	GetOneById(correlationId string, id string) (item *DummyMap, err error)
-	Create(correlationId string, item DummyMap) (result *DummyMap, err error)
-	Update(correlationId string, item DummyMap) (result *DummyMap, err error)
-	UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item *DummyMap, err error)
-	DeleteById(correlationId string, id string) (item *DummyMap, err error)
+	GetOneById(correlationId string, id string) (item DummyMap, err error)
+	Create(correlationId string, item interface{}) (result DummyMap, err error)
+	Update(correlationId string, item interface{}) (result DummyMap, err error)
+	UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item DummyMap, err error)
+	DeleteById(correlationId string, id string) (item DummyMap, err error)
 	DeleteByIds(correlationId string, ids []string) (err error)
 }

@@ -22,12 +22,12 @@ func NewDummyMapMemoryPersistence(loader cpersist.ILoader, saver cpersist.ISaver
 	return &DummyMapMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto, loader, saver)}
 }
 
-func (c *DummyMapMemoryPersistence) Create(correlationId string, item DummyMap) (result *DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) Create(correlationId string, item interface{}) (result DummyMap, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Create(correlationId, item)
-	result = nil
+	//result = nil
 	if value != nil {
-		val, _ := (*value).(DummyMap)
-		result = &val
+		val, _ := value.(DummyMap)
+		result = val
 	}
 	return result, err
 }
@@ -46,42 +46,42 @@ func (c *DummyMapMemoryPersistence) GetListByIds(correlationId string, ids []str
 	return items, err
 }
 
-func (c *DummyMapMemoryPersistence) GetOneById(correlationId string, id string) (item *DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) GetOneById(correlationId string, id string) (item DummyMap, err error) {
 	result, err := c.IdentifiableMemoryPersistence.GetOneById(correlationId, id)
-	item = nil
+	//item = nil
 	if result != nil {
-		val, _ := (*result).(DummyMap)
-		item = &val
+		val, _ := result.(DummyMap)
+		item = val
 	}
 	return item, err
 }
 
-func (c *DummyMapMemoryPersistence) Update(correlationId string, item DummyMap) (result *DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) Update(correlationId string, item interface{}) (result DummyMap, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Update(correlationId, item)
-	result = nil
+	//result = nil
 	if value != nil {
-		val, _ := (*value).(DummyMap)
-		result = &val
+		val, _ := value.(DummyMap)
+		result = val
 	}
 	return result, err
 }
 
-func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item *DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item DummyMap, err error) {
 	result, err := c.IdentifiableMemoryPersistence.UpdatePartially(correlationId, id, data)
-	item = nil
+	//item = nil
 	if result != nil {
-		val, _ := (*result).(DummyMap)
-		item = &val
+		val, _ := result.(DummyMap)
+		item = val
 	}
 	return item, err
 }
 
-func (c *DummyMapMemoryPersistence) DeleteById(correlationId string, id string) (item *DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) DeleteById(correlationId string, id string) (item DummyMap, err error) {
 	result, err := c.IdentifiableMemoryPersistence.DeleteById(correlationId, id)
-	item = nil
+	//item = nil
 	if result != nil {
-		val, _ := (*result).(DummyMap)
-		item = &val
+		val, _ := result.(DummyMap)
+		item = val
 	}
 	return item, err
 }
