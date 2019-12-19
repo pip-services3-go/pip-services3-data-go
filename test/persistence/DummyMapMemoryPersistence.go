@@ -12,75 +12,70 @@ type DummyMapMemoryPersistence struct {
 	cpersist.IdentifiableMemoryPersistence
 }
 
-func NewEmptyDummyMapMemoryPersistence() *DummyMapMemoryPersistence {
-	proto := reflect.TypeOf(DummyMap{})
-	return &DummyMapMemoryPersistence{*cpersist.NewEmptyIdentifiableMemoryPersistence(proto)}
+func NewDummyMapMemoryPersistence() *DummyMapMemoryPersistence {
+	proto := reflect.TypeOf(map[string]interface{})
+	return &DummyMapMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto)}
 }
 
-func NewDummyMapMemoryPersistence(loader cpersist.ILoader, saver cpersist.ISaver) *DummyMapMemoryPersistence {
-	proto := reflect.TypeOf(DummyMap{})
-	return &DummyMapMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto, loader, saver)}
-}
-
-func (c *DummyMapMemoryPersistence) Create(correlationId string, item interface{}) (result DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) Create(correlationId string, item map[string]interface{}) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Create(correlationId, item)
 	//result = nil
 	if value != nil {
-		val, _ := value.(DummyMap)
+		val, _ := value.(map[string]interface{})
 		result = val
 	}
 	return result, err
 }
 
-func (c *DummyMapMemoryPersistence) GetListByIds(correlationId string, ids []string) (items []DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) GetListByIds(correlationId string, ids []string) (items []map[string]interface{}, err error) {
 	convIds := make([]interface{}, len(ids))
 	for i, v := range ids {
 		convIds[i] = v
 	}
 	result, err := c.IdentifiableMemoryPersistence.GetListByIds(correlationId, convIds)
-	items = make([]DummyMap, len(result))
+	items = make([]map[string]interface{}, len(result))
 	for i, v := range result {
-		val, _ := v.(DummyMap)
+		val, _ := v.(map[string]interface{})
 		items[i] = val
 	}
 	return items, err
 }
 
-func (c *DummyMapMemoryPersistence) GetOneById(correlationId string, id string) (item DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) GetOneById(correlationId string, id string) (item map[string]interface{}, err error) {
 	result, err := c.IdentifiableMemoryPersistence.GetOneById(correlationId, id)
 	//item = nil
 	if result != nil {
-		val, _ := result.(DummyMap)
+		val, _ := result.(map[string]interface{})
 		item = val
 	}
 	return item, err
 }
 
-func (c *DummyMapMemoryPersistence) Update(correlationId string, item interface{}) (result DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) Update(correlationId string, item interface{}) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Update(correlationId, item)
 	//result = nil
 	if value != nil {
-		val, _ := value.(DummyMap)
+		val, _ := value.(map[string]interface{})
 		result = val
 	}
 	return result, err
 }
 
-func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item map[string]interface{}, err error) {
 	result, err := c.IdentifiableMemoryPersistence.UpdatePartially(correlationId, id, data)
 	//item = nil
 	if result != nil {
-		val, _ := result.(DummyMap)
+		val, _ := result.(map[string]interface{})
 		item = val
 	}
 	return item, err
 }
 
-func (c *DummyMapMemoryPersistence) DeleteById(correlationId string, id string) (item DummyMap, err error) {
+func (c *DummyMapMemoryPersistence) DeleteById(correlationId string, id string) (item map[string]interface{}, err error) {
 	result, err := c.IdentifiableMemoryPersistence.DeleteById(correlationId, id)
 	//item = nil
 	if result != nil {
-		val, _ := result.(DummyMap)
+		val, _ := result.(map[string]interface{})
 		item = val
 	}
 	return item, err
@@ -103,15 +98,15 @@ func (c *DummyMapMemoryPersistence) GetPageByFilter(correlationId string, filter
 	key := filter.GetAsNullableString("Key")
 
 	return c.IdentifiableMemoryPersistence.GetPageByFilter(correlationId, func(item interface{}) bool {
-		dummy, ok := item.(DummyMap)
+		dummy, ok := item.(map[string]interface{})
 		if *key != "" && ok && dummy["Key"] != *key {
 			return false
 		}
 		return true
 	}, paging,
 		func(a, b interface{}) bool {
-			_a, _ := a.(DummyMap)
-			_b, _ := b.(DummyMap)
+			_a, _ := a.(map[string]interface{})
+			_b, _ := b.(map[string]interface{})
 			return len(_a["Key"]) < len(_b["Key"])
 		}, nil)
 }

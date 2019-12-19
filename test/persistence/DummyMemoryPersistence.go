@@ -12,14 +12,9 @@ type DummyMemoryPersistence struct {
 	cpersist.IdentifiableMemoryPersistence
 }
 
-func NewEmptyDummyMemoryPersistence() *DummyMemoryPersistence {
+func NewDummyMemoryPersistence() *DummyMemoryPersistence {
 	proto := reflect.TypeOf(Dummy{})
-	return &DummyMemoryPersistence{*cpersist.NewEmptyIdentifiableMemoryPersistence(proto)}
-}
-
-func NewDummyMemoryPersistence(loader cpersist.ILoader, saver cpersist.ISaver) *DummyMemoryPersistence {
-	proto := reflect.TypeOf(Dummy{})
-	return &DummyMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto, loader, saver)}
+	return &DummyMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto)}
 }
 
 func (c *DummyMemoryPersistence) Create(correlationId string, item interface{}) (result Dummy, err error) {

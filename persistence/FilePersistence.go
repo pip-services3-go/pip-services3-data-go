@@ -30,12 +30,12 @@ Example
 type MyJsonFilePersistence struct {
 	FilePersistence
 }
-    func NewMyJsonFilePersistence(path string) mjfp* NewMyJsonFilePersistence {
+    func NewMyJsonFilePersistence(path string) *NewMyJsonFilePersistence {
 		return NewFilePersistence(NewJsonPersister(path))
     }
 
-	func (fp * FilePersistence) GetByName(correlationId string, name string) (item interface{}, err error){
-		for _,v := range fp._items {
+	func (c * FilePersistence) GetByName(correlationId string, name string) (item interface{}, err error){
+		for _,v := range c._items {
 			if v.name == name {
 				item = v
 				break
@@ -44,34 +44,36 @@ type MyJsonFilePersistence struct {
         return item, nil
     }
 
-    func (fp *FilePersistence) Set(correlatonId string, item MyData) error {
-		for i,v:=range fp._items {
+    func (c *FilePersistence) Set(correlatonId string, item MyData) error {
+		for i,v := range c._items {
 			if v.name == item.name {
-				fp._items = append(fp._items[:i], fp._items[i+1:])
+				c._items = append(c._items[:i], c._items[i+1:])
 			}
 		}
-		fp._items = append(fp._items, item)
-        retrun fp.save(correlationId)
+		c._items = append(c._items, item)
+        retrun c.save(correlationId)
     }
 }
 */
 //extends MemoryPersistence implements IConfigurable
 type FilePersistence struct {
 	MemoryPersistence
-	Persister JsonFilePersister
+	Persister *JsonFilePersister
 }
 
 // Creates a new instance of the persistence.
 // - persister    (optional) a persister component that loads and saves data from/to flat file.
 // Return *FilePersistence
 // Pointer on new FilePersistence instance
-func NewFilePersistence(prototype reflect.Type, persister JsonFilePersister) *FilePersistence {
-	var c = &FilePersistence{}
-	if &persister == nil {
-		persister = *NewJsonFilePersister("")
+func NewFilePersistence(prototype reflect.Type, persister *JsonFilePersister) *FilePersistence {
+	c := &FilePersistence{}
+	if persister == nil {
+		persister = NewJsonFilePersister("")
 	}
+	c.MemoryPersistence = *NewMemoryPersistence(prototype)
+	c.Loader = persister
+	c.Saver = persister
 	c.Persister = persister
-	c.MemoryPersistence = *NewMemoryPersistence(prototype, &persister, &persister)
 	return c
 }
 

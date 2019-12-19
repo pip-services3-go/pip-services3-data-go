@@ -75,7 +75,7 @@ type MyFilePersistence  struct {
 */
 type IdentifiableFilePersistence struct {
 	IdentifiableMemoryPersistence
-	Persister JsonFilePersister
+	Persister *JsonFilePersister
 }
 
 // Creates a new instance of the persistence.
@@ -85,12 +85,14 @@ type IdentifiableFilePersistence struct {
 //  	- persister    (optional) a persister component that loads and saves data from/to flat file.
 // Return *IdentifiableFilePersistence
 // pointer on new IdentifiableFilePersistence
-func NewIdentifiableFilePersistence(prototype reflect.Type, persister JsonFilePersister) *IdentifiableFilePersistence {
-	var c = &IdentifiableFilePersistence{}
-	if &persister == nil {
-		persister = *NewJsonFilePersister("")
+func NewIdentifiableFilePersistence(prototype reflect.Type, persister *JsonFilePersister) *IdentifiableFilePersistence {
+	c := &IdentifiableFilePersistence{}
+	if persister == nil {
+		persister = NewJsonFilePersister("")
 	}
-	c.IdentifiableMemoryPersistence = *NewIdentifiableMemoryPersistence(prototype, &persister, &persister)
+	c.IdentifiableMemoryPersistence = *NewIdentifiableMemoryPersistence(prototype)
+	c.Loader = persister
+	c.Saver = persister
 	c.Persister = persister
 	return c
 }

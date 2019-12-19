@@ -53,52 +53,30 @@ Example
 */
 // implements IReferenceable, IOpenable, ICleanable
 type MemoryPersistence struct {
-	Logger    log.CompositeLogger
+	Logger    *log.CompositeLogger
 	Items     []interface{}
 	Loader    ILoader
 	Saver     ISaver
 	opened    bool
-	prototype reflect.Type
+	Prototype reflect.Type
 	Lock      sync.RWMutex
 }
 
-// Creates a new empty instance of the MemoryPersistence
+// Creates a new instance of the MemoryPersistence
 // Parameters:
 // 	- prototype reflect.Type
 //    type of contained data
 // Return *MemoryPersistence
-// empty MemoryPersistence
-func NewEmptyMemoryPersistence(prototype reflect.Type) (mp *MemoryPersistence) {
+// a MemoryPersistence
+func NewMemoryPersistence(prototype reflect.Type) *MemoryPersistence {
 	if prototype == nil {
 		return nil
 	}
-	mp = &MemoryPersistence{}
-	mp.prototype = prototype
-	mp.Logger = *log.NewCompositeLogger()
-	mp.Items = make([]interface{}, 0, 10)
-	return mp
-}
-
-// Creates a new instance of the persistence.
-// Parameters:
-// 	  - prototype reflect.Type
-//    type of contained data
-//    - loader ILoader
-//    (optional) a loader to load items from external datasource.
-//    - saver  ISaver
-//    (optional) a saver to save items to external datasource.
-// Return *MemoryPersistence
-// MemoryPersistence
-func NewMemoryPersistence(prototype reflect.Type, loader ILoader, saver ISaver) (mp *MemoryPersistence) {
-	if prototype == nil {
-		return nil
-	}
-	mp = &MemoryPersistence{}
-	mp.Items = make([]interface{}, 0, 10)
-	mp.Loader = loader
-	mp.Saver = saver
-	mp.Logger = *log.NewCompositeLogger()
-	return mp
+	c := &MemoryPersistence{}
+	c.Prototype = prototype
+	c.Logger = log.NewCompositeLogger()
+	c.Items = make([]interface{}, 0, 10)
+	return c
 }
 
 //  Sets references to dependent components.
@@ -123,14 +101,15 @@ func (c *MemoryPersistence) IsOpen() bool {
 func (c *MemoryPersistence) Open(correlationId string) error {
 	c.Lock.Lock()
 	defer c.Lock.Unlock()
-	err := c.load(correlationId)
+
+	err := c.Load(correlationId)
 	if err == nil {
 		c.opened = true
 	}
 	return err
 }
 
-func (c *MemoryPersistence) load(correlationId string) error {
+func (c *MemoryPersistence) Load(correlationId string) error {
 	if c.Loader == nil {
 		return nil
 	}
@@ -144,7 +123,7 @@ func (c *MemoryPersistence) load(correlationId string) error {
 			if errJson != nil {
 				panic("MemoryPersistence.Load Error can't convert from Json to any type")
 			}
-			value := reflect.New(c.prototype).Interface()
+			value := reflect.New(c.Prototype).Interface()
 			json.Unmarshal(jsonMarshalStr, value)
 			c.Items[i] = reflect.ValueOf(value).Elem().Interface()
 		}

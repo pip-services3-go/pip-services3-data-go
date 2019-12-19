@@ -7,7 +7,7 @@ import (
 )
 
 func TestMemoryPersistence(t *testing.T) {
-	persister := NewEmptyDummyMemoryPersistence()
+	persister := NewDummyMemoryPersistence()
 	persister.Configure(*cconf.NewEmptyConfigParams())
 
 	fixture := NewDummyPersistenceFixture(persister)

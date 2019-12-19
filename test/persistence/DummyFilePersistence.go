@@ -8,15 +8,18 @@ import (
 //  extends DummyMemoryPersistence
 type DummyFilePersistence struct {
 	DummyMemoryPersistence
-	persister cpersist.JsonFilePersister
+	persister *cpersist.JsonFilePersister
 }
 
 func NewDummyFilePersistence(path string) *DummyFilePersistence {
-	c := DummyFilePersistence{}
+	c := &DummyFilePersistence{
+		DummyMemoryPersistence: *NewDummyMemoryPersistence(),
+	}
 	persister := cpersist.NewJsonFilePersister(path)
-	c.persister = *persister
-	c.DummyMemoryPersistence = *NewDummyMemoryPersistence(persister, persister)
-	return &c
+	c.persister = persister
+	c.Loader = persister
+	c.Saver = persister
+	return c
 }
 
 func (c *DummyFilePersistence) Configure(config cconf.ConfigParams) {

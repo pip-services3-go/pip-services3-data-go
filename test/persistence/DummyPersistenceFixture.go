@@ -35,7 +35,7 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 	assert.Equal(t, c.dummy1.Content, dummy1.Content)
 
 	// Create another dummy by send pointer
-	result, err = c.persistence.Create("", &c.dummy2)
+	result, err = c.persistence.Create("", c.dummy2)
 	if err != nil {
 		t.Errorf("Create method error %v", err)
 	}
@@ -53,9 +53,9 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 	assert.Len(t, page.Data, 2)
 	//Testing default sorting by Key field len
 
-	item1 := page.Data[0].(Dummy)
+	item1 := page.Data[0]
 	assert.Equal(t, item1.Key, dummy2.Key)
-	item2 := page.Data[1].(Dummy)
+	item2 := page.Data[1]
 	assert.Equal(t, item2.Key, dummy1.Key)
 
 	// Update the dummy
