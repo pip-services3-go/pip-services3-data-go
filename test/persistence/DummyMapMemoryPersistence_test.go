@@ -7,12 +7,12 @@ import (
 )
 
 func TestDummyMapMemoryPersistence(t *testing.T) {
-	persister := NewEmptyDummyMapMemoryPersistence()
+	persister := NewDummyMapMemoryPersistence()
 	persister.Configure(*cconf.NewEmptyConfigParams())
 
 	fixture := NewDummyMapPersistenceFixture(persister)
 
-	t.Run("MemoryPersistence:CRUD", fixture.TestCrudOperations)
-	t.Run("MemoryPersistence:Batch", fixture.TestBatchOperations)
+	t.Run("DummyMapMemoryPersistence:CRUD", fixture.TestCrudOperations)
+	t.Run("DummyMapMemoryPersistence:Batch", fixture.TestBatchOperations)
 
 }

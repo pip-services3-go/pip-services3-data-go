@@ -73,7 +73,7 @@ func (c *JsonFilePersister) Configure(config config.ConfigParams) {
 func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err error) {
 	if c.path == "" {
 		data = nil
-		err = errors.NewConfigError("", "NOpath", "Data file path is not set")
+		err = errors.NewConfigError("", "NO_PATH", "Data file path is not set")
 		return data, err
 	}
 
@@ -91,12 +91,10 @@ func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err
 		return data, err
 	}
 	list, err := convert.FromJson((string)(json))
-	//list := convert.JsonConverter.ToNullableMap((string)(json))
 	if list == nil {
 		data = nil
 		return data, err
 	}
-	//data = *convert.ArrayConverter.ToNullableArray(list)
 	data = convert.ArrayConverter.ListToArray(list)
 	err = nil
 	return data, err

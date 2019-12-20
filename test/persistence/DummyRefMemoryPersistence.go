@@ -8,77 +8,78 @@ import (
 
 // extends IdentifiableMemoryPersistence<Dummy, string>
 // implements IDummyPersistence {
-type DummyMemoryPersistence struct {
+type DummyRefMemoryPersistence struct {
 	cpersist.IdentifiableMemoryPersistence
 }
 
-func NewDummyMemoryPersistence() *DummyMemoryPersistence {
-	proto := reflect.TypeOf(Dummy{})
-	return &DummyMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto)}
+func NewDummyRefMemoryPersistence() *DummyRefMemoryPersistence {
+	var t *Dummy
+	proto := reflect.TypeOf(t)
+	return &DummyRefMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto)}
 }
 
-func (c *DummyMemoryPersistence) Create(correlationId string, item Dummy) (result Dummy, err error) {
+func (c *DummyRefMemoryPersistence) Create(correlationId string, item *Dummy) (result *Dummy, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Create(correlationId, item)
 
 	if value != nil {
 		val, _ := value.(Dummy)
-		result = val
+		result = &val
 	}
 	return result, err
 }
 
-func (c *DummyMemoryPersistence) GetListByIds(correlationId string, ids []string) (items []Dummy, err error) {
+func (c *DummyRefMemoryPersistence) GetListByIds(correlationId string, ids []string) (items []*Dummy, err error) {
 	convIds := make([]interface{}, len(ids))
 	for i, v := range ids {
 		convIds[i] = v
 	}
 	result, err := c.IdentifiableMemoryPersistence.GetListByIds(correlationId, convIds)
-	items = make([]Dummy, len(result))
+	items = make([]*Dummy, len(result))
 	for i, v := range result {
 		val, _ := v.(Dummy)
-		items[i] = val
+		items[i] = &val
 	}
 	return items, err
 }
 
-func (c *DummyMemoryPersistence) GetOneById(correlationId string, id string) (item Dummy, err error) {
+func (c *DummyRefMemoryPersistence) GetOneById(correlationId string, id string) (item *Dummy, err error) {
 	result, err := c.IdentifiableMemoryPersistence.GetOneById(correlationId, id)
 	if result != nil {
 		val, _ := result.(Dummy)
-		item = val
+		item = &val
 	}
 	return item, err
 }
 
-func (c *DummyMemoryPersistence) Update(correlationId string, item Dummy) (result Dummy, err error) {
+func (c *DummyRefMemoryPersistence) Update(correlationId string, item *Dummy) (result *Dummy, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Update(correlationId, item)
 	if value != nil {
 		val, _ := value.(Dummy)
-		result = val
+		result = &val
 	}
 	return result, err
 }
 
-func (c *DummyMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item Dummy, err error) {
+func (c *DummyRefMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item *Dummy, err error) {
 	result, err := c.IdentifiableMemoryPersistence.UpdatePartially(correlationId, id, data)
 
 	if result != nil {
 		val, _ := result.(Dummy)
-		item = val
+		item = &val
 	}
 	return item, err
 }
 
-func (c *DummyMemoryPersistence) DeleteById(correlationId string, id string) (item Dummy, err error) {
+func (c *DummyRefMemoryPersistence) DeleteById(correlationId string, id string) (item *Dummy, err error) {
 	result, err := c.IdentifiableMemoryPersistence.DeleteById(correlationId, id)
 	if result != nil {
 		val, _ := result.(Dummy)
-		item = val
+		item = &val
 	}
 	return item, err
 }
 
-func (c *DummyMemoryPersistence) DeleteByIds(correlationId string, ids []string) (err error) {
+func (c *DummyRefMemoryPersistence) DeleteByIds(correlationId string, ids []string) (err error) {
 	convIds := make([]interface{}, len(ids))
 	for i, v := range ids {
 		convIds[i] = v
@@ -86,7 +87,7 @@ func (c *DummyMemoryPersistence) DeleteByIds(correlationId string, ids []string)
 	return c.IdentifiableMemoryPersistence.DeleteByIds(correlationId, convIds)
 }
 
-func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter cdata.FilterParams, paging cdata.PagingParams) (page DummyPage, err error) {
+func (c *DummyRefMemoryPersistence) GetPageByFilter(correlationId string, filter cdata.FilterParams, paging cdata.PagingParams) (page DummyRefPage, err error) {
 
 	if &filter == nil {
 		filter = *cdata.NewEmptyFilterParams()
@@ -96,7 +97,7 @@ func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter cd
 
 	tempPage, err := c.IdentifiableMemoryPersistence.GetPageByFilter(correlationId, func(item interface{}) bool {
 		dummy, ok := item.(Dummy)
-		if *key != "" && ok && dummy.Key != *key {
+		if *key != "" && ok && (dummy).Key != *key {
 			return false
 		}
 		return true
@@ -104,14 +105,15 @@ func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter cd
 		func(a, b interface{}) bool {
 			_a, _ := a.(Dummy)
 			_b, _ := b.(Dummy)
-			return len(_a.Key) < len(_b.Key)
+			return len((_a).Key) < len((_b).Key)
 		}, nil)
-	// Convert to DummyPage
+	// Convert to DummyRefPage
 	dataLen := int64(len(tempPage.Data)) // For full release tempPage and delete this by GC
-	data := make([]Dummy, dataLen)
-	for i, v := range tempPage.Data {
-		data[i] = v.(Dummy)
+	data := make([]*Dummy, dataLen)
+	for i := range tempPage.Data {
+		temp := tempPage.Data[i].(Dummy)
+		data[i] = &temp
 	}
-	page = *NewDummyPage(&dataLen, data)
+	page = *NewDummyRefPage(&dataLen, data)
 	return page, err
 }

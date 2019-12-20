@@ -125,7 +125,11 @@ func (c *MemoryPersistence) Load(correlationId string) error {
 			}
 			value := reflect.New(c.Prototype).Interface()
 			json.Unmarshal(jsonMarshalStr, value)
-			c.Items[i] = reflect.ValueOf(value).Elem().Interface()
+			// if c.Prototype.Kind() == reflect.Ptr {
+			// 	c.Items[i] = reflect.ValueOf(value).Interface() // load pointer
+			// } else {
+			c.Items[i] = reflect.ValueOf(value).Elem().Interface() // load value
+			//}
 		}
 		length := len(c.Items)
 		c.Logger.Trace(correlationId, "Loaded %d items", length)

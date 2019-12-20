@@ -13,13 +13,13 @@ type DummyMapMemoryPersistence struct {
 }
 
 func NewDummyMapMemoryPersistence() *DummyMapMemoryPersistence {
-	proto := reflect.TypeOf(map[string]interface{})
+	var t map[string]interface{}
+	proto := reflect.TypeOf(t)
 	return &DummyMapMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto)}
 }
 
 func (c *DummyMapMemoryPersistence) Create(correlationId string, item map[string]interface{}) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Create(correlationId, item)
-	//result = nil
 	if value != nil {
 		val, _ := value.(map[string]interface{})
 		result = val
@@ -43,7 +43,7 @@ func (c *DummyMapMemoryPersistence) GetListByIds(correlationId string, ids []str
 
 func (c *DummyMapMemoryPersistence) GetOneById(correlationId string, id string) (item map[string]interface{}, err error) {
 	result, err := c.IdentifiableMemoryPersistence.GetOneById(correlationId, id)
-	//item = nil
+
 	if result != nil {
 		val, _ := result.(map[string]interface{})
 		item = val
@@ -51,9 +51,9 @@ func (c *DummyMapMemoryPersistence) GetOneById(correlationId string, id string) 
 	return item, err
 }
 
-func (c *DummyMapMemoryPersistence) Update(correlationId string, item interface{}) (result map[string]interface{}, err error) {
+func (c *DummyMapMemoryPersistence) Update(correlationId string, item map[string]interface{}) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Update(correlationId, item)
-	//result = nil
+
 	if value != nil {
 		val, _ := value.(map[string]interface{})
 		result = val
@@ -63,7 +63,7 @@ func (c *DummyMapMemoryPersistence) Update(correlationId string, item interface{
 
 func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item map[string]interface{}, err error) {
 	result, err := c.IdentifiableMemoryPersistence.UpdatePartially(correlationId, id, data)
-	//item = nil
+
 	if result != nil {
 		val, _ := result.(map[string]interface{})
 		item = val
@@ -73,7 +73,7 @@ func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id str
 
 func (c *DummyMapMemoryPersistence) DeleteById(correlationId string, id string) (item map[string]interface{}, err error) {
 	result, err := c.IdentifiableMemoryPersistence.DeleteById(correlationId, id)
-	//item = nil
+
 	if result != nil {
 		val, _ := result.(map[string]interface{})
 		item = val
@@ -89,7 +89,7 @@ func (c *DummyMapMemoryPersistence) DeleteByIds(correlationId string, ids []stri
 	return c.IdentifiableMemoryPersistence.DeleteByIds(correlationId, convIds)
 }
 
-func (c *DummyMapMemoryPersistence) GetPageByFilter(correlationId string, filter cdata.FilterParams, paging cdata.PagingParams) (page cdata.DataPage, err error) {
+func (c *DummyMapMemoryPersistence) GetPageByFilter(correlationId string, filter cdata.FilterParams, paging cdata.PagingParams) (page MapPage, err error) {
 
 	if &filter == nil {
 		filter = *cdata.NewEmptyFilterParams()
@@ -97,7 +97,7 @@ func (c *DummyMapMemoryPersistence) GetPageByFilter(correlationId string, filter
 
 	key := filter.GetAsNullableString("Key")
 
-	return c.IdentifiableMemoryPersistence.GetPageByFilter(correlationId, func(item interface{}) bool {
+	tempPage, err := c.IdentifiableMemoryPersistence.GetPageByFilter(correlationId, func(item interface{}) bool {
 		dummy, ok := item.(map[string]interface{})
 		if *key != "" && ok && dummy["Key"] != *key {
 			return false
@@ -107,6 +107,13 @@ func (c *DummyMapMemoryPersistence) GetPageByFilter(correlationId string, filter
 		func(a, b interface{}) bool {
 			_a, _ := a.(map[string]interface{})
 			_b, _ := b.(map[string]interface{})
-			return len(_a["Key"]) < len(_b["Key"])
+			return len(_a["Key"].(string)) < len(_b["Key"].(string))
 		}, nil)
+	dataLen := int64(len(tempPage.Data))
+	data := make([]map[string]interface{}, dataLen)
+	for i, v := range tempPage.Data {
+		data[i] = v.(map[string]interface{})
+	}
+	dataPage := *NewMapPage(&dataLen, data)
+	return dataPage, err
 }

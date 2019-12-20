@@ -71,7 +71,7 @@ type MyMemoryPersistence struct{
 	...
 
 */
-//  extends MemoryPersistence  implements IConfigurable, IWriter, IGetter, ISetter
+// extends MemoryPersistence  implements IConfigurable, IWriter, IGetter, ISetter
 type IdentifiableMemoryPersistence struct {
 	MemoryPersistence
 	MaxPageSize int
@@ -313,7 +313,8 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 
 	var item interface{} = nil
 	if len(items) > 0 {
-		item = items[0]
+		item = CloneObject(items[0])
+		result = CloneObject(item)
 	}
 	if item != nil {
 		c.Logger.Trace(correlationId, "Retrieved item %s", id)
@@ -321,7 +322,6 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 		c.Logger.Trace(correlationId, "Cannot find item by %s", id)
 	}
 
-	result = CloneObject(item)
 	return result, err
 }
 
