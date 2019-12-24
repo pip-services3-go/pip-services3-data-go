@@ -44,6 +44,14 @@ func getValue(obj interface{}) interface{} {
 	return obj
 }
 
+// Gets value of object property specified by its name.
+// Parameters:
+// 			- obj interface{}
+// 			an object to read property from.
+// 			- name string
+// 			a name of the property to get.
+// Returns interface{}
+// the property value or null if property doesn't exist or introspection failed.
 func GetProperty(obj interface{}, name string) interface{} {
 	if obj == nil || name == "" {
 		return nil
@@ -86,6 +94,15 @@ func GetProperty(obj interface{}, name string) interface{} {
 	return nil
 }
 
+// Sets value of object property specified by its name.
+// If the property does not exist or introspection fails this method doesn't do anything and doesn't any throw errors.
+// Parameters:
+// 			- obj interface{}
+// 			an object to write property to.
+// 			name string
+// 			a name of the property to set.
+// 			- value interface{}
+// 			a new value for the property to set.
 func SetProperty(obj interface{}, name string, value interface{}) {
 	if obj == nil || name == "" {
 		return
@@ -130,12 +147,23 @@ func SetProperty(obj interface{}, name string, value interface{}) {
 }
 
 // Get object Id value
+// Parameters:
+// 			- item interface{}
+// 			an object to read property from.
+// Returns interface{}
+// the property value or nil if property doesn't exist or introspection failed.
 func GetObjectId(item interface{}) interface{} {
 	return GetProperty(item, "Id")
 
 }
 
 // SetObjectId is set object Id value
+// Parameters:
+// 			- item *interface{}
+// 			an pointer on object to set id property
+// 			- id interface{}
+//			id value for set
+// Results saved in input object
 func SetObjectId(item *interface{}, id interface{}) {
 	value := *item
 	if reflect.ValueOf(value).Kind() == reflect.Map {
@@ -152,10 +180,12 @@ func SetObjectId(item *interface{}, id interface{}) {
 }
 
 // GenerateObjectId is generates a new id value when it's empty
+// Parameters:
+// 			- item *interface{}
+// 			an pointer on object to set id property
+// Results saved in input object
 func GenerateObjectId(item *interface{}) {
 	value := *item
-	//idField := refl.ObjectReader.GetProperty(value, "Id")
-
 	idField := GetProperty(value, "Id")
 	if idField != nil {
 		if reflect.ValueOf(idField).IsZero() {
@@ -166,7 +196,12 @@ func GenerateObjectId(item *interface{}) {
 	}
 }
 
-// CloneObject is Clones object function
+// CloneObject is clones object function
+// Parameters:
+// 			- item interface{}
+// 			an object to clone
+// Return interface{}
+// copy of input item
 func CloneObject(item interface{}) interface{} {
 	var dest interface{}
 	var src = item
@@ -195,6 +230,13 @@ func CloneObject(item interface{}) interface{} {
 }
 
 // CompareValues are ompares two values
+// Parameters:
+// 			- value1 interface{}
+// 			an object one for compare
+// 			- value2 interface{}
+// 			an object two for compare
+// Return bool
+// true if value1 equal value2 and false otherwise
 func CompareValues(value1 interface{}, value2 interface{}) bool {
 	// Todo: Implement proper comparison
 	return value1 == value2

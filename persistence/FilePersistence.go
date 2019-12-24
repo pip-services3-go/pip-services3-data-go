@@ -31,13 +31,14 @@ type MyJsonFilePersistence struct {
 	FilePersistence
 }
     func NewMyJsonFilePersistence(path string) *NewMyJsonFilePersistence {
-		return NewFilePersistence(NewJsonPersister(path))
+		prototype := reflcet.TypeOf(MyData{})
+		return &NewFilePersistence(prototype, NewJsonPersister(prototype, path))
     }
 
-	func (c * FilePersistence) GetByName(correlationId string, name string) (item interface{}, err error){
+	func (c * FilePersistence) GetByName(correlationId string, name string) (item MyData, err error){
 		for _,v := range c._items {
-			if v.name == name {
-				item = v
+			if v.Name == name {
+				item = v.(MyData)
 				break
 			}
 		}
@@ -62,15 +63,16 @@ type FilePersistence struct {
 }
 
 // Creates a new instance of the persistence.
-// - persister    (optional) a persister component that loads and saves data from/to flat file.
+// 		- persister    (optional) a persister component that loads and saves data from/to flat file.
 // Return *FilePersistence
 // Pointer on new FilePersistence instance
 func NewFilePersistence(prototype reflect.Type, persister *JsonFilePersister) *FilePersistence {
 	c := &FilePersistence{}
-	if persister == nil {
-		persister = NewJsonFilePersister("")
-	}
 	c.MemoryPersistence = *NewMemoryPersistence(prototype)
+	c.Prototype = prototype
+	if persister == nil {
+		persister = NewJsonFilePersister(prototype, "")
+	}
 	c.Loader = persister
 	c.Saver = persister
 	c.Persister = persister
@@ -78,7 +80,7 @@ func NewFilePersistence(prototype reflect.Type, persister *JsonFilePersister) *F
 }
 
 // Configures component by passing configuration parameters.
-// - config    configuration parameters to be set.
+// 		- config    configuration parameters to be set.
 func (c *FilePersistence) Configure(conf config.ConfigParams) {
 	c.Persister.Configure(conf)
 }

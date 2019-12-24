@@ -2,11 +2,12 @@ package persistence
 
 import (
 	"encoding/json"
+	"reflect"
+	"sync"
+
 	"github.com/pip-services3-go/pip-services3-commons-go/convert"
 	"github.com/pip-services3-go/pip-services3-commons-go/refer"
 	"github.com/pip-services3-go/pip-services3-components-go/log"
-	"reflect"
-	"sync"
 )
 
 /*
@@ -23,7 +24,7 @@ of persistence components that cache all data in memory.
 
 References
 
-- *:logger:*:*:1.0       (optional) [[https://rawgit.com/pip-services-node/pip-services3-components-go/master/doc/api/interfaces/log.ilogger.html ILogger]] components to pass log messages
+- *:logger:*:*:1.0    ILogger components to pass log messages
 
 Example
 
@@ -47,7 +48,7 @@ Example
     }
 
     persistence := NewMyMemoryPersistence();
-    err := persistence.Set("123", interface{}({ name: "ABC" }))
+    err := persistence.Set("123", MyData{ name: "ABC" })
     item, err := persistence.GetByName("123", "ABC")
     fmt.Println(item)   // Result: { name: "ABC" }
 */
@@ -81,8 +82,8 @@ func NewMemoryPersistence(prototype reflect.Type) *MemoryPersistence {
 
 //  Sets references to dependent components.
 //  Parameters:
-// 	- references refer.IReferences
-//	references to locate the component dependencies.
+// 		- references refer.IReferences
+//		references to locate the component dependencies.
 func (c *MemoryPersistence) SetReferences(references refer.IReferences) {
 	c.Logger.SetReferences(references)
 }
@@ -102,34 +103,31 @@ func (c *MemoryPersistence) Open(correlationId string) error {
 	c.Lock.Lock()
 	defer c.Lock.Unlock()
 
-	err := c.Load(correlationId)
+	err := c.load(correlationId)
 	if err == nil {
 		c.opened = true
 	}
 	return err
 }
 
-func (c *MemoryPersistence) Load(correlationId string) error {
+func (c *MemoryPersistence) load(correlationId string) error {
 	if c.Loader == nil {
 		return nil
 	}
 
 	items, err := c.Loader.Load(correlationId)
 	if err == nil && items != nil {
+		c.Items = items
 		c.Items = make([]interface{}, len(items))
 		for i, v := range items {
 			item := convert.MapConverter.ToNullableMap(v)
 			jsonMarshalStr, errJson := json.Marshal(item)
 			if errJson != nil {
-				panic("MemoryPersistence.Load Error can't convert from Json to any type")
+				panic("MemoryPersistence.Load Error can't convert from Json to type")
 			}
 			value := reflect.New(c.Prototype).Interface()
 			json.Unmarshal(jsonMarshalStr, value)
-			// if c.Prototype.Kind() == reflect.Ptr {
-			// 	c.Items[i] = reflect.ValueOf(value).Interface() // load pointer
-			// } else {
 			c.Items[i] = reflect.ValueOf(value).Elem().Interface() // load value
-			//}
 		}
 		length := len(c.Items)
 		c.Logger.Trace(correlationId, "Loaded %d items", length)
@@ -139,8 +137,9 @@ func (c *MemoryPersistence) Load(correlationId string) error {
 
 // Closes component and frees used resources.
 // Parameters:
-// 	- correlationId 	(optional) transaction id to trace execution through call chain.
-// Retruns: error or null no errors occured.
+// 		- correlationId string
+//		(optional) transaction id to trace execution through call chain.
+// Retruns: error or nil if no errors occured.
 func (c *MemoryPersistence) Close(correlationId string) error {
 	err := c.Save(correlationId)
 	c.opened = false
@@ -148,6 +147,7 @@ func (c *MemoryPersistence) Close(correlationId string) error {
 }
 
 // Saves items to external data source using configured saver component.
+// Parameters:
 //    - correlationId string
 //     (optional) transaction id to trace execution through call chain.
 // Return error or null for success.
@@ -168,7 +168,9 @@ func (c *MemoryPersistence) Save(correlationId string) error {
 }
 
 // Clears component state.
-// 	- correlationId 	(optional) transaction id to trace execution through call chain.
+// Parameters:
+// 		- correlationId string
+//		(optional) transaction id to trace execution through call chain.
 //  Returns error or null no errors occured.
 func (c *MemoryPersistence) Clear(correlationId string) error {
 	c.Lock.Lock()

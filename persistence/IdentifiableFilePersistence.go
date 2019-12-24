@@ -38,7 +38,8 @@ type MyFilePersistence  struct {
 }
     func NewMyFilePersistence(path string)(mfp *MyFilePersistence) {
 		mfp = MyFilePersistence{}
-		mfp.IdentifiableFilePersistence = *NewJsonPersister(path)
+		prototype := reflect.TypeOf(MyData{})
+		mfp.IdentifiableFilePersistence = *NewJsonPersister(prototype,path)
 		return mfp
     }
 
@@ -48,7 +49,7 @@ type MyFilePersistence  struct {
 		}
         name := filter.GetAsNullableString("name");
         return func (item interface) bool {
-            dummy, ok := item.(Dummy)
+            dummy, ok := item.(MyData)
 			if *name != "" && ok && dummy.Name != *name {
 				return false
 			}
@@ -56,8 +57,15 @@ type MyFilePersistence  struct {
         }
     }
 
-    func (c *MyFilePersistence ) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams)(page cdata.DataPage, err error){
-        return c.GetPageByFilter(correlationId, this.composeFilter(filter), paging, nil, nil)
+    func (c *MyFilePersistence ) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams)(page cdata.MyDataPage, err error){
+		tempPage, err := c.GetPageByFilter(correlationId, composeFilter(filter), paging, nil, nil)
+		dataLen := int64(len(tempPage.Data))
+		data := make([]MyData, dataLen)
+		for i, v := range tempPage.Data {
+			data[i] = v.(MyData)
+		}
+		page = *NewMyDataPage(&dataLen, data)
+		return page, err
     }
 
     persistence := NewMyFilePersistence("./data/data.json")
@@ -88,7 +96,7 @@ type IdentifiableFilePersistence struct {
 func NewIdentifiableFilePersistence(prototype reflect.Type, persister *JsonFilePersister) *IdentifiableFilePersistence {
 	c := &IdentifiableFilePersistence{}
 	if persister == nil {
-		persister = NewJsonFilePersister("")
+		persister = NewJsonFilePersister(prototype, "")
 	}
 	c.IdentifiableMemoryPersistence = *NewIdentifiableMemoryPersistence(prototype)
 	c.Loader = persister
@@ -98,7 +106,8 @@ func NewIdentifiableFilePersistence(prototype reflect.Type, persister *JsonFileP
 }
 
 // Configures component by passing configuration parameters.
-// - config    configuration parameters to be set.
+// Parameters:
+// 		- config    configuration parameters to be set.
 func (c *IdentifiableFilePersistence) Configure(config config.ConfigParams) {
 	c.Configure(config)
 	c.Persister.Configure(config)

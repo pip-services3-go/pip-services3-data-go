@@ -6,8 +6,8 @@ import (
 	"reflect"
 )
 
-// extends IdentifiableMemoryPersistence<Dummy, string>
-// implements IDummyPersistence {
+// extends IdentifiableMemoryPersistence
+// implements IDummyPersistence
 type DummyMemoryPersistence struct {
 	cpersist.IdentifiableMemoryPersistence
 }

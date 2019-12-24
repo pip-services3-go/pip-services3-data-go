@@ -47,7 +47,7 @@ type MyMemoryPersistence struct{
 		}
         name := filter.getAsNullableString("Name");
         return func(item interface{}) bool {
-			dummy, ok := item.(Dummy)
+			dummy, ok := item.(MyData)
             if (*name != "" && ok && item.Name != *name)
                 return false;
             return true;
@@ -55,8 +55,14 @@ type MyMemoryPersistence struct{
     }
 
     func (mmp * MyMemoryPersistence) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams) (page DataPage, err error) {
-        return mmp.IdentifiableMemoryPersistence.GetPageByFilter(correlationId, c.composeFilter(filter), paging, nil, nil)
-    }
+        tempPage, err := c.GetPageByFilter(correlationId, composeFilter(filter), paging, nil, nil)
+		dataLen := int64(len(tempPage.Data))
+		data := make([]MyData, dataLen)
+		for i, v := range tempPage.Data {
+			data[i] = v.(MyData)
+		}
+		page = *NewMyDataPage(&dataLen, data)
+		return page, err}
 
     persistence := NewMyMemoryPersistence();
 
@@ -256,7 +262,7 @@ func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids [
 //     (optional) transaction id to trace execution through call chain.
 // 		- filter   func(interface{}) bool
 //     (optional) a filter function to filter items.
-// Returns: *interface{}, error
+// Returns: interface{}, error
 // random item or error.
 func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filterFunc func(interface{}) bool) (result interface{}, err error) {
 	c.Lock.RLock()
@@ -297,7 +303,7 @@ func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filte
 //   	(optional) transaction id to trace execution through call chain.
 // 		- id interface{}
 //      an id of data item to be retrieved.
-// Returns:  *interface{}, error
+// Returns:  interface{}, error
 // data item or error.
 func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (result interface{}, err error) {
 	c.Lock.RLock()
@@ -345,14 +351,14 @@ func (c *IdentifiableMemoryPersistence) getIndexById(id interface{}) int {
 //   (optional) transaction id to trace execution through call chain.
 // 	 - item  string
 //   an item to be created.
-// Returns:  *interface{}, error
+// Returns:  interface{}, error
 // created item or error.
 func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result interface{}, err error) {
 	c.Lock.Lock()
 
 	newItem := CloneObject(item)
 	GenerateObjectId(&newItem)
-	id := GetObjectId(item)
+	id := GetObjectId(newItem)
 	c.Items = append(c.Items, newItem)
 
 	c.Lock.Unlock()
@@ -370,7 +376,7 @@ func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interf
 //	    (optional) transaction id to trace execution through call chain.
 // 		- item  interface{}
 //      a item to be set.
-// Returns:  *interface{}, error
+// Returns:  interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result interface{}, err error) {
 	c.Lock.Lock()
@@ -400,7 +406,7 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 //  	(optional) transaction id to trace execution through call chain.
 // 		- item  interface{}
 //      an item to be updated.
-// Returns:   *interface{}, error
+// Returns:   interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (result interface{}, err error) {
 	c.Lock.Lock()
@@ -430,7 +436,7 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 //      an id of data item to be updated.
 // 		- data  cdata.AnyValueMap
 //      a map with fields to be updated.
-// Returns: *interface{}, error
+// Returns: interface{}, error
 // updated item or error.
 func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (result interface{}, err error) {
 	c.Lock.Lock()
@@ -469,7 +475,7 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 //	    (optional) transaction id to trace execution through call chain.
 //  	- id interface{}
 //      an id of the item to be deleted
-// Retruns:
+// Retruns:  interface{}, error
 // deleted item or error.
 func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (result interface{}, err error) {
 	c.Lock.Lock()

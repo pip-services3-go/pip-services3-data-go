@@ -3,6 +3,7 @@ package persistence
 import (
 	"io/ioutil"
 	"os"
+	"reflect"
 
 	"github.com/pip-services3-go/pip-services3-commons-go/config"
 	"github.com/pip-services3-go/pip-services3-commons-go/convert"
@@ -20,7 +21,7 @@ It is used by FilePersistence, but can be useful on its own.
 
  Example
 
-    persister := NewJsonFilePersister("./data/data.json");
+    persister := NewJsonFilePersister(reflect.TypeOf(MyData{}), "./data/data.json");
 
 	err_sav := persister.Save("123", ["A", "B", "C"])
 	if err_sav == nil {
@@ -31,15 +32,16 @@ It is used by FilePersistence, but can be useful on its own.
 */
 // implements ILoader, ISaver, IConfigurable
 type JsonFilePersister struct {
-	path string
+	path      string
+	Prototype reflect.Type
 }
 
 // Creates a new instance of the persistence.
 // Parameters:
 //		- path  string
 //		(optional) a path to the file where data is stored.
-func NewJsonFilePersister(path string) *JsonFilePersister {
-	var c = &JsonFilePersister{path: path}
+func NewJsonFilePersister(prototype reflect.Type, path string) *JsonFilePersister {
+	var c = &JsonFilePersister{path: path, Prototype: prototype}
 	return c
 }
 
@@ -66,6 +68,7 @@ func (c *JsonFilePersister) Configure(config config.ConfigParams) {
 }
 
 // Loads data items from external JSON file.
+// Parameters:
 //		- correlation_id  string
 //		transaction id to trace execution through call chain.
 // Returns []interface{}, error
@@ -84,13 +87,18 @@ func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err
 		return data, err
 	}
 
-	json, jsonerr := ioutil.ReadFile(c.path)
+	jsonStr, jsonerr := ioutil.ReadFile(c.path)
 	if jsonerr != nil {
 		err = errors.NewFileError(correlation_id, "READ_FAILED", "Failed to read data file: "+c.path).WithCause(jsonerr)
 		data = nil
 		return data, err
 	}
-	list, err := convert.FromJson((string)(json))
+
+	if len(jsonStr) == 0 {
+		return nil, nil
+	}
+
+	list, err := convert.FromJson((string)(jsonStr))
 	if list == nil {
 		data = nil
 		return data, err
@@ -100,12 +108,12 @@ func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err
 	return data, err
 }
 
-//Saves given data items to external JSON file.
+// Saves given data items to external JSON file.
 // Parameters:
 //		- correlation_id string
 //	    transaction id to trace execution through call chain.
 // 		- items []interface[]
-//      list if data items to save
+//      list of data items to save
 //  Retruns error
 //  error or nil for success.
 func (c *JsonFilePersister) Save(correlationId string, items []interface{}) error {

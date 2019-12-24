@@ -16,7 +16,7 @@ func NewDummyMapFilePersistence(path string) *DummyMapFilePersistence {
 		DummyMapMemoryPersistence: *NewDummyMapMemoryPersistence(),
 	}
 
-	persister := cpersist.NewJsonFilePersister(path)
+	persister := cpersist.NewJsonFilePersister(c.Prototype, path)
 	c.persister = persister
 	c.Loader = persister
 	c.Saver = persister

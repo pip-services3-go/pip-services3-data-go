@@ -15,7 +15,7 @@ func NewDummyRefFilePersistence(path string) *DummyRefFilePersistence {
 	c := &DummyRefFilePersistence{
 		DummyRefMemoryPersistence: *NewDummyRefMemoryPersistence(),
 	}
-	persister := cpersist.NewJsonFilePersister(path)
+	persister := cpersist.NewJsonFilePersister(c.Prototype, path)
 	c.persister = persister
 	c.Loader = persister
 	c.Saver = persister
