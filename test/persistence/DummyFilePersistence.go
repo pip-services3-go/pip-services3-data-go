@@ -2,7 +2,7 @@ package test_persistence
 
 import (
 	cconf "github.com/pip-services3-go/pip-services3-commons-go/config"
-	cpersist "github.com/pip-services3-go/pip-services3-data-go/persistence"
+	cpersist "github.com/pip-services3-go/pip-services3-data-go/v3/persistence"
 )
 
 //  extends DummyMemoryPersistence
