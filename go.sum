@@ -13,6 +13,8 @@ github.com/pip-services3-go/pip-services3-commons-go v0.0.0-20191120184752-e90ca
 github.com/pip-services3-go/pip-services3-commons-go v0.0.0-20191120184752-e90ca65ad1c9/go.mod h1:zuPMQBL05n7s1oEaEdMvJZy6bWnUhbV6LH9wq60+0VE=
 github.com/pip-services3-go/pip-services3-components-go v0.0.0-20191121193353-fd649422216e h1:j/rWy+ZKGMi+kWKWv0uAgWMAPku7fw3Nu4LaElljvwA=
 github.com/pip-services3-go/pip-services3-components-go v0.0.0-20191121193353-fd649422216e/go.mod h1:HXw/ZY1ptv0WEICtazRu6ZeWjtmn90maApMBGfzRj8I=
+github.com/pip-services3-go/pip-services3-data-go v1.0.0 h1:hyk/bMtzxVlZuhSUYMIj9kEW+CXJ28gYpsq9Q+rK6lk=
+github.com/pip-services3-go/pip-services3-data-go v1.0.0/go.mod h1:DExl49aIGpYj7P78WAdfL6PuKZ3GbQ5OTeVwD19n2lY=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/satori/go.uuid v1.2.0 h1:0uYX9dsZ2yD7q2RtLRtPSdGDWzjeM3TbMJP9utgA0ww=
