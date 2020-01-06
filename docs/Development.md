@@ -14,7 +14,7 @@ This document provides high-level instructions on how to build and test the micr
 This is a Golang project and you have to install Golang tools. 
 You can download them from official Golang website: https://golang.org/dl/ 
 
-After node is installed you can check it by running the following command:
+After go is installed you can check it by running the following command:
 ```bash
 go version
 ```

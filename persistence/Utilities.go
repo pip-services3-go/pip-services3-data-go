@@ -7,9 +7,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/jinzhu/copier"
-	"github.com/pip-services3-go/pip-services3-commons-go/convert"
-	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
-	refl "github.com/pip-services3-go/pip-services3-commons-go/reflect"
+	"github.com/pip-services3-go/pip-services3-commons-go/v3/convert"
+	cdata "github.com/pip-services3-go/pip-services3-commons-go/v3/data"
+	refl "github.com/pip-services3-go/pip-services3-commons-go/v3/reflect"
 )
 
 func toFieldType(obj interface{}) reflect.Type {

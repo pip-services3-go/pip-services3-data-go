@@ -1,6 +1,6 @@
 package persistence
 
-import "github.com/pip-services3-go/pip-services3-commons-go/data"
+import "github.com/pip-services3-go/pip-services3-commons-go/v3/data"
 
 /*
   Interface for data processing components that can retrieve a list of data items by filter.

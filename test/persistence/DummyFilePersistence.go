@@ -1,7 +1,7 @@
 package test_persistence
 
 import (
-	cconf "github.com/pip-services3-go/pip-services3-commons-go/config"
+	cconf "github.com/pip-services3-go/pip-services3-commons-go/v3/config"
 	cpersist "github.com/pip-services3-go/pip-services3-data-go/v3/persistence"
 )
 

@@ -6,10 +6,10 @@ import (
 	"sort"
 	"time"
 
-	"github.com/pip-services3-go/pip-services3-commons-go/config"
-	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
-	refl "github.com/pip-services3-go/pip-services3-commons-go/reflect"
-	"github.com/pip-services3-go/pip-services3-components-go/log"
+	"github.com/pip-services3-go/pip-services3-commons-go/v3/config"
+	cdata "github.com/pip-services3-go/pip-services3-commons-go/v3/data"
+	refl "github.com/pip-services3-go/pip-services3-commons-go/v3/reflect"
+	"github.com/pip-services3-go/pip-services3-components-go/v3/log"
 )
 
 /*
@@ -142,10 +142,8 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 
 	// Apply sorting
 	if sortFunc != nil {
-		if sortFunc != nil {
-			localSort := sorter{items: items, compFunc: sortFunc}
-			sort.Sort(localSort)
-		}
+		localSort := sorter{items: items, compFunc: sortFunc}
+		sort.Sort(localSort)
 	}
 
 	// Extract a page
