@@ -171,9 +171,11 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 	}
 
 	c.Logger.Trace(correlationId, "Retrieved %d items", len(items))
+	// W!
 	for i := 0; i < len(items); i++ {
 		items[i] = CloneObject(items[i])
 	}
+
 	page = *cdata.NewDataPage(&total, items)
 	return page, nil
 }
@@ -222,6 +224,7 @@ func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, fi
 	}
 
 	c.Logger.Trace(correlationId, "Retrieved %d items", len(results))
+	//W!
 	for i := 0; i < len(results); i++ {
 		results[i] = CloneObject(results[i])
 	}
@@ -318,7 +321,7 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 	var item interface{} = nil
 	if len(items) > 0 {
 		item = CloneObject(items[0])
-		result = CloneObject(item)
+		//result = CloneObject(item)
 	}
 	if item != nil {
 		c.Logger.Trace(correlationId, "Retrieved item %s", id)
@@ -326,7 +329,8 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 		c.Logger.Trace(correlationId, "Cannot find item by %s", id)
 	}
 
-	return result, err
+	//return result, err
+	return item, err
 }
 
 // Get index by "Id" field
