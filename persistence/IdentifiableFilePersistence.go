@@ -108,7 +108,7 @@ func NewIdentifiableFilePersistence(prototype reflect.Type, persister *JsonFileP
 // Configures component by passing configuration parameters.
 // Parameters:
 // 		- config    configuration parameters to be set.
-func (c *IdentifiableFilePersistence) Configure(config config.ConfigParams) {
+func (c *IdentifiableFilePersistence) Configure(config *config.ConfigParams) {
 	c.Configure(config)
 	c.Persister.Configure(config)
 }

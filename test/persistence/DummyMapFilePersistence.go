@@ -24,7 +24,7 @@ func NewDummyMapFilePersistence(path string) *DummyMapFilePersistence {
 	return c
 }
 
-func (c *DummyMapFilePersistence) Configure(config cconf.ConfigParams) {
+func (c *DummyMapFilePersistence) Configure(config *cconf.ConfigParams) {
 	c.DummyMapMemoryPersistence.Configure(config)
 	c.persister.Configure(config)
 }

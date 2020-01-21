@@ -18,7 +18,7 @@ func NewDummyMapMemoryPersistence() *DummyMapMemoryPersistence {
 	return &DummyMapMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto)}
 }
 
-func (c *DummyMapMemoryPersistence) fromIds(ids []string]) []interface{} {
+func (c *DummyMapMemoryPersistence) fromIds(ids []string) []interface{} {
 	result := make([]interface{}, len(ids))
 	for i, v := range ids {
 		result[i] = v
@@ -39,7 +39,7 @@ func (c *DummyMapMemoryPersistence) toPublicArray(values []interface{}) []map[st
 		return nil
 	}
 
-	result = make([]map[string]interface{}, len(values))
+	result := make([]map[string]interface{}, len(values))
 	for i, v := range values {
 		result[i] = c.toPublic(v)
 	}
@@ -86,7 +86,7 @@ func (c *DummyMapMemoryPersistence) Update(correlationId string, item map[string
 	return result, err
 }
 
-func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (result map[string]interface{}, err error) {
+func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id string, data *cdata.AnyValueMap) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.UpdatePartially(correlationId, id, data)
 	result = c.toPublic(value)
 	return result, err

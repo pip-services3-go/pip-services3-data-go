@@ -99,9 +99,9 @@ func NewIdentifiableMemoryPersistence(prototype reflect.Type) (c *IdentifiableMe
 
 // Configures component by passing configuration parameters.
 // Parameters:
-// 		- config  config.ConfigParams
+// 		- config  *config.ConfigParams
 //		 configuration parameters to be set.
-func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
+func (c *IdentifiableMemoryPersistence) Configure(config *config.ConfigParams) {
 	c.MaxPageSize = config.GetAsIntegerWithDefault("options.max_page_size", c.MaxPageSize)
 }
 
@@ -113,7 +113,7 @@ func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
 //	     transaction id to trace execution through call chain.
 // 		- filter func(interface{}) bool
 //      (optional) a filter function to filter items
-// 		- paging cdata.PagingParams
+// 		- paging *cdata.PagingParams
 //      (optional) paging parameters
 // 		- sortFunc func(a, b interface{}) bool
 //      (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
@@ -122,7 +122,7 @@ func (c *IdentifiableMemoryPersistence) Configure(config config.ConfigParams) {
 // Return cdata.DataPage, error
 // data page or error.
 func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, filterFunc func(interface{}) bool,
-	paging cdata.PagingParams, sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (page cdata.DataPage, err error) {
+	paging *cdata.PagingParams, sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (page *cdata.DataPage, err error) {
 	c.Lock.RLock()
 	defer c.Lock.RUnlock()
 
@@ -148,7 +148,7 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 
 	// Extract a page
 	if &paging == nil {
-		paging = *cdata.NewEmptyPagingParams()
+		paging = cdata.NewEmptyPagingParams()
 	}
 	skip := paging.GetSkip(-1)
 	take := paging.GetTake((int64)(c.MaxPageSize))
@@ -176,7 +176,7 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 		items[i] = CloneObject(items[i])
 	}
 
-	page = *cdata.NewDataPage(&total, items)
+	page = cdata.NewDataPage(&total, items)
 	return page, nil
 }
 
@@ -440,7 +440,7 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 //      a map with fields to be updated.
 // Returns: interface{}, error
 // updated item or error.
-func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data cdata.AnyValueMap) (result interface{}, err error) {
+func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data *cdata.AnyValueMap) (result interface{}, err error) {
 	c.Lock.Lock()
 
 	index := c.getIndexById(id)

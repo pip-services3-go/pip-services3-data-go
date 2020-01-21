@@ -12,8 +12,8 @@ import (
 func TestJsonFilePersister(t *testing.T) {
 	var p interface{}
 	persistence := cpersist.NewJsonFilePersister(reflect.TypeOf(p), "")
-	persistence.Configure(*cconf.NewEmptyConfigParams())
+	persistence.Configure(cconf.NewEmptyConfigParams())
 	fileName := "../JsonFilePersisterTest"
-	persistence.Configure(*cconf.NewConfigParamsFromTuples("path", fileName))
+	persistence.Configure(cconf.NewConfigParamsFromTuples("path", fileName))
 	assert.Equal(t, fileName, persistence.Path())
 }

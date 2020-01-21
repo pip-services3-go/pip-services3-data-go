@@ -22,7 +22,7 @@ func NewDummyRefFilePersistence(path string) *DummyRefFilePersistence {
 	return c
 }
 
-func (c *DummyRefFilePersistence) Configure(config cconf.ConfigParams) {
+func (c *DummyRefFilePersistence) Configure(config *cconf.ConfigParams) {
 	c.DummyRefMemoryPersistence.Configure(config)
 	c.persister.Configure(config)
 }

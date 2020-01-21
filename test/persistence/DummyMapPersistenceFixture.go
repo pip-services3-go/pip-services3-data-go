@@ -45,7 +45,7 @@ func (c *DummyMapPersistenceFixture) TestCrudOperations(t *testing.T) {
 	assert.Equal(t, c.dummy2["Key"], dummy2["Key"])
 	assert.Equal(t, c.dummy2["Content"], dummy2["Content"])
 
-	page, errp := c.persistence.GetPageByFilter("", *cdata.NewEmptyFilterParams(), *cdata.NewEmptyPagingParams())
+	page, errp := c.persistence.GetPageByFilter("", cdata.NewEmptyFilterParams(), cdata.NewEmptyPagingParams())
 	if errp != nil {
 		t.Errorf("GetPageByFilter method error %v", err)
 	}
@@ -70,7 +70,7 @@ func (c *DummyMapPersistenceFixture) TestCrudOperations(t *testing.T) {
 	assert.Equal(t, dummy1["Content"], result["Content"])
 
 	// Partially update the dummy
-	updateMap := *cdata.NewAnyValueMapFromTuples("Content", "Partially Updated Content 1")
+	updateMap := cdata.NewAnyValueMapFromTuples("Content", "Partially Updated Content 1")
 	result, err = c.persistence.UpdatePartially("", dummy1["Id"].(string), updateMap)
 	if err != nil {
 		t.Errorf("UpdatePartially method error %v", err)
@@ -157,7 +157,7 @@ func (c *DummyMapPersistenceFixture) TestBatchOperations(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetListByIds method error %v", err)
 	}
-	assert.NotNil(t, items)
+	assert.Nil(t, items)
 	assert.Len(t, items, 0)
 
 }

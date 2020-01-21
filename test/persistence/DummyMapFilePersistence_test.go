@@ -18,7 +18,7 @@ func TestDummyMapFilePersistence(t *testing.T) {
 	f.Close()
 
 	persistence := NewDummyMapFilePersistence(filename)
-	persistence.Configure(*cconf.NewEmptyConfigParams())
+	persistence.Configure(cconf.NewEmptyConfigParams())
 
 	defer persistence.Close("")
 

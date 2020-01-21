@@ -81,6 +81,6 @@ func NewFilePersistence(prototype reflect.Type, persister *JsonFilePersister) *F
 
 // Configures component by passing configuration parameters.
 // 		- config    configuration parameters to be set.
-func (c *FilePersistence) Configure(conf config.ConfigParams) {
+func (c *FilePersistence) Configure(conf *config.ConfigParams) {
 	c.Persister.Configure(conf)
 }

@@ -59,7 +59,7 @@ func (c *DummyMemoryPersistence) Update(correlationId string, item Dummy) (resul
 	return result, err
 }
 
-func (c *DummyMemoryPersistence) UpdatePartially(correlationId string, id string, data cdata.AnyValueMap) (item Dummy, err error) {
+func (c *DummyMemoryPersistence) UpdatePartially(correlationId string, id string, data *cdata.AnyValueMap) (item Dummy, err error) {
 	result, err := c.IdentifiableMemoryPersistence.UpdatePartially(correlationId, id, data)
 
 	if result != nil {
@@ -86,10 +86,10 @@ func (c *DummyMemoryPersistence) DeleteByIds(correlationId string, ids []string)
 	return c.IdentifiableMemoryPersistence.DeleteByIds(correlationId, convIds)
 }
 
-func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter cdata.FilterParams, paging cdata.PagingParams) (page DummyPage, err error) {
+func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter *cdata.FilterParams, paging *cdata.PagingParams) (page *DummyPage, err error) {
 
 	if &filter == nil {
-		filter = *cdata.NewEmptyFilterParams()
+		filter = cdata.NewEmptyFilterParams()
 	}
 
 	key := filter.GetAsNullableString("Key")
@@ -112,6 +112,6 @@ func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter cd
 	for i, v := range tempPage.Data {
 		data[i] = v.(Dummy)
 	}
-	page = *NewDummyPage(&dataLen, data)
+	page = NewDummyPage(&dataLen, data)
 	return page, err
 }

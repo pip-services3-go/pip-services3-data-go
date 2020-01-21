@@ -63,7 +63,7 @@ func (c *JsonFilePersister) SetPath(value string) {
 // Parameters:
 //		- config  config.ConfigParams
 //		parameters to be set.
-func (c *JsonFilePersister) Configure(config config.ConfigParams) {
+func (c *JsonFilePersister) Configure(config *config.ConfigParams) {
 	c.path = config.GetAsStringWithDefault("path", c.path)
 }
 

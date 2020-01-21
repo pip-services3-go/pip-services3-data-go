@@ -8,7 +8,7 @@ import (
 
 func TestDummyMapMemoryPersistence(t *testing.T) {
 	persister := NewDummyMapMemoryPersistence()
-	persister.Configure(*cconf.NewEmptyConfigParams())
+	persister.Configure(cconf.NewEmptyConfigParams())
 
 	fixture := NewDummyMapPersistenceFixture(persister)
 
