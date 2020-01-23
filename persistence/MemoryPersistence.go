@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/pip-services3-go/pip-services3-commons-go/v3/convert"
-	"github.com/pip-services3-go/pip-services3-commons-go/v3/refer"
-	"github.com/pip-services3-go/pip-services3-components-go/v3/log"
+	"github.com/pip-services3-go/pip-services3-commons-go/convert"
+	"github.com/pip-services3-go/pip-services3-commons-go/refer"
+	"github.com/pip-services3-go/pip-services3-components-go/log"
 )
 
 /*

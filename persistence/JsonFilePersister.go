@@ -5,9 +5,9 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/pip-services3-go/pip-services3-commons-go/v3/config"
-	"github.com/pip-services3-go/pip-services3-commons-go/v3/convert"
-	"github.com/pip-services3-go/pip-services3-commons-go/v3/errors"
+	"github.com/pip-services3-go/pip-services3-commons-go/config"
+	"github.com/pip-services3-go/pip-services3-commons-go/convert"
+	"github.com/pip-services3-go/pip-services3-commons-go/errors"
 )
 
 /*

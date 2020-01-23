@@ -6,10 +6,10 @@ import (
 	"sort"
 	"time"
 
-	"github.com/pip-services3-go/pip-services3-commons-go/v3/config"
-	cdata "github.com/pip-services3-go/pip-services3-commons-go/v3/data"
-	refl "github.com/pip-services3-go/pip-services3-commons-go/v3/reflect"
-	"github.com/pip-services3-go/pip-services3-components-go/v3/log"
+	"github.com/pip-services3-go/pip-services3-commons-go/config"
+	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
+	refl "github.com/pip-services3-go/pip-services3-commons-go/reflect"
+	"github.com/pip-services3-go/pip-services3-components-go/log"
 )
 
 /*
