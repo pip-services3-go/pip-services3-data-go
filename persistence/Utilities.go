@@ -241,3 +241,51 @@ func CompareValues(value1 interface{}, value2 interface{}) bool {
 	// Todo: Implement proper comparison
 	return value1 == value2
 }
+
+// Convert methods
+
+// FromIds method convert ids string array to array of interface{} object
+// Parameters:
+// - ids - []string
+//   array of ids
+// Return []interface{}
+// array of ids
+func FromIds(ids []string) []interface{} {
+	result := make([]interface{}, len(ids))
+	for i, v := range ids {
+		result[i] = v
+	}
+	return result
+}
+
+// ToPublicMap method convert interface{} object to map[string]interface{}
+// Parameters
+// - value - interface{}
+// 	input object to convert
+// Return map[string]interface{}
+// converted object to map
+func ToPublicMap(value interface{}) map[string]interface{} {
+	if value != nil {
+		result, _ := value.(map[string]interface{})
+		return result
+	}
+	return nil
+}
+
+// ToPublicArray method convert array of interface{} object to array of map[string]interface{}
+// Parameters
+// - value - []interface{}
+// 	input object to convert
+// Return []map[string]interface{}
+// converted map array
+func ToPublicArray(values []interface{}) []map[string]interface{} {
+	if values == nil {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, len(values))
+	for i, v := range values {
+		result[i] = ToPublicMap(v)
+	}
+	return result
+}

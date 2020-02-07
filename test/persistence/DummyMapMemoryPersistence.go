@@ -1,9 +1,10 @@
 package test_persistence
 
 import (
+	"reflect"
+
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
 	cpersist "github.com/pip-services3-go/pip-services3-data-go/persistence"
-	"reflect"
 )
 
 // extends IdentifiableMemoryPersistence<DummyMap, string>
@@ -18,34 +19,6 @@ func NewDummyMapMemoryPersistence() *DummyMapMemoryPersistence {
 	return &DummyMapMemoryPersistence{*cpersist.NewIdentifiableMemoryPersistence(proto)}
 }
 
-func (c *DummyMapMemoryPersistence) fromIds(ids []string) []interface{} {
-	result := make([]interface{}, len(ids))
-	for i, v := range ids {
-		result[i] = v
-	}
-	return result
-}
-
-func (c *DummyMapMemoryPersistence) toPublic(value interface{}) map[string]interface{} {
-	if value != nil {
-		result, _ := value.(map[string]interface{})
-		return result
-	}
-	return nil
-}
-
-func (c *DummyMapMemoryPersistence) toPublicArray(values []interface{}) []map[string]interface{} {
-	if values == nil {
-		return nil
-	}
-
-	result := make([]map[string]interface{}, len(values))
-	for i, v := range values {
-		result[i] = c.toPublic(v)
-	}
-	return result
-}
-
 func (c *DummyMapMemoryPersistence) toPublicPage(page *cdata.DataPage) *MapPage {
 	if page == nil {
 		return nil
@@ -54,7 +27,7 @@ func (c *DummyMapMemoryPersistence) toPublicPage(page *cdata.DataPage) *MapPage 
 	dataLen := int64(len(page.Data))
 	data := make([]map[string]interface{}, dataLen)
 	for i, v := range page.Data {
-		data[i] = c.toPublic(v)
+		data[i] = cpersist.ToPublicMap(v)
 	}
 	dataPage := NewMapPage(&dataLen, data)
 
@@ -63,43 +36,43 @@ func (c *DummyMapMemoryPersistence) toPublicPage(page *cdata.DataPage) *MapPage 
 
 func (c *DummyMapMemoryPersistence) Create(correlationId string, item map[string]interface{}) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Create(correlationId, item)
-	result = c.toPublic(value)
+	result = cpersist.ToPublicMap(value)
 	return result, err
 }
 
 func (c *DummyMapMemoryPersistence) GetListByIds(correlationId string, ids []string) (result []map[string]interface{}, err error) {
-	convIds := c.fromIds(ids)
+	convIds := cpersist.FromIds(ids)
 	values, err := c.IdentifiableMemoryPersistence.GetListByIds(correlationId, convIds)
-	result = c.toPublicArray(values)
+	result = cpersist.ToPublicArray(values)
 	return result, err
 }
 
 func (c *DummyMapMemoryPersistence) GetOneById(correlationId string, id string) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.GetOneById(correlationId, id)
-	result = c.toPublic(value)
+	result = cpersist.ToPublicMap(value)
 	return result, err
 }
 
 func (c *DummyMapMemoryPersistence) Update(correlationId string, item map[string]interface{}) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Update(correlationId, item)
-	result = c.toPublic(value)
+	result = cpersist.ToPublicMap(value)
 	return result, err
 }
 
 func (c *DummyMapMemoryPersistence) UpdatePartially(correlationId string, id string, data *cdata.AnyValueMap) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.UpdatePartially(correlationId, id, data)
-	result = c.toPublic(value)
+	result = cpersist.ToPublicMap(value)
 	return result, err
 }
 
 func (c *DummyMapMemoryPersistence) DeleteById(correlationId string, id string) (result map[string]interface{}, err error) {
 	value, err := c.IdentifiableMemoryPersistence.DeleteById(correlationId, id)
-	result = c.toPublic(value)
+	result = cpersist.ToPublicMap(value)
 	return result, err
 }
 
 func (c *DummyMapMemoryPersistence) DeleteByIds(correlationId string, ids []string) (err error) {
-	convIds := c.fromIds(ids)
+	convIds := cpersist.FromIds(ids)
 	return c.IdentifiableMemoryPersistence.DeleteByIds(correlationId, convIds)
 }
 
