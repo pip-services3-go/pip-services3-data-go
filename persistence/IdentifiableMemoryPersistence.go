@@ -173,7 +173,8 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 	c.Logger.Trace(correlationId, "Retrieved %d items", len(items))
 	// W!
 	for i := 0; i < len(items); i++ {
-		items[i] = CloneObject(items[i])
+		//items[i] = CloneObject(items[i])
+		items[i] = CloneObjectForResult(items[i], c.Prototype)
 	}
 
 	page = cdata.NewDataPage(&total, items)
@@ -226,7 +227,8 @@ func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, fi
 	c.Logger.Trace(correlationId, "Retrieved %d items", len(results))
 	//W!
 	for i := 0; i < len(results); i++ {
-		results[i] = CloneObject(results[i])
+		//results[i] = CloneObject(results[i])
+		results[i] = CloneObjectForResult(results[i], c.Prototype)
 	}
 	return results, nil
 }
@@ -293,8 +295,8 @@ func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filte
 	} else {
 		c.Logger.Trace(correlationId, "Nothing to return as random item")
 	}
-
-	result = CloneObject(item)
+	//result = CloneObject(item)
+	result = CloneObjectForResult(item, c.Prototype)
 	return result, nil
 }
 
@@ -320,16 +322,14 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 
 	var item interface{} = nil
 	if len(items) > 0 {
-		item = CloneObject(items[0])
-		//result = CloneObject(item)
+		//item = CloneObject(items[0])
+		item = CloneObjectForResult(items[0], c.Prototype)
 	}
 	if item != nil {
 		c.Logger.Trace(correlationId, "Retrieved item %s", id)
 	} else {
 		c.Logger.Trace(correlationId, "Cannot find item by %s", id)
 	}
-
-	//return result, err
 	return item, err
 }
 
@@ -367,7 +367,8 @@ func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interf
 	c.Logger.Trace(correlationId, "Created item %s", id)
 
 	errsave := c.Save(correlationId)
-	result = CloneObject(newItem)
+	result = CloneObjectForResult(newItem, c.Prototype)
+
 	return result, errsave
 }
 
@@ -398,7 +399,8 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 	c.Logger.Trace(correlationId, "Set item %s", id)
 
 	errsav := c.Save(correlationId)
-	result = CloneObject(newItem)
+	//result = CloneObject(newItem)
+	result = CloneObjectForResult(newItem, c.Prototype)
 	return result, errsav
 }
 
@@ -426,7 +428,8 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 	c.Logger.Trace(correlationId, "Updated item %s", id)
 
 	errsave := c.Save(correlationId)
-	result = CloneObject(newItem)
+	//result = CloneObject(newItem)
+	result = CloneObjectForResult(newItem, c.Prototype)
 	return result, errsave
 }
 
@@ -467,7 +470,8 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 	c.Logger.Trace(correlationId, "Partially updated item %s", id)
 
 	errsave := c.Save(correlationId)
-	result = CloneObject(newItem)
+	//result = CloneObject(newItem)
+	result = CloneObjectForResult(newItem, c.Prototype)
 	return result, errsave
 }
 
@@ -500,7 +504,8 @@ func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id inte
 	c.Logger.Trace(correlationId, "Deleted item by %s", id)
 
 	errsave := c.Save(correlationId)
-	result = CloneObject(oldItem)
+	//result = CloneObject(oldItem)
+	result = CloneObjectForResult(oldItem, c.Prototype)
 	return result, errsave
 }
 

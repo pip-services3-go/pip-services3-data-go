@@ -217,14 +217,43 @@ func CloneObject(item interface{}) interface{} {
 			v := itemValue.MapIndex(k)
 			newMap.SetMapIndex(k, v)
 		}
-		// inflate map
-		typePointer := reflect.New(itemType)
-		typePointer.Elem().Set(newMap)
-		interfacePointer := typePointer.Interface()
-		dest = reflect.ValueOf(interfacePointer).Elem().Interface()
+		dest = newMap.Interface()
 
 	} else {
 		copier.Copy(&dest, &src)
+	}
+	return dest
+}
+
+// CloneObjectForResult is clones object for result function
+// Parameters:
+// 	- item interface{}
+// 	an object to clone
+//	-proto reflect.Type
+//	type of returned value, need for detect object or pointer returned type
+// Return interface{}
+// copy of input item
+func CloneObjectForResult(src interface{}, proto reflect.Type) interface{} {
+	var dest interface{}
+	if reflect.ValueOf(src).Kind() == reflect.Map {
+		itemType := reflect.TypeOf(src)
+		itemValue := reflect.ValueOf(src)
+		mapType := reflect.MapOf(itemType.Key(), itemType.Elem())
+		newMap := reflect.MakeMap(mapType)
+		for _, k := range itemValue.MapKeys() {
+			v := itemValue.MapIndex(k)
+			newMap.SetMapIndex(k, v)
+		}
+		dest = newMap.Interface()
+
+	} else {
+		copier.Copy(&dest, &src)
+	}
+	// make pointer on clone object, if proto is ptr
+	if proto.Kind() == reflect.Ptr {
+		newPtr := reflect.New(proto.Elem())
+		newPtr.Elem().Set(reflect.ValueOf(dest))
+		return newPtr.Interface()
 	}
 	return dest
 }

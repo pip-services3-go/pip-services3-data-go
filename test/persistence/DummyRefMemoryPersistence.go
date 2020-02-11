@@ -1,9 +1,10 @@
 package test_persistence
 
 import (
+	"reflect"
+
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
 	cpersist "github.com/pip-services3-go/pip-services3-data-go/persistence"
-	"reflect"
 )
 
 // extends IdentifiableMemoryPersistence<Dummy, string>
@@ -22,8 +23,8 @@ func (c *DummyRefMemoryPersistence) Create(correlationId string, item *Dummy) (r
 	value, err := c.IdentifiableMemoryPersistence.Create(correlationId, item)
 
 	if value != nil {
-		val, _ := value.(Dummy)
-		result = &val
+		val, _ := value.(*Dummy)
+		result = val
 	}
 	return result, err
 }
@@ -36,8 +37,8 @@ func (c *DummyRefMemoryPersistence) GetListByIds(correlationId string, ids []str
 	result, err := c.IdentifiableMemoryPersistence.GetListByIds(correlationId, convIds)
 	items = make([]*Dummy, len(result))
 	for i, v := range result {
-		val, _ := v.(Dummy)
-		items[i] = &val
+		val, _ := v.(*Dummy)
+		items[i] = val
 	}
 	return items, err
 }
@@ -45,8 +46,8 @@ func (c *DummyRefMemoryPersistence) GetListByIds(correlationId string, ids []str
 func (c *DummyRefMemoryPersistence) GetOneById(correlationId string, id string) (item *Dummy, err error) {
 	result, err := c.IdentifiableMemoryPersistence.GetOneById(correlationId, id)
 	if result != nil {
-		val, _ := result.(Dummy)
-		item = &val
+		val, _ := result.(*Dummy)
+		item = val
 	}
 	return item, err
 }
@@ -54,8 +55,8 @@ func (c *DummyRefMemoryPersistence) GetOneById(correlationId string, id string) 
 func (c *DummyRefMemoryPersistence) Update(correlationId string, item *Dummy) (result *Dummy, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Update(correlationId, item)
 	if value != nil {
-		val, _ := value.(Dummy)
-		result = &val
+		val, _ := value.(*Dummy)
+		result = val
 	}
 	return result, err
 }
@@ -64,8 +65,8 @@ func (c *DummyRefMemoryPersistence) UpdatePartially(correlationId string, id str
 	result, err := c.IdentifiableMemoryPersistence.UpdatePartially(correlationId, id, data)
 
 	if result != nil {
-		val, _ := result.(Dummy)
-		item = &val
+		val, _ := result.(*Dummy)
+		item = val
 	}
 	return item, err
 }
@@ -73,8 +74,8 @@ func (c *DummyRefMemoryPersistence) UpdatePartially(correlationId string, id str
 func (c *DummyRefMemoryPersistence) DeleteById(correlationId string, id string) (item *Dummy, err error) {
 	result, err := c.IdentifiableMemoryPersistence.DeleteById(correlationId, id)
 	if result != nil {
-		val, _ := result.(Dummy)
-		item = &val
+		val, _ := result.(*Dummy)
+		item = val
 	}
 	return item, err
 }
@@ -111,8 +112,8 @@ func (c *DummyRefMemoryPersistence) GetPageByFilter(correlationId string, filter
 	dataLen := int64(len(tempPage.Data)) // For full release tempPage and delete this by GC
 	data := make([]*Dummy, dataLen)
 	for i := range tempPage.Data {
-		temp := tempPage.Data[i].(Dummy)
-		data[i] = &temp
+		temp := tempPage.Data[i].(*Dummy)
+		data[i] = temp
 	}
 	page = NewDummyRefPage(&dataLen, data)
 	return page, err
