@@ -1,9 +1,10 @@
 package test_persistence
 
 import (
+	"reflect"
+
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
 	cpersist "github.com/pip-services3-go/pip-services3-data-go/persistence"
-	"reflect"
 )
 
 // extends IdentifiableMemoryPersistence
@@ -19,7 +20,6 @@ func NewDummyMemoryPersistence() *DummyMemoryPersistence {
 
 func (c *DummyMemoryPersistence) Create(correlationId string, item Dummy) (result Dummy, err error) {
 	value, err := c.IdentifiableMemoryPersistence.Create(correlationId, item)
-
 	if value != nil {
 		val, _ := value.(Dummy)
 		result = val

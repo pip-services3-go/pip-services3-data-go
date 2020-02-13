@@ -174,9 +174,10 @@ func (c *MemoryPersistence) Save(correlationId string) error {
 //  Returns error or null no errors occured.
 func (c *MemoryPersistence) Clear(correlationId string) error {
 	c.Lock.Lock()
-	defer c.Lock.Unlock()
 
 	c.Items = make([]interface{}, 0, 5)
 	c.Logger.Trace(correlationId, "Cleared items")
+
+	c.Lock.Unlock()
 	return c.Save(correlationId)
 }
