@@ -147,7 +147,7 @@ func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, fi
 	}
 
 	// Extract a page
-	if &paging == nil {
+	if paging == nil {
 		paging = cdata.NewEmptyPagingParams()
 	}
 	skip := paging.GetSkip(-1)
