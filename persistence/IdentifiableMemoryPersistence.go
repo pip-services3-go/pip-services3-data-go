@@ -580,7 +580,7 @@ func (c *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []
 //      (optional) a filter function to filter items
 // Return int, error
 // data count or error.
-func (c *IdentifiableMemoryPersistence) GetCountByFilter(correlationId string, filterFunc func(interface{}) bool) (count int, err error) {
+func (c *IdentifiableMemoryPersistence) GetCountByFilter(correlationId string, filterFunc func(interface{}) bool) (count int64, err error) {
 	c.Lock.RLock()
 	defer c.Lock.RUnlock()
 

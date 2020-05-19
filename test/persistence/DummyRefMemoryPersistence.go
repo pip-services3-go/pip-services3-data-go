@@ -119,7 +119,7 @@ func (c *DummyRefMemoryPersistence) GetPageByFilter(correlationId string, filter
 	return page, err
 }
 
-func (c *DummyRefMemoryPersistence) GetCountByFilter(correlationId string, filter *cdata.FilterParams) (count int, err error) {
+func (c *DummyRefMemoryPersistence) GetCountByFilter(correlationId string, filter *cdata.FilterParams) (count int64, err error) {
 
 	if &filter == nil {
 		filter = cdata.NewEmptyFilterParams()

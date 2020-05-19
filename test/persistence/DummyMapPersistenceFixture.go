@@ -62,7 +62,7 @@ func (c *DummyMapPersistenceFixture) TestCrudOperations(t *testing.T) {
 	// Get count
 	count, errc := c.persistence.GetCountByFilter("", cdata.NewEmptyFilterParams())
 	assert.Nil(t, errc)
-	assert.Equal(t, count, 2)
+	assert.Equal(t, count, int64(2))
 
 	// Update the dummy
 	dummy1["Content"] = "Updated Content 1"

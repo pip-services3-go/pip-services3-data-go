@@ -105,7 +105,7 @@ func (c *DummyMapMemoryPersistence) GetPageByFilter(correlationId string, filter
 	return result, err
 }
 
-func (c *DummyMapMemoryPersistence) GetCountByFilter(correlationId string, filter *cdata.FilterParams) (count int, err error) {
+func (c *DummyMapMemoryPersistence) GetCountByFilter(correlationId string, filter *cdata.FilterParams) (count int64, err error) {
 	if &filter == nil {
 		filter = cdata.NewEmptyFilterParams()
 	}
