@@ -115,3 +115,21 @@ func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter *c
 	page = NewDummyPage(&dataLen, data)
 	return page, err
 }
+
+func (c *DummyMemoryPersistence) GetCountByFilter(correlationId string, filter *cdata.FilterParams) (count int, err error) {
+
+	if &filter == nil {
+		filter = cdata.NewEmptyFilterParams()
+	}
+
+	key := filter.GetAsNullableString("Key")
+
+	count, err = c.IdentifiableMemoryPersistence.GetCountByFilter(correlationId, func(item interface{}) bool {
+		dummy, ok := item.(Dummy)
+		if *key != "" && ok && dummy.Key != *key {
+			return false
+		}
+		return true
+	})
+	return count, err
+}

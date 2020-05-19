@@ -1,9 +1,10 @@
 package test_persistence
 
 import (
+	"testing"
+
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 type DummyPersistenceFixture struct {
@@ -57,6 +58,11 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 	assert.Equal(t, item1.Key, dummy2.Key)
 	item2 := page.Data[1]
 	assert.Equal(t, item2.Key, dummy1.Key)
+
+	// Get count
+	count, errc := c.persistence.GetCountByFilter("", cdata.NewEmptyFilterParams())
+	assert.Nil(t, errc)
+	assert.Equal(t, count, 2)
 
 	// Update the dummy
 	dummy1.Content = "Updated Content 1"

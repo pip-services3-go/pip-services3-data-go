@@ -569,3 +569,37 @@ func (c *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []
 
 	return c.DeleteByFilter(correlationId, filterFunc)
 }
+
+// Gets a page of data items retrieved by a given filter and sorted according to sort parameters.
+// cmethod shall be called by a func (imp* IdentifiableMemoryPersistence) getPageByFilter method from child struct that
+// receives FilterParams and converts them into a filter function.
+// Parameters:
+// 		- correlationId string
+//	     transaction id to trace execution through call chain.
+// 		- filter func(interface{}) bool
+//      (optional) a filter function to filter items
+// 		- paging *cdata.PagingParams
+//      (optional) paging parameters
+// 		- sortFunc func(a, b interface{}) bool
+//      (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
+// 		- selectFunc func(in interface{}) (out interface{})
+//      (optional) projection parameters
+// Return cdata.DataPage, error
+// data page or error.
+func (c *IdentifiableMemoryPersistence) GetCountByFilter(correlationId string, filterFunc func(interface{}) bool) (count int, err error) {
+	c.Lock.RLock()
+	defer c.Lock.RUnlock()
+
+	// Apply filtering
+	if filterFunc != nil {
+		for _, v := range c.Items {
+			if filterFunc(v) {
+				count++
+			}
+		}
+	} else {
+		count = 0
+	}
+	c.Logger.Trace(correlationId, "Find %d items", count)
+	return count, nil
+}
