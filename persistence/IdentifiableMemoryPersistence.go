@@ -1,10 +1,7 @@
 package persistence
 
 import (
-	"math/rand"
 	"reflect"
-	"sort"
-	"time"
 
 	"github.com/pip-services3-go/pip-services3-commons-go/config"
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
@@ -80,7 +77,6 @@ type MyMemoryPersistence struct{
 // extends MemoryPersistence  implements IConfigurable, IWriter, IGetter, ISetter
 type IdentifiableMemoryPersistence struct {
 	MemoryPersistence
-	MaxPageSize int
 }
 
 // Creates a new empty instance of the persistence.
@@ -105,134 +101,6 @@ func (c *IdentifiableMemoryPersistence) Configure(config *config.ConfigParams) {
 	c.MaxPageSize = config.GetAsIntegerWithDefault("options.max_page_size", c.MaxPageSize)
 }
 
-// Gets a page of data items retrieved by a given filter and sorted according to sort parameters.
-// cmethod shall be called by a func (imp* IdentifiableMemoryPersistence) getPageByFilter method from child struct that
-// receives FilterParams and converts them into a filter function.
-// Parameters:
-// 		- correlationId string
-//	     transaction id to trace execution through call chain.
-// 		- filter func(interface{}) bool
-//      (optional) a filter function to filter items
-// 		- paging *cdata.PagingParams
-//      (optional) paging parameters
-// 		- sortFunc func(a, b interface{}) bool
-//      (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
-// 		- selectFunc func(in interface{}) (out interface{})
-//      (optional) projection parameters
-// Return cdata.DataPage, error
-// data page or error.
-func (c *IdentifiableMemoryPersistence) GetPageByFilter(correlationId string, filterFunc func(interface{}) bool,
-	paging *cdata.PagingParams, sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (page *cdata.DataPage, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	var items []interface{}
-
-	// Apply filtering
-	if filterFunc != nil {
-		for _, v := range c.Items {
-			if filterFunc(v) {
-				items = append(items, v)
-			}
-		}
-	} else {
-		items = make([]interface{}, len(c.Items))
-		copy(items, c.Items)
-	}
-
-	// Apply sorting
-	if sortFunc != nil {
-		localSort := sorter{items: items, compFunc: sortFunc}
-		sort.Sort(localSort)
-	}
-
-	// Extract a page
-	if paging == nil {
-		paging = cdata.NewEmptyPagingParams()
-	}
-	skip := paging.GetSkip(-1)
-	take := paging.GetTake((int64)(c.MaxPageSize))
-	var total int64
-	if paging.Total {
-		total = (int64)(len(items))
-	}
-	if skip > 0 {
-		items = items[skip:]
-	}
-	if (int64)(len(items)) >= take {
-		items = items[:take]
-	}
-
-	// Get projection
-	if selectFunc != nil {
-		for i, v := range items {
-			items[i] = selectFunc(v)
-		}
-	}
-
-	c.Logger.Trace(correlationId, "Retrieved %d items", len(items))
-	// W!
-	for i := 0; i < len(items); i++ {
-		//items[i] = CloneObject(items[i])
-		items[i] = CloneObjectForResult(items[i], c.Prototype)
-	}
-
-	page = cdata.NewDataPage(&total, items)
-	return page, nil
-}
-
-// Gets a list of data items retrieved by a given filter and sorted according to sort parameters.
-// This method shall be called by a func (c * IdentifiableMemoryPersistence) GetListByFilter method from child struct that
-// receives FilterParams and converts them into a filter function.
-// Parameters:
-// 		- correlationId string
-//      (optional) transaction id to trace execution through call chain.
-// 		- filter func(interface{}) bool
-//      (optional) a filter function to filter items
-// 		- sortFunc func(a, b interface{}) bool
-//      (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
-// 		- selectFunc func(in interface{}) (out interface{})
-//      (optional) projection parameters
-// Returns  []interface{},  error
-// array of items and error
-func (c *IdentifiableMemoryPersistence) GetListByFilter(correlationId string, filterFunc func(interface{}) bool,
-	sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (results []interface{}, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	// Apply filter
-	if filterFunc != nil {
-		for _, v := range c.Items {
-			if filterFunc(v) {
-				results = append(results, v)
-			}
-		}
-	} else {
-		copy(results, c.Items)
-	}
-
-	// Apply sorting
-	if sortFunc != nil {
-		localSort := sorter{items: results, compFunc: sortFunc}
-		sort.Sort(localSort)
-	}
-
-	// Get projection
-	if selectFunc != nil {
-		for i, v := range results {
-			results[i] = selectFunc(v)
-		}
-	}
-
-	c.Logger.Trace(correlationId, "Retrieved %d items", len(results))
-	//W!
-	for i := 0; i < len(results); i++ {
-		//results[i] = CloneObject(results[i])
-		results[i] = CloneObjectForResult(results[i], c.Prototype)
-	}
-	return results, nil
-}
-
 // Gets a list of data items retrieved by given unique ids.
 // Parameters:
 // 		- correlationId string
@@ -255,49 +123,6 @@ func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids [
 		return exist
 	}
 	return c.GetListByFilter(correlationId, filter, nil, nil)
-}
-
-// Gets a random item from items that match to a given filter.
-// This method shall be called by a func (c* IdentifiableMemoryPersistence) GetOneRandom method from child type that
-// receives FilterParams and converts them into a filter function.
-// Parameters:
-// 		- correlationId string
-//     (optional) transaction id to trace execution through call chain.
-// 		- filter   func(interface{}) bool
-//     (optional) a filter function to filter items.
-// Returns: interface{}, error
-// random item or error.
-func (c *IdentifiableMemoryPersistence) GetOneRandom(correlationId string, filterFunc func(interface{}) bool) (result interface{}, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	var items []interface{}
-
-	// Apply filter
-	if filterFunc != nil {
-		for _, v := range c.Items {
-			if filterFunc(v) {
-				items = append(items, v)
-			}
-		}
-	} else {
-		copy(items, c.Items)
-	}
-	rand.Seed(time.Now().UnixNano())
-
-	var item interface{} = nil
-	if len(items) > 0 {
-		item = items[rand.Intn(len(items))]
-	}
-
-	if item != nil {
-		c.Logger.Trace(correlationId, "Retrieved a random item")
-	} else {
-		c.Logger.Trace(correlationId, "Nothing to return as random item")
-	}
-	//result = CloneObject(item)
-	result = CloneObjectForResult(item, c.Prototype)
-	return result, nil
 }
 
 // Gets a data item by its unique id.
@@ -509,43 +334,6 @@ func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id inte
 	return result, errsave
 }
 
-// Deletes data items that match to a given filter.
-// this method shall be called by a func (c* IdentifiableMemoryPersistence) DeleteByFilter method from child struct that
-// receives FilterParams and converts them into a filter function.
-// Parameters:
-// 		- correlationId  string
-//		(optional) transaction id to trace execution through call chain.
-// 		- filter  filter func(interface{}) bool
-//      (optional) a filter function to filter items.
-// Retruns: error
-// error or nil for success.
-func (c *IdentifiableMemoryPersistence) DeleteByFilter(correlationId string, filterFunc func(interface{}) bool) (err error) {
-	c.Lock.Lock()
-
-	deleted := 0
-	for i := 0; i < len(c.Items); {
-		if filterFunc(c.Items[i]) {
-			if i == len(c.Items)-1 {
-				c.Items = c.Items[:i]
-			} else {
-				c.Items = append(c.Items[:i], c.Items[i+1:]...)
-			}
-			deleted++
-		} else {
-			i++
-		}
-	}
-	if deleted == 0 {
-		return nil
-	}
-
-	c.Lock.Unlock()
-	c.Logger.Trace(correlationId, "Deleted %s items", deleted)
-
-	errsave := c.Save(correlationId)
-	return errsave
-}
-
 // Deletes multiple data items by their unique ids.
 // Parameters:
 // 		- correlationId  string
@@ -568,32 +356,4 @@ func (c *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []
 	}
 
 	return c.DeleteByFilter(correlationId, filterFunc)
-}
-
-// Gets a count of data items retrieved by a given filter.
-// this method shall be called by a func (imp* IdentifiableMemoryPersistence) getCountByFilter method from child struct that
-// receives FilterParams and converts them into a filter function.
-// Parameters:
-// 		- correlationId string
-//	     transaction id to trace execution through call chain.
-// 		- filter func(interface{}) bool
-//      (optional) a filter function to filter items
-// Return int, error
-// data count or error.
-func (c *IdentifiableMemoryPersistence) GetCountByFilter(correlationId string, filterFunc func(interface{}) bool) (count int64, err error) {
-	c.Lock.RLock()
-	defer c.Lock.RUnlock()
-
-	// Apply filtering
-	if filterFunc != nil {
-		for _, v := range c.Items {
-			if filterFunc(v) {
-				count++
-			}
-		}
-	} else {
-		count = 0
-	}
-	c.Logger.Trace(correlationId, "Find %d items", count)
-	return count, nil
 }
