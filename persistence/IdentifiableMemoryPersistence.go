@@ -160,7 +160,7 @@ func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id inte
 
 // Get index by "Id" field
 // return index number
-func (c *IdentifiableMemoryPersistence) getIndexById(id interface{}) int {
+func (c *IdentifiableMemoryPersistence) GetIndexById(id interface{}) int {
 	var index int = -1
 	for i, v := range c.Items {
 		vId := GetObjectId(v)
@@ -213,7 +213,7 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 	GenerateObjectId(&newItem)
 
 	id := GetObjectId(item)
-	index := c.getIndexById(id)
+	index := c.GetIndexById(id)
 	if index < 0 {
 		c.Items = append(c.Items, newItem)
 	} else {
@@ -241,7 +241,7 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 	c.Lock.Lock()
 
 	id := GetObjectId(item)
-	index := c.getIndexById(id)
+	index := c.GetIndexById(id)
 	if index < 0 {
 		c.Logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
@@ -271,7 +271,7 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data *cdata.AnyValueMap) (result interface{}, err error) {
 	c.Lock.Lock()
 
-	index := c.getIndexById(id)
+	index := c.GetIndexById(id)
 	if index < 0 {
 		c.Logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
@@ -311,7 +311,7 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (result interface{}, err error) {
 	c.Lock.Lock()
 
-	index := c.getIndexById(id)
+	index := c.GetIndexById(id)
 	if index < 0 {
 		c.Logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
