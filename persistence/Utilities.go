@@ -46,10 +46,10 @@ func getValue(obj interface{}) interface{} {
 
 // Gets value of object property specified by its name.
 // Parameters:
-// 			- obj interface{}
-// 			an object to read property from.
-// 			- name string
-// 			a name of the property to get.
+//   - obj interface{}
+//   an object to read property from.
+//   - name string
+//   a name of the property to get.
 // Returns interface{}
 // the property value or null if property doesn't exist or introspection failed.
 func GetProperty(obj interface{}, name string) interface{} {
@@ -97,12 +97,12 @@ func GetProperty(obj interface{}, name string) interface{} {
 // Sets value of object property specified by its name.
 // If the property does not exist or introspection fails this method doesn't do anything and doesn't any throw errors.
 // Parameters:
-// 			- obj interface{}
-// 			an object to write property to.
-// 			name string
-// 			a name of the property to set.
-// 			- value interface{}
-// 			a new value for the property to set.
+//   - obj interface{}
+//   an object to write property to.
+//   name string
+//   a name of the property to set.
+//   - value interface{}
+//   a new value for the property to set.
 func SetProperty(obj interface{}, name string, value interface{}) {
 	if obj == nil || name == "" {
 		return
@@ -148,8 +148,8 @@ func SetProperty(obj interface{}, name string, value interface{}) {
 
 // Get object Id value
 // Parameters:
-// 			- item interface{}
-// 			an object to read property from.
+//   - item interface{}
+//   an object to read property from.
 // Returns interface{}
 // the property value or nil if property doesn't exist or introspection failed.
 func GetObjectId(item interface{}) interface{} {
@@ -159,10 +159,10 @@ func GetObjectId(item interface{}) interface{} {
 
 // SetObjectId is set object Id value
 // Parameters:
-// 			- item *interface{}
-// 			an pointer on object to set id property
-// 			- id interface{}
-//			id value for set
+//   - item *interface{}
+//   an pointer on object to set id property
+//   - id interface{}
+//   id value for set
 // Results saved in input object
 func SetObjectId(item *interface{}, id interface{}) {
 	value := *item
@@ -181,8 +181,8 @@ func SetObjectId(item *interface{}, id interface{}) {
 
 // GenerateObjectId is generates a new id value when it's empty
 // Parameters:
-// 			- item *interface{}
-// 			an pointer on object to set id property
+//   - item *interface{}
+//   an pointer on object to set id property
 // Results saved in input object
 func GenerateObjectId(item *interface{}) {
 	value := *item
@@ -198,8 +198,8 @@ func GenerateObjectId(item *interface{}) {
 
 // CloneObject is clones object function
 // Parameters:
-// 			- item interface{}
-// 			an object to clone
+//   - item interface{}
+//   an object to clone
 // Return interface{}
 // copy of input item
 func CloneObject(item interface{}) interface{} {
@@ -227,10 +227,10 @@ func CloneObject(item interface{}) interface{} {
 
 // CloneObjectForResult is clones object for result function
 // Parameters:
-// 	- item interface{}
-// 	an object to clone
-//	-proto reflect.Type
-//	type of returned value, need for detect object or pointer returned type
+// 	  - item interface{}
+// 	  an object to clone
+//	  -proto reflect.Type
+//	  type of returned value, need for detect object or pointer returned type
 // Return interface{}
 // copy of input item
 func CloneObjectForResult(src interface{}, proto reflect.Type) interface{} {
@@ -260,10 +260,10 @@ func CloneObjectForResult(src interface{}, proto reflect.Type) interface{} {
 
 // CompareValues are ompares two values
 // Parameters:
-// 			- value1 interface{}
-// 			an object one for compare
-// 			- value2 interface{}
-// 			an object two for compare
+//   - value1 interface{}
+//   an object one for compare
+//   - value2 interface{}
+//   an object two for compare
 // Return bool
 // true if value1 equal value2 and false otherwise
 func CompareValues(value1 interface{}, value2 interface{}) bool {
@@ -275,7 +275,7 @@ func CompareValues(value1 interface{}, value2 interface{}) bool {
 
 // FromIds method convert ids string array to array of interface{} object
 // Parameters:
-// - ids - []string
+//   - ids - []string
 //   array of ids
 // Return []interface{}
 // array of ids
@@ -289,8 +289,8 @@ func FromIds(ids []string) []interface{} {
 
 // ToPublicMap method convert interface{} object to map[string]interface{}
 // Parameters
-// - value - interface{}
-// 	input object to convert
+//   - value - interface{}
+//   input object to convert
 // Return map[string]interface{}
 // converted object to map
 func ToPublicMap(value interface{}) map[string]interface{} {
@@ -303,8 +303,8 @@ func ToPublicMap(value interface{}) map[string]interface{} {
 
 // ToPublicArray method convert array of interface{} object to array of map[string]interface{}
 // Parameters
-// - value - []interface{}
-// 	input object to convert
+//   - value - []interface{}
+//   input object to convert
 // Return []map[string]interface{}
 // converted map array
 func ToPublicArray(values []interface{}) []map[string]interface{} {

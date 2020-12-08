@@ -8,10 +8,10 @@ type ISetter interface {
 	// Sets a data item. If the data item exists it updates it,
 	// otherwise it create a new data item.
 	// Parameters:
-	// 		- correlation_id string
-	//	    transaction id to trace execution through call chain.
-	// 		- item  interface{}
-	//      a item to be set.
+	//   - correlation_id string
+	//   transaction id to trace execution through call chain.
+	//   - item  interface{}
+	//   a item to be set.
 	// Retruns interface{}, error
 	// updated item or error.
 	Set(correlation_id string, item interface{}) (value interface{}, err error)

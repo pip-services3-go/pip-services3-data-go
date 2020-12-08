@@ -19,7 +19,7 @@ func (s sorter) Len() int {
 
 // Make swap two items in array
 // Parameters:
-//	- i,j int
+//	 - i,j int
 //	indexes of array for swap
 func (s sorter) Swap(i, j int) {
 	s.items[i], s.items[j] = s.items[j], s.items[i]
@@ -27,8 +27,8 @@ func (s sorter) Swap(i, j int) {
 
 // Compare less function
 // Parameters:
-//	- i,j int
-//	indexes of array for compare
+//	 - i,j int
+//	 indexes of array for compare
 // Returns bool
 // true if items[i] < items[j] and false otherwise
 func (s sorter) Less(i, j int) bool {

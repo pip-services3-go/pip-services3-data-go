@@ -17,18 +17,18 @@ It is used by FilePersistence, but can be useful on its own.
 
  Configuration parameters
 
-- path:          path to the file where data is stored
+  - path:          path to the file where data is stored
 
  Example
 
-    persister := NewJsonFilePersister(reflect.TypeOf(MyData{}), "./data/data.json");
+  persister := NewJsonFilePersister(reflect.TypeOf(MyData{}), "./data/data.json");
 
-	err_sav := persister.Save("123", ["A", "B", "C"])
-	if err_sav == nil {
-		items, err_lod := persister.Load("123")
-		if err_lod == nil {
-			fmt.Println(items);// Result: ["A", "B", "C"]
-		}
+  err_sav := persister.Save("123", ["A", "B", "C"])
+  if err_sav == nil {
+  	items, err_lod := persister.Load("123")
+  	if err_lod == nil {
+  		fmt.Println(items);// Result: ["A", "B", "C"]
+  	}
 */
 // implements ILoader, ISaver, IConfigurable
 type JsonFilePersister struct {
@@ -38,8 +38,8 @@ type JsonFilePersister struct {
 
 // Creates a new instance of the persistence.
 // Parameters:
-//		- path  string
-//		(optional) a path to the file where data is stored.
+//  - path  string
+//  (optional) a path to the file where data is stored.
 func NewJsonFilePersister(prototype reflect.Type, path string) *JsonFilePersister {
 	var c = &JsonFilePersister{path: path, Prototype: prototype}
 	return c
@@ -53,24 +53,24 @@ func (c *JsonFilePersister) Path() string {
 
 // Sets the file path where data is stored.
 // Parameters:
-//		- value  string
-//	    the file path where data is stored.
+//  - value  string
+//  the file path where data is stored.
 func (c *JsonFilePersister) SetPath(value string) {
 	c.path = value
 }
 
 // Configures component by passing configuration parameters.
 // Parameters:
-//		- config  config.ConfigParams
-//		parameters to be set.
+//  - config  config.ConfigParams
+//  parameters to be set.
 func (c *JsonFilePersister) Configure(config *config.ConfigParams) {
 	c.path = config.GetAsStringWithDefault("path", c.path)
 }
 
 // Loads data items from external JSON file.
 // Parameters:
-//		- correlation_id  string
-//		transaction id to trace execution through call chain.
+//  - correlation_id  string
+//  transaction id to trace execution through call chain.
 // Returns []interface{}, error
 // loaded items or error.
 func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err error) {
@@ -110,10 +110,10 @@ func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err
 
 // Saves given data items to external JSON file.
 // Parameters:
-//		- correlation_id string
-//	    transaction id to trace execution through call chain.
-// 		- items []interface[]
-//      list of data items to save
+//   - correlation_id string
+//   transaction id to trace execution through call chain.
+//   - items []interface[]
+//   list of data items to save
 //  Retruns error
 //  error or nil for success.
 func (c *JsonFilePersister) Save(correlationId string, items []interface{}) error {

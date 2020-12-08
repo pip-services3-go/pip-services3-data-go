@@ -70,8 +70,8 @@ type MemoryPersistence struct {
 
 // Creates a new instance of the MemoryPersistence
 // Parameters:
-// 	- prototype reflect.Type
-//    type of contained data
+//  - prototype reflect.Type
+//   type of contained data
 // Return *MemoryPersistence
 // a MemoryPersistence
 func NewMemoryPersistence(prototype reflect.Type) *MemoryPersistence {
@@ -87,8 +87,8 @@ func NewMemoryPersistence(prototype reflect.Type) *MemoryPersistence {
 
 //  Sets references to dependent components.
 //  Parameters:
-// 		- references refer.IReferences
-//		references to locate the component dependencies.
+//   - references refer.IReferences
+//   references to locate the component dependencies.
 func (c *MemoryPersistence) SetReferences(references refer.IReferences) {
 	c.Logger.SetReferences(references)
 }
@@ -101,8 +101,8 @@ func (c *MemoryPersistence) IsOpen() bool {
 
 // Opens the component.
 // Parameters:
-// 		- correlationId  string
-// 		(optional) transaction id to trace execution through call chain.
+//   - correlationId  string
+//   (optional) transaction id to trace execution through call chain.
 // Returns  error or null no errors occured.
 func (c *MemoryPersistence) Open(correlationId string) error {
 	c.Lock.Lock()
@@ -142,8 +142,8 @@ func (c *MemoryPersistence) load(correlationId string) error {
 
 // Closes component and frees used resources.
 // Parameters:
-// 		- correlationId string
-//		(optional) transaction id to trace execution through call chain.
+//  - correlationId string
+//  (optional) transaction id to trace execution through call chain.
 // Retruns: error or nil if no errors occured.
 func (c *MemoryPersistence) Close(correlationId string) error {
 	err := c.Save(correlationId)
@@ -153,8 +153,8 @@ func (c *MemoryPersistence) Close(correlationId string) error {
 
 // Saves items to external data source using configured saver component.
 // Parameters:
-//    - correlationId string
-//     (optional) transaction id to trace execution through call chain.
+//   - correlationId string
+//   (optional) transaction id to trace execution through call chain.
 // Return error or null for success.
 func (c *MemoryPersistence) Save(correlationId string) error {
 	c.Lock.RLock()
@@ -174,8 +174,8 @@ func (c *MemoryPersistence) Save(correlationId string) error {
 
 // Clears component state.
 // Parameters:
-// 		- correlationId string
-//		(optional) transaction id to trace execution through call chain.
+//  - correlationId string
+//  (optional) transaction id to trace execution through call chain.
 //  Returns error or null no errors occured.
 func (c *MemoryPersistence) Clear(correlationId string) error {
 	c.Lock.Lock()
@@ -191,16 +191,16 @@ func (c *MemoryPersistence) Clear(correlationId string) error {
 // cmethod shall be called by a func (imp* IdentifiableMemoryPersistence) getPageByFilter method from child struct that
 // receives FilterParams and converts them into a filter function.
 // Parameters:
-// 		- correlationId string
-//	     transaction id to trace execution through call chain.
-// 		- filter func(interface{}) bool
-//      (optional) a filter function to filter items
-// 		- paging *cdata.PagingParams
-//      (optional) paging parameters
-// 		- sortFunc func(a, b interface{}) bool
-//      (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
-// 		- selectFunc func(in interface{}) (out interface{})
-//      (optional) projection parameters
+//   - correlationId string
+//   transaction id to trace execution through call chain.
+//   - filter func(interface{}) bool
+//   (optional) a filter function to filter items
+//   - paging *cdata.PagingParams
+//   (optional) paging parameters
+//   - sortFunc func(a, b interface{}) bool
+//   (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
+//   - selectFunc func(in interface{}) (out interface{})
+// (optional) projection parameters
 // Return cdata.DataPage, error
 // data page or error.
 func (c *MemoryPersistence) GetPageByFilter(correlationId string, filterFunc func(interface{}) bool,
@@ -267,14 +267,14 @@ func (c *MemoryPersistence) GetPageByFilter(correlationId string, filterFunc fun
 // This method shall be called by a func (c * IdentifiableMemoryPersistence) GetListByFilter method from child struct that
 // receives FilterParams and converts them into a filter function.
 // Parameters:
-// 		- correlationId string
-//      (optional) transaction id to trace execution through call chain.
-// 		- filter func(interface{}) bool
-//      (optional) a filter function to filter items
-// 		- sortFunc func(a, b interface{}) bool
-//      (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
-// 		- selectFunc func(in interface{}) (out interface{})
-//      (optional) projection parameters
+//   - correlationId string
+//   (optional) transaction id to trace execution through call chain.
+//   - filter func(interface{}) bool
+//   (optional) a filter function to filter items
+//   - sortFunc func(a, b interface{}) bool
+//   (optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
+//   - selectFunc func(in interface{}) (out interface{})
+//   (optional) projection parameters
 // Returns  []interface{},  error
 // array of items and error
 func (c *MemoryPersistence) GetListByFilter(correlationId string, filterFunc func(interface{}) bool,
@@ -319,10 +319,10 @@ func (c *MemoryPersistence) GetListByFilter(correlationId string, filterFunc fun
 // This method shall be called by a func (c* IdentifiableMemoryPersistence) GetOneRandom method from child type that
 // receives FilterParams and converts them into a filter function.
 // Parameters:
-// 		- correlationId string
-//     (optional) transaction id to trace execution through call chain.
-// 		- filter   func(interface{}) bool
-//     (optional) a filter function to filter items.
+//   - correlationId string
+//   (optional) transaction id to trace execution through call chain.
+//   - filter   func(interface{}) bool
+//   (optional) a filter function to filter items.
 // Returns: interface{}, error
 // random item or error.
 func (c *MemoryPersistence) GetOneRandom(correlationId string, filterFunc func(interface{}) bool) (result interface{}, err error) {
@@ -360,9 +360,9 @@ func (c *MemoryPersistence) GetOneRandom(correlationId string, filterFunc func(i
 
 // Creates a data item.
 // Returns:
-// 	 - correlation_id string
+//   - correlation_id string
 //   (optional) transaction id to trace execution through call chain.
-// 	 - item  string
+//   - item  string
 //   an item to be created.
 // Returns:  interface{}, error
 // created item or error.
@@ -388,10 +388,10 @@ func (c *MemoryPersistence) Create(correlationId string, item interface{}) (resu
 // this method shall be called by a func (c* IdentifiableMemoryPersistence) DeleteByFilter method from child struct that
 // receives FilterParams and converts them into a filter function.
 // Parameters:
-// 		- correlationId  string
-//		(optional) transaction id to trace execution through call chain.
-// 		- filter  filter func(interface{}) bool
-//      (optional) a filter function to filter items.
+//   - correlationId  string
+//   (optional) transaction id to trace execution through call chain.
+//   - filter  filter func(interface{}) bool
+//   (optional) a filter function to filter items.
 // Retruns: error
 // error or nil for success.
 func (c *MemoryPersistence) DeleteByFilter(correlationId string, filterFunc func(interface{}) bool) (err error) {
@@ -425,10 +425,10 @@ func (c *MemoryPersistence) DeleteByFilter(correlationId string, filterFunc func
 // this method shall be called by a func (imp* IdentifiableMemoryPersistence) getCountByFilter method from child struct that
 // receives FilterParams and converts them into a filter function.
 // Parameters:
-// 		- correlationId string
-//	     transaction id to trace execution through call chain.
-// 		- filter func(interface{}) bool
-//      (optional) a filter function to filter items
+//  - correlationId string
+//  transaction id to trace execution through call chain.
+//  - filter func(interface{}) bool
+//  (optional) a filter function to filter items
 // Return int, error
 // data count or error.
 func (c *MemoryPersistence) GetCountByFilter(correlationId string, filterFunc func(interface{}) bool) (count int64, err error) {

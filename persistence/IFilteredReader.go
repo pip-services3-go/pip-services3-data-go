@@ -9,12 +9,12 @@ type IFilteredReader interface {
 
 	// Gets a list of data items using filter
 	// Parameters:
-	// 			- correlation_id string
-	//		    transaction id to trace execution through call chain.
-	// 			- filter data.FilterParams
-	//          filter parameters
-	// 			- sort  data.SortParams
-	//			sort parameters
+	// 	  - correlation_id string
+	//	  transaction id to trace execution through call chain.
+	// 	  - filter data.FilterParams
+	//    filter parameters
+	// 	  - sort  data.SortParams
+	//	  sort parameters
 	// Returns []interfcace{}, error
 	// receives list of items or error.
 	GetListByFilter(correlation_id string, filter *data.FilterParams, sort *data.SortParams) (items []interface{}, err error)
