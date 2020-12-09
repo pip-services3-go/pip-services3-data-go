@@ -7,7 +7,7 @@ The second kind is so called "identifieable" persistence with works with "identi
 
 The module contains the following packages:
 
-- [Persistence](https://pkg.go.dev/github.com/pip-services3-go/pip-services3-data-go/persistence)
+- [Persistence](https://pkg.go.dev/github.com/pip-services3-go/pip-services3-data-go/persistence) - in-memory and file persistence components, as well as JSON persister class.
 
 <a name="links"></a> Quick links:
 
