@@ -76,7 +76,7 @@ type MemoryPersistence struct {
 // a MemoryPersistence
 func NewMemoryPersistence(prototype reflect.Type) *MemoryPersistence {
 	if prototype == nil {
-		return nil
+		panic("Prototype cannot be nil")
 	}
 	c := &MemoryPersistence{}
 	c.Prototype = prototype
@@ -370,12 +370,9 @@ func (c *MemoryPersistence) Create(correlationId string, item interface{}) (resu
 	c.Lock.Lock()
 
 	newItem := CloneObject(item)
-	//GenerateObjectId(&newItem)
-	//id := GetObjectId(newItem)
 	c.Items = append(c.Items, newItem)
 
 	c.Lock.Unlock()
-	//c.Logger.Trace(correlationId, "Created item %s", id)
 	c.Logger.Trace(correlationId, "Created item")
 
 	errsave := c.Save(correlationId)
