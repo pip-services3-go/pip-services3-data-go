@@ -369,7 +369,7 @@ func (c *MemoryPersistence) GetOneRandom(correlationId string, filterFunc func(i
 func (c *MemoryPersistence) Create(correlationId string, item interface{}) (result interface{}, err error) {
 	c.Lock.Lock()
 
-	newItem := CloneObject(item)
+	newItem := CloneObject(item, c.Prototype)
 	c.Items = append(c.Items, newItem)
 
 	c.Lock.Unlock()

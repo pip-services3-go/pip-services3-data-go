@@ -50,7 +50,7 @@ Configuration parameters
               return true;
           };
       }
-  
+
       func (mmp * MyMemoryPersistence) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams) (page DataPage, err error) {
           tempPage, err := c.GetPageByFilter(correlationId, composeFilter(filter), paging, nil, nil)
   		dataLen := int64(len(tempPage.Data))
@@ -60,9 +60,9 @@ Configuration parameters
   		}
   		page = *NewMyDataPage(&dataLen, data)
   		return page, err}
-  
+
       persistence := NewMyMemoryPersistence();
-  
+
   	item, err := persistence.Create("123", { Id: "1", Name: "ABC" })
   	...
   	page, err := persistence.GetPageByFilter("123", NewFilterParamsFromTuples("Name", "ABC"), nil)
@@ -72,7 +72,7 @@ Configuration parameters
       fmt.Prnitln(page.data)         // Result: { Id: "1", Name: "ABC" }
   	item, err := persistence.DeleteById("123", "1")
   	...
-  
+
 */
 // extends MemoryPersistence  implements IConfigurable, IWriter, IGetter, ISetter
 type IdentifiableMemoryPersistence struct {
@@ -183,7 +183,7 @@ func (c *IdentifiableMemoryPersistence) GetIndexById(id interface{}) int {
 func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result interface{}, err error) {
 	c.Lock.Lock()
 
-	newItem := CloneObject(item)
+	newItem := CloneObject(item, c.Prototype)
 	GenerateObjectId(&newItem)
 	id := GetObjectId(newItem)
 	c.Items = append(c.Items, newItem)
@@ -209,7 +209,7 @@ func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interf
 func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result interface{}, err error) {
 	c.Lock.Lock()
 
-	newItem := CloneObject(item)
+	newItem := CloneObject(item, c.Prototype)
 	GenerateObjectId(&newItem)
 
 	id := GetObjectId(item)
@@ -246,7 +246,7 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 		c.Logger.Trace(correlationId, "Item %s was not found", id)
 		return nil, nil
 	}
-	newItem := CloneObject(item)
+	newItem := CloneObject(item, c.Prototype)
 	c.Items[index] = newItem
 
 	c.Lock.Unlock()
@@ -277,7 +277,7 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 		return nil, nil
 	}
 
-	newItem := CloneObject(c.Items[index])
+	newItem := CloneObject(c.Items[index], c.Prototype)
 
 	if reflect.ValueOf(newItem).Kind() == reflect.Map {
 		refl.ObjectWriter.SetProperties(newItem, data.Value())

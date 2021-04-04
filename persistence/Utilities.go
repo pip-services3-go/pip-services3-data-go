@@ -202,25 +202,31 @@ func GenerateObjectId(item *interface{}) {
 //   an object to clone
 // Return interface{}
 // copy of input item
-func CloneObject(item interface{}) interface{} {
+func CloneObject(item interface{}, proto reflect.Type) interface{} {
 	var dest interface{}
 	var src = item
-	if reflect.TypeOf(src).Kind() == reflect.Ptr {
-		src = reflect.ValueOf(src).Elem().Interface()
-	}
+
 	if reflect.ValueOf(src).Kind() == reflect.Map {
 		itemType := reflect.TypeOf(src)
-		itemValue := reflect.ValueOf(src)
 		mapType := reflect.MapOf(itemType.Key(), itemType.Elem())
 		newMap := reflect.MakeMap(mapType)
-		for _, k := range itemValue.MapKeys() {
-			v := itemValue.MapIndex(k)
-			newMap.SetMapIndex(k, v)
-		}
 		dest = newMap.Interface()
-
+		copier.CopyWithOption(&dest, src, copier.Option{DeepCopy: true})
 	} else {
-		copier.Copy(&dest, &src)
+		var destPtr reflect.Value
+		if proto.Kind() == reflect.Ptr {
+			destPtr = reflect.New(proto.Elem())
+		} else {
+			destPtr = reflect.New(proto)
+		}
+		if reflect.TypeOf(src).Kind() == reflect.Ptr {
+			src = reflect.ValueOf(src).Elem().Interface()
+		}
+		err := copier.CopyWithOption(destPtr.Interface(), src, copier.Option{DeepCopy: true})
+		if err != nil {
+			return nil
+		}
+		dest = destPtr.Elem().Interface()
 	}
 	return dest
 }
@@ -235,26 +241,31 @@ func CloneObject(item interface{}) interface{} {
 // copy of input item
 func CloneObjectForResult(src interface{}, proto reflect.Type) interface{} {
 	var dest interface{}
+
 	if reflect.ValueOf(src).Kind() == reflect.Map {
 		itemType := reflect.TypeOf(src)
-		itemValue := reflect.ValueOf(src)
 		mapType := reflect.MapOf(itemType.Key(), itemType.Elem())
 		newMap := reflect.MakeMap(mapType)
-		for _, k := range itemValue.MapKeys() {
-			v := itemValue.MapIndex(k)
-			newMap.SetMapIndex(k, v)
-		}
 		dest = newMap.Interface()
-
+		copier.CopyWithOption(&dest, src, copier.Option{DeepCopy: true})
 	} else {
-		copier.Copy(&dest, &src)
+		var destPtr reflect.Value
+		if proto.Kind() == reflect.Ptr {
+			destPtr = reflect.New(proto.Elem())
+		} else {
+			destPtr = reflect.New(proto)
+		}
+		err := copier.CopyWithOption(destPtr.Interface(), src, copier.Option{DeepCopy: true})
+		if err != nil {
+			return nil
+		}
+		// make pointer on clone object, if proto is ptr
+		dest = destPtr.Elem().Interface()
+		if proto.Kind() == reflect.Ptr {
+			dest = destPtr.Interface()
+		}
 	}
-	// make pointer on clone object, if proto is ptr
-	if proto.Kind() == reflect.Ptr {
-		newPtr := reflect.New(proto.Elem())
-		newPtr.Elem().Set(reflect.ValueOf(dest))
-		return newPtr.Interface()
-	}
+
 	return dest
 }
 
