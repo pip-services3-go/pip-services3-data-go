@@ -154,7 +154,6 @@ func SetProperty(obj interface{}, name string, value interface{}) {
 // the property value or nil if property doesn't exist or introspection failed.
 func GetObjectId(item interface{}) interface{} {
 	return GetProperty(item, "Id")
-
 }
 
 // SetObjectId is set object Id value
@@ -211,7 +210,11 @@ func CloneObject(item interface{}, proto reflect.Type) interface{} {
 		mapType := reflect.MapOf(itemType.Key(), itemType.Elem())
 		newMap := reflect.MakeMap(mapType)
 		dest = newMap.Interface()
-		copier.CopyWithOption(&dest, src, copier.Option{DeepCopy: true})
+		err := copier.CopyWithOption(&dest, src, copier.Option{DeepCopy: false, IgnoreEmpty: false})
+		if err != nil {
+			return nil
+		}
+
 	} else {
 		var destPtr reflect.Value
 		if proto.Kind() == reflect.Ptr {
@@ -222,10 +225,11 @@ func CloneObject(item interface{}, proto reflect.Type) interface{} {
 		if reflect.TypeOf(src).Kind() == reflect.Ptr {
 			src = reflect.ValueOf(src).Elem().Interface()
 		}
-		err := copier.CopyWithOption(destPtr.Interface(), src, copier.Option{DeepCopy: true})
+		err := copier.CopyWithOption(destPtr.Interface(), src, copier.Option{DeepCopy: false, IgnoreEmpty: false})
 		if err != nil {
 			return nil
 		}
+
 		dest = destPtr.Elem().Interface()
 	}
 	return dest
@@ -247,7 +251,10 @@ func CloneObjectForResult(src interface{}, proto reflect.Type) interface{} {
 		mapType := reflect.MapOf(itemType.Key(), itemType.Elem())
 		newMap := reflect.MakeMap(mapType)
 		dest = newMap.Interface()
-		copier.CopyWithOption(&dest, src, copier.Option{DeepCopy: true})
+		err := copier.CopyWithOption(&dest, src, copier.Option{DeepCopy: false, IgnoreEmpty: false})
+		if err != nil {
+			return nil
+		}
 	} else {
 		var destPtr reflect.Value
 		if proto.Kind() == reflect.Ptr {
@@ -255,7 +262,7 @@ func CloneObjectForResult(src interface{}, proto reflect.Type) interface{} {
 		} else {
 			destPtr = reflect.New(proto)
 		}
-		err := copier.CopyWithOption(destPtr.Interface(), src, copier.Option{DeepCopy: true})
+		err := copier.CopyWithOption(destPtr.Interface(), src, copier.Option{DeepCopy: false, IgnoreEmpty: false})
 		if err != nil {
 			return nil
 		}
