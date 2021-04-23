@@ -407,11 +407,12 @@ func (c *MemoryPersistence) DeleteByFilter(correlationId string, filterFunc func
 			i++
 		}
 	}
+	c.Lock.Unlock()
+
 	if deleted == 0 {
 		return nil
 	}
 
-	c.Lock.Unlock()
 	c.Logger.Trace(correlationId, "Deleted %s items", deleted)
 
 	errsave := c.Save(correlationId)
