@@ -408,6 +408,7 @@ func (c *MemoryPersistence) DeleteByFilter(correlationId string, filterFunc func
 		}
 	}
 	if deleted == 0 {
+		c.Lock.Unlock()
 		return nil
 	}
 
