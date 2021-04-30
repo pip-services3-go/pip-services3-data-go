@@ -4,7 +4,7 @@
 
 ## <a name="1.1.3"></a> 1.1.3 (2021-04-30) 
 ### Bug Fixes
-- Fix deadlock in DeleteByFilter, DeleteById, Update and UpdatePartialy methods
+- Fix deadlock in DeleteByFilter, DeleteById, Update and UpdatePartially methods
 
 ## <a name="1.1.0"></a> 1.1.0 (2021-04-04) 
 ### Features
