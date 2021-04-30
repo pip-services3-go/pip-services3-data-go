@@ -224,7 +224,7 @@ func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface
 	c.Logger.Trace(correlationId, "Set item %s", id)
 
 	errsav := c.Save(correlationId)
-	//result = CloneObject(newItem)
+
 	result = CloneObjectForResult(newItem, c.Prototype)
 	return result, errsav
 }
@@ -244,6 +244,7 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 	index := c.GetIndexById(id)
 	if index < 0 {
 		c.Logger.Trace(correlationId, "Item %s was not found", id)
+		c.Lock.Unlock()
 		return nil, nil
 	}
 	newItem := CloneObject(item, c.Prototype)
@@ -253,7 +254,7 @@ func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interf
 	c.Logger.Trace(correlationId, "Updated item %s", id)
 
 	errsave := c.Save(correlationId)
-	//result = CloneObject(newItem)
+
 	result = CloneObjectForResult(newItem, c.Prototype)
 	return result, errsave
 }
@@ -274,6 +275,7 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 	index := c.GetIndexById(id)
 	if index < 0 {
 		c.Logger.Trace(correlationId, "Item %s was not found", id)
+		c.Lock.Unlock()
 		return nil, nil
 	}
 
@@ -295,7 +297,7 @@ func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id
 	c.Logger.Trace(correlationId, "Partially updated item %s", id)
 
 	errsave := c.Save(correlationId)
-	//result = CloneObject(newItem)
+
 	result = CloneObjectForResult(newItem, c.Prototype)
 	return result, errsave
 }
@@ -314,6 +316,7 @@ func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id inte
 	index := c.GetIndexById(id)
 	if index < 0 {
 		c.Logger.Trace(correlationId, "Item %s was not found", id)
+		c.Lock.Unlock()
 		return nil, nil
 	}
 
