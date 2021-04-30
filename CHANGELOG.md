@@ -1,8 +1,10 @@
 # <img src="https://uploads-ssl.webflow.com/5ea5d3315186cf5ec60c3ee4/5edf1c94ce4c859f2b188094_logo.svg" alt="Pip.Services Logo" width="200"> <br/> Persistence components for Golang Changelog
 
-## <a name="1.1.2"></a> 1.1.2 (2021-04-23) 
+
+
+## <a name="1.1.3"></a> 1.1.3 (2021-04-30) 
 ### Bug Fixes
-- Fix deadlock in DeleteByFilter method
+- Fix deadlock in DeleteByFilter, DeleteById, Update and UpdatePartialy methods
 
 ## <a name="1.1.0"></a> 1.1.0 (2021-04-04) 
 ### Features
