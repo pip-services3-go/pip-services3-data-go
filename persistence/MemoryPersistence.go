@@ -290,6 +290,7 @@ func (c *MemoryPersistence) GetListByFilter(correlationId string, filterFunc fun
 			}
 		}
 	} else {
+		results = make([]interface{}, len(c.Items))
 		copy(results, c.Items)
 	}
 
