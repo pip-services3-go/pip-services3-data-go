@@ -59,6 +59,13 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 	item2 := page.Data[1]
 	assert.Equal(t, item2.Key, dummy1.Key)
 
+	page, errp = c.persistence.GetPageByFilter("", cdata.NewEmptyFilterParams(), cdata.NewPagingParams(10, 1, false))
+	if errp != nil {
+		t.Errorf("GetPageByFilter method error %v", err)
+	}
+	assert.NotNil(t, page)
+	assert.Len(t, page.Data, 0)
+
 	// Get count
 	count, errc := c.persistence.GetCountByFilter("", cdata.NewEmptyFilterParams())
 	assert.Nil(t, errc)

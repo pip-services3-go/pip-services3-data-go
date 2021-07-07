@@ -239,6 +239,10 @@ func (c *MemoryPersistence) GetPageByFilter(correlationId string, filterFunc fun
 		total = (int64)(len(items))
 	}
 	if skip > 0 {
+		len := (int64)(len(items))
+		if skip >= len {
+			skip = len
+		}
 		items = items[skip:]
 	}
 	if (int64)(len(items)) >= take {
