@@ -215,10 +215,10 @@ func GenerateObjectId(item *interface{}) {
 	if idField != nil {
 		if reflect.ValueOf(idField).IsZero() {
 			SetObjectId(item, cdata.IdGenerator.NextLong())
-			return
 		}
+	} else {
+		panic("'Id' or 'ID' field doesn't exist")
 	}
-	panic("'Id' or 'ID' field doesn't exist")
 
 }
 
