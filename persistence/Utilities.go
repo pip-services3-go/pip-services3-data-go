@@ -212,15 +212,14 @@ func SetObjectId(item *interface{}, id interface{}) {
 func GenerateObjectId(item *interface{}) {
 	value := *item
 	idField := GetProperty(value, "Id")
-	if idField == nil {
-		idField = GetProperty(value, "ID")
+	if idField != nil {
+		if reflect.ValueOf(idField).IsZero() {
+			SetObjectId(item, cdata.IdGenerator.NextLong())
+			return
+		}
 	}
-	if idField == nil {
-		panic("'Id' or 'ID' field doesn't exist")
-	}
-	if reflect.ValueOf(idField).IsZero() {
-		SetObjectId(item, cdata.IdGenerator.NextLong())
-	}
+	panic("'Id' or 'ID' field doesn't exist")
+
 }
 
 // CloneObject is clones object function

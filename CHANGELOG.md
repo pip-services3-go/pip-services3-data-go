@@ -1,5 +1,9 @@
 # <img src="https://uploads-ssl.webflow.com/5ea5d3315186cf5ec60c3ee4/5edf1c94ce4c859f2b188094_logo.svg" alt="Pip.Services Logo" width="200"> <br/> Persistence components for Golang Changelog
 
+## <a name="1.1.6"></a> 1.1.6 (2021-08-06) 
+### Bug Fixes
+- Fix error in GenerateObjectId when Id field exists in nested struct
+
 ## <a name="1.1.5"></a> 1.1.5 (2021-07-07) 
 ### Bug Fixes
 - Fix error in GetPageByFilter when paging skip greater than length of items slice
