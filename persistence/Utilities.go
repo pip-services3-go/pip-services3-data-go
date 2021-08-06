@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 	"unicode"
@@ -79,14 +80,27 @@ func GetProperty(obj interface{}, name string) interface{} {
 
 	fieldType := toFieldType(obj)
 	if fieldType.Kind() == reflect.Struct {
-		for index := 0; index < fieldType.NumField(); index++ {
-			field := fieldType.Field(index)
+		return getPropertyRecursive(fieldType, obj, name)
+	}
+
+	return nil
+}
+
+func getPropertyRecursive(fieldType reflect.Type, obj interface{}, name string) interface{} {
+	for index := 0; index < fieldType.NumField(); index++ {
+		field := fieldType.Field(index)
+		val := reflect.ValueOf(obj)
+		if val.Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
+		switch field.Type.Kind() {
+		default:
 			if matchField(field, name) {
-				val := reflect.ValueOf(obj)
-				if val.Kind() == reflect.Ptr {
-					val = val.Elem()
-				}
 				return val.Field(index).Interface()
+			}
+		case reflect.Struct:
+			if item := getPropertyRecursive(field.Type, val.Field(index).Interface(), name); item != nil {
+				return item
 			}
 		}
 	}
@@ -127,21 +141,33 @@ func SetProperty(obj interface{}, name string, value interface{}) {
 
 	defer func() {
 		// Do nothing and return nil
-		recover()
+		if err := recover(); err != nil {
+			fmt.Println("Error while set property %v", err)
+		}
 	}()
 
 	fieldType := toFieldType(obj)
 	if fieldType.Kind() == reflect.Struct {
-		for index := 0; index < fieldType.NumField(); index++ {
-			field := fieldType.Field(index)
+		setPropertyRecursive(fieldType, obj, name, value)
+	}
+
+}
+
+func setPropertyRecursive(fieldType reflect.Type, obj interface{}, name string, value interface{}) {
+	for index := 0; index < fieldType.NumField(); index++ {
+		field := fieldType.Field(index)
+		val := reflect.ValueOf(obj)
+		if val.Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
+		switch field.Type.Kind() {
+		default:
 			if matchField(field, name) {
-				val := reflect.ValueOf(obj)
-				if val.Kind() == reflect.Ptr {
-					val = val.Elem()
-				}
 				val.Field(index).Set(reflect.ValueOf(value))
 				return
 			}
+		case reflect.Struct:
+			setPropertyRecursive(field.Type, val.Field(index).Addr().Interface(), name, value)
 		}
 	}
 }
@@ -186,12 +212,14 @@ func SetObjectId(item *interface{}, id interface{}) {
 func GenerateObjectId(item *interface{}) {
 	value := *item
 	idField := GetProperty(value, "Id")
-	if idField != nil {
-		if reflect.ValueOf(idField).IsZero() {
-			SetObjectId(item, cdata.IdGenerator.NextLong())
-		}
-	} else {
-		panic("Id field doesn't exist")
+	if idField == nil {
+		idField = GetProperty(value, "ID")
+	}
+	if idField == nil {
+		panic("'Id' or 'ID' field doesn't exist")
+	}
+	if reflect.ValueOf(idField).IsZero() {
+		SetObjectId(item, cdata.IdGenerator.NextLong())
 	}
 }
 
