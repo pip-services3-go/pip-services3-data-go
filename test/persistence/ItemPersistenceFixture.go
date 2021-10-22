@@ -15,10 +15,10 @@ type ItemPersistenceFixture struct {
 func NewItemPersistenceFixture(persistence IItemPersistence) *ItemPersistenceFixture {
 	c := ItemPersistenceFixture{}
 	c.item1 = Item{
-		Id:                             "",
-		FailingToUpdateThisField1:      0,
-		Failing_to_update_this_field_2: 0,
-		Updated_by:                     "y76bh72c1",
+		Id:                        "",
+		FailingToUpdateThisField1: 0,
+		FailingToUpdateThisField2: 0,
+		UpdatedBy:                 "y76bh72c1",
 	}
 	c.persistence = persistence
 	return &c
@@ -35,8 +35,8 @@ func (c *ItemPersistenceFixture) TestCrudOperations(t *testing.T) {
 	assert.NotNil(t, item1)
 	assert.NotNil(t, item1.Id)
 	assert.Equal(t, c.item1.FailingToUpdateThisField1, item1.FailingToUpdateThisField1)
-	assert.Equal(t, c.item1.Failing_to_update_this_field_2, item1.Failing_to_update_this_field_2)
-	assert.Equal(t, c.item1.Updated_by, item1.Updated_by)
+	assert.Equal(t, c.item1.FailingToUpdateThisField2, item1.FailingToUpdateThisField2)
+	assert.Equal(t, c.item1.UpdatedBy, item1.UpdatedBy)
 
 	intvar1 := (int64)(1234757257822780121)
 	intvar2 := (int64)(1434824722285792000)
@@ -53,7 +53,7 @@ func (c *ItemPersistenceFixture) TestCrudOperations(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, item1.Id, result.Id)
 	assert.Equal(t, (int64)(1234757257822780121), result.FailingToUpdateThisField1)
-	assert.Equal(t, (int64)(1434824722285792000), result.Failing_to_update_this_field_2)
-	assert.Equal(t, "upd_y76bh72c1", result.Updated_by)
+	assert.Equal(t, (int64)(1434824722285792000), result.FailingToUpdateThisField2)
+	assert.Equal(t, "upd_y76bh72c1", result.UpdatedBy)
 
 }
