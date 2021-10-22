@@ -16,8 +16,8 @@ func NewItemPersistenceFixture(persistence IItemPersistence) *ItemPersistenceFix
 	c := ItemPersistenceFixture{}
 	c.item1 = Item{
 		Id:                             "",
-		Failing_to_update_this_field_1: 1434824722285792000,
-		Failing_to_update_this_field_2: 1234757257822780121,
+		FailingToUpdateThisField1:      0,
+		Failing_to_update_this_field_2: 0,
 		Updated_by:                     "y76bh72c1",
 	}
 	c.persistence = persistence
@@ -34,15 +34,17 @@ func (c *ItemPersistenceFixture) TestCrudOperations(t *testing.T) {
 	item1 = result
 	assert.NotNil(t, item1)
 	assert.NotNil(t, item1.Id)
-	assert.Equal(t, c.item1.Failing_to_update_this_field_1, item1.Failing_to_update_this_field_1)
+	assert.Equal(t, c.item1.FailingToUpdateThisField1, item1.FailingToUpdateThisField1)
 	assert.Equal(t, c.item1.Failing_to_update_this_field_2, item1.Failing_to_update_this_field_2)
 	assert.Equal(t, c.item1.Updated_by, item1.Updated_by)
 
+	intvar1 := (int64)(1234757257822780121)
+	intvar2 := (int64)(1434824722285792000)
 	// Partially update the item
 	updateMap := cdata.NewAnyValueMapFromTuples(
-		"failing_to_update_this_field_1", (int64)(1234757257822780121),
+		"FailingToUpdateThisField1", intvar1,
 		"updated_by", "upd_y76bh72c1",
-		"failing_to_update_this_field_2", (int64)(1434824722285792000),
+		"failing_to_update_this_field_2", intvar2,
 	)
 	result, err = c.persistence.UpdatePartially("", item1.Id, updateMap)
 	if err != nil {
@@ -50,7 +52,7 @@ func (c *ItemPersistenceFixture) TestCrudOperations(t *testing.T) {
 	}
 	assert.NotNil(t, result)
 	assert.Equal(t, item1.Id, result.Id)
-	assert.Equal(t, (int64)(1234757257822780121), result.Failing_to_update_this_field_1)
+	assert.Equal(t, (int64)(1234757257822780121), result.FailingToUpdateThisField1)
 	assert.Equal(t, (int64)(1434824722285792000), result.Failing_to_update_this_field_2)
 	assert.Equal(t, "upd_y76bh72c1", result.Updated_by)
 
