@@ -288,6 +288,7 @@ func (c *MemoryPersistence) GetListByFilter(correlationId string, filterFunc fun
 
 	// Apply filter
 	if filterFunc != nil {
+		results = make([]interface{}, 0)
 		for _, v := range c.Items {
 			if filterFunc(v) {
 				results = append(results, v)

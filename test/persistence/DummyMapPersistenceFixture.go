@@ -163,7 +163,7 @@ func (c *DummyMapPersistenceFixture) TestBatchOperations(t *testing.T) {
 	if err != nil {
 		t.Errorf("GetListByIds method error %v", err)
 	}
-	assert.Nil(t, items)
+	assert.NotNil(t, items)
 	assert.Len(t, items, 0)
 
 }
