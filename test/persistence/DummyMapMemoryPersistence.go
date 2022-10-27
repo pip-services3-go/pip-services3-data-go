@@ -29,7 +29,12 @@ func (c *DummyMapMemoryPersistence) toPublicPage(page *cdata.DataPage) *MapPage 
 	for i, v := range page.Data {
 		data[i] = cpersist.ToPublicMap(v)
 	}
-	dataPage := NewMapPage(&dataLen, data)
+	total := (int64)(0)
+	if page.Total != nil {
+		total = *page.Total
+	}
+
+	dataPage := NewMapPage(&total, data)
 
 	return dataPage
 }

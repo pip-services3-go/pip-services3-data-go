@@ -1,6 +1,7 @@
 package test_persistence
 
 import (
+	"strconv"
 	"testing"
 
 	cdata "github.com/pip-services3-go/pip-services3-commons-go/data"
@@ -48,20 +49,14 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 
 	page, errp := c.persistence.GetPageByFilter("", cdata.NewEmptyFilterParams(), cdata.NewEmptyPagingParams())
 	if errp != nil {
-		t.Errorf("GetPageByFilter method error %v", err)
+		t.Errorf("GetPageByFilter method error %v", errp)
 	}
 	assert.NotNil(t, page)
 	assert.Len(t, page.Data, 2)
-	//Testing default sorting by Key field len
-
-	item1 := page.Data[0]
-	assert.Equal(t, item1.Key, dummy2.Key)
-	item2 := page.Data[1]
-	assert.Equal(t, item2.Key, dummy1.Key)
 
 	page, errp = c.persistence.GetPageByFilter("", cdata.NewEmptyFilterParams(), cdata.NewPagingParams(10, 1, false))
 	if errp != nil {
-		t.Errorf("GetPageByFilter method error %v", err)
+		t.Errorf("GetPageByFilter method error %v", errp)
 	}
 	assert.NotNil(t, page)
 	assert.Len(t, page.Data, 0)
@@ -122,6 +117,13 @@ func (c *DummyPersistenceFixture) TestCrudOperations(t *testing.T) {
 	// Try to get item, must be an empty Dummy struct
 	temp := Dummy{}
 	assert.Equal(t, temp, result)
+
+	// Delete the second dummy
+	result, err = c.persistence.DeleteById("", dummy2.Id)
+	if err != nil {
+		t.Errorf("DeleteById method error %v", err)
+	}
+	assert.NotNil(t, result)
 }
 
 func (c *DummyPersistenceFixture) TestBatchOperations(t *testing.T) {
@@ -174,4 +176,53 @@ func (c *DummyPersistenceFixture) TestBatchOperations(t *testing.T) {
 	assert.NotNil(t, items)
 	assert.Len(t, items, 0)
 
+}
+
+func (c *DummyPersistenceFixture) TestFiltersOperations(t *testing.T) {
+
+	// Creating list of Dummies
+	for i := 0; i < 200; i++ {
+		d := Dummy{
+			Id:      "",
+			Key:     "Key " + strconv.Itoa(i),
+			Content: "Content " + strconv.Itoa(i),
+		}
+
+		dummy, err := c.persistence.Create("", d)
+		if err != nil {
+			t.Errorf("Create method error %v", err)
+		}
+		assert.NotNil(t, dummy)
+		assert.NotNil(t, dummy.Id)
+		assert.Equal(t, d.Key, dummy.Key)
+		assert.Equal(t, d.Content, dummy.Content)
+	}
+
+	// Check count
+	count, errc := c.persistence.GetCountByFilter("", cdata.NewEmptyFilterParams())
+	assert.Nil(t, errc)
+	assert.Equal(t, int64(200), count)
+
+	// Testing  GetPageByFilter
+	page, errp := c.persistence.GetPageByFilter("", cdata.NewEmptyFilterParams(), cdata.NewPagingParams(10, 1, true))
+	if errp != nil {
+		t.Errorf("GetPageByFilter method error %v", errp)
+	}
+	assert.NotNil(t, page)
+	assert.NotNil(t, page.Total)
+	assert.Equal(t, (int64)(200), *page.Total)
+	assert.Len(t, page.Data, 1)
+	assert.Equal(t, "Key 10", page.Data[0].Key)
+	assert.Equal(t, "Content 10", page.Data[0].Content)
+
+	page, errp = c.persistence.GetPageByFilter("", cdata.NewEmptyFilterParams(), cdata.NewPagingParams(100, 50, true))
+	if errp != nil {
+		t.Errorf("GetPageByFilter method error %v", errp)
+	}
+	assert.NotNil(t, page)
+	assert.NotNil(t, page.Total)
+	assert.Equal(t, (int64)(200), *page.Total)
+	assert.Len(t, page.Data, 50)
+	assert.Equal(t, "Key 100", page.Data[0].Key)
+	assert.Equal(t, "Content 100", page.Data[0].Content)
 }

@@ -100,19 +100,18 @@ func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter *c
 			return false
 		}
 		return true
-	}, paging,
-		func(a, b interface{}) bool {
-			_a, _ := a.(Dummy)
-			_b, _ := b.(Dummy)
-			return len(_a.Key) < len(_b.Key)
-		}, nil)
+	}, paging, nil, nil)
 	// Convert to DummyPage
 	dataLen := int64(len(tempPage.Data)) // For full release tempPage and delete this by GC
 	data := make([]Dummy, dataLen)
 	for i, v := range tempPage.Data {
 		data[i] = v.(Dummy)
 	}
-	page = NewDummyPage(&dataLen, data)
+	total := (int64)(0)
+	if tempPage.Total != nil {
+		total = *tempPage.Total
+	}
+	page = NewDummyPage(&total, data)
 	return page, err
 }
 

@@ -14,5 +14,6 @@ func TestDummyMemoryPersistence(t *testing.T) {
 
 	t.Run("DummyMemoryPersistence:CRUD", fixture.TestCrudOperations)
 	t.Run("DummyMemoryPersistence:Batch", fixture.TestBatchOperations)
+	t.Run("DummyMemoryPersistence:TestFiltersOperations", fixture.TestFiltersOperations)
 
 }

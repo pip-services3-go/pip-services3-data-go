@@ -115,7 +115,11 @@ func (c *DummyRefMemoryPersistence) GetPageByFilter(correlationId string, filter
 		temp := tempPage.Data[i].(*Dummy)
 		data[i] = temp
 	}
-	page = NewDummyRefPage(&dataLen, data)
+	total := (int64)(0)
+	if tempPage.Total != nil {
+		total = *tempPage.Total
+	}
+	page = NewDummyRefPage(&total, data)
 	return page, err
 }
 
