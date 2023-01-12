@@ -82,7 +82,7 @@ func (c *DummyMapMemoryPersistence) DeleteByIds(correlationId string, ids []stri
 }
 
 func filterFunc(filter *cdata.FilterParams) func(interface{}) bool {
-	if &filter == nil {
+	if filter == nil {
 		filter = cdata.NewEmptyFilterParams()
 	}
 
@@ -90,7 +90,7 @@ func filterFunc(filter *cdata.FilterParams) func(interface{}) bool {
 
 	return func(value interface{}) bool {
 		dummy, ok := value.(map[string]interface{})
-		if *key != "" && ok && dummy["Key"] != *key {
+		if key != nil && ok && dummy["Key"] != *key {
 			return false
 		}
 		return true
@@ -111,13 +111,13 @@ func (c *DummyMapMemoryPersistence) GetPageByFilter(correlationId string, filter
 }
 
 func (c *DummyMapMemoryPersistence) GetCountByFilter(correlationId string, filter *cdata.FilterParams) (count int64, err error) {
-	if &filter == nil {
+	if filter == nil {
 		filter = cdata.NewEmptyFilterParams()
 	}
 	key := filter.GetAsNullableString("Key")
 	count, err = c.IdentifiableMemoryPersistence.GetCountByFilter(correlationId, func(item interface{}) bool {
 		dummy, ok := item.(Dummy)
-		if *key != "" && ok && dummy.Key != *key {
+		if key != nil && ok && dummy.Key != *key {
 			return false
 		}
 		return true

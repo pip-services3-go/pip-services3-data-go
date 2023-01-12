@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>persistence - Go Documentation Server</title>
+
+<link type="text/css" rel="stylesheet" href="../../lib/godoc/style.css">
+
+<script>window.initFuncs = [];</script>
+<script src="../../lib/godoc/jquery.js" defer></script>
+
+
+
+<script>var goVersion = "go1.16.15";</script>
+<script src="../../lib/godoc/godocs.js" defer></script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+<div id="topbar" class="wide"><div class="container">
+<div class="top-heading" id="heading-wide"><a href="../index.html">Go Documentation Server</a></div>
+<div class="top-heading" id="heading-narrow"><a href="../index.html">GoDoc</a></div>
+<a href="index.html#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
+<form method="GET" action="http://localhost:6060/search">
+<div id="menu">
+
+<span class="search-box"><input type="search" id="search" name="q" placeholder="Search" aria-label="Search" required><button type="submit"><span><!-- magnifying glass: --><svg width="24" height="24" viewBox="0 0 24 24"><title>submit search</title><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M0 0h24v24H0z" fill="none"/></svg></span></button></span>
+</div>
+</form>
+
+</div></div>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package persistence
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "persistence"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="index.html#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="index.html#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				<p>
+Package persistence contains interfaces for various design patterns that work with data.
+Contains various persistence implementations (InMemory and File –persistences). These are &#34;abstract&#34; persistences, which only connect to data sources and do not implement the operations and methods for working the data. The classes that extend these persistences must implement this logic on their own.
+Identifiable Persistences work with Identifiable objects, which have primary keys. A few standard operations are defined by default for these objects: reading arrays and data pages; searching for an object by its id; and creating, updating, and deleting records of objects.
+</p>
+
+				
+			</div>
+		</div>
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+			
+				
+				<dd><a href="index.html#CloneObject">func CloneObject(item interface{}, proto reflect.Type) interface{}</a></dd>
+			
+				
+				<dd><a href="index.html#CloneObjectForResult">func CloneObjectForResult(src interface{}, proto reflect.Type) interface{}</a></dd>
+			
+				
+				<dd><a href="index.html#CompareValues">func CompareValues(value1 interface{}, value2 interface{}) bool</a></dd>
+			
+				
+				<dd><a href="index.html#FromIds">func FromIds(ids []string) []interface{}</a></dd>
+			
+				
+				<dd><a href="index.html#GenerateObjectId">func GenerateObjectId(item *interface{})</a></dd>
+			
+				
+				<dd><a href="index.html#GetObjectId">func GetObjectId(item interface{}) interface{}</a></dd>
+			
+				
+				<dd><a href="index.html#GetProperty">func GetProperty(obj interface{}, name string) interface{}</a></dd>
+			
+				
+				<dd><a href="index.html#SetObjectId">func SetObjectId(item *interface{}, id interface{})</a></dd>
+			
+				
+				<dd><a href="index.html#SetProperty">func SetProperty(obj interface{}, name string, value interface{})</a></dd>
+			
+				
+				<dd><a href="index.html#ToPublicArray">func ToPublicArray(values []interface{}) []map[string]interface{}</a></dd>
+			
+				
+				<dd><a href="index.html#ToPublicMap">func ToPublicMap(value interface{}) map[string]interface{}</a></dd>
+			
+			
+				
+				<dd><a href="index.html#FilePersistence">type FilePersistence</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#NewFilePersistence">func NewFilePersistence(prototype reflect.Type, persister *JsonFilePersister) *FilePersistence</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#FilePersistence.Configure">func (c *FilePersistence) Configure(conf *config.ConfigParams)</a></dd>
+				
+			
+				
+				<dd><a href="index.html#IFilteredPageReader">type IFilteredPageReader</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#IFilteredReader">type IFilteredReader</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#IGetter">type IGetter</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#ILoader">type ILoader</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#IPartialUpdater">type IPartialUpdater</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#IQuerablePageReader">type IQuerablePageReader</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#IQuerableReader">type IQuerableReader</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#ISaver">type ISaver</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#ISetter">type ISetter</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#IWriter">type IWriter</a></dd>
+				
+				
+			
+				
+				<dd><a href="index.html#IdentifiableFilePersistence">type IdentifiableFilePersistence</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#NewIdentifiableFilePersistence">func NewIdentifiableFilePersistence(prototype reflect.Type, persister *JsonFilePersister) *IdentifiableFilePersistence</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableFilePersistence.Configure">func (c *IdentifiableFilePersistence) Configure(config *config.ConfigParams)</a></dd>
+				
+			
+				
+				<dd><a href="index.html#IdentifiableMemoryPersistence">type IdentifiableMemoryPersistence</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#NewIdentifiableMemoryPersistence">func NewIdentifiableMemoryPersistence(prototype reflect.Type) (c *IdentifiableMemoryPersistence)</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.Configure">func (c *IdentifiableMemoryPersistence) Configure(config *config.ConfigParams)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.Create">func (c *IdentifiableMemoryPersistence) Create(correlationId string, item interface{}) (result interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.DeleteById">func (c *IdentifiableMemoryPersistence) DeleteById(correlationId string, id interface{}) (result interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.DeleteByIds">func (c *IdentifiableMemoryPersistence) DeleteByIds(correlationId string, ids []interface{}) (err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.GetIndexById">func (c *IdentifiableMemoryPersistence) GetIndexById(id interface{}) int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.GetListByIds">func (c *IdentifiableMemoryPersistence) GetListByIds(correlationId string, ids []interface{}) (result []interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.GetOneById">func (c *IdentifiableMemoryPersistence) GetOneById(correlationId string, id interface{}) (result interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.Set">func (c *IdentifiableMemoryPersistence) Set(correlationId string, item interface{}) (result interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.Update">func (c *IdentifiableMemoryPersistence) Update(correlationId string, item interface{}) (result interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#IdentifiableMemoryPersistence.UpdatePartially">func (c *IdentifiableMemoryPersistence) UpdatePartially(correlationId string, id interface{}, data *cdata.AnyValueMap) (result interface{}, err error)</a></dd>
+				
+			
+				
+				<dd><a href="index.html#JsonFilePersister">type JsonFilePersister</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#NewJsonFilePersister">func NewJsonFilePersister(prototype reflect.Type, path string) *JsonFilePersister</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#JsonFilePersister.Configure">func (c *JsonFilePersister) Configure(config *config.ConfigParams)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#JsonFilePersister.Load">func (c *JsonFilePersister) Load(correlation_id string) (data []interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#JsonFilePersister.Path">func (c *JsonFilePersister) Path() string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#JsonFilePersister.Save">func (c *JsonFilePersister) Save(correlationId string, items []interface{}) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#JsonFilePersister.SetPath">func (c *JsonFilePersister) SetPath(value string)</a></dd>
+				
+			
+				
+				<dd><a href="index.html#MemoryPersistence">type MemoryPersistence</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#NewMemoryPersistence">func NewMemoryPersistence(prototype reflect.Type) *MemoryPersistence</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.Clear">func (c *MemoryPersistence) Clear(correlationId string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.Close">func (c *MemoryPersistence) Close(correlationId string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.Create">func (c *MemoryPersistence) Create(correlationId string, item interface{}) (result interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.DeleteByFilter">func (c *MemoryPersistence) DeleteByFilter(correlationId string, filterFunc func(interface{}) bool) (err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.GetCountByFilter">func (c *MemoryPersistence) GetCountByFilter(correlationId string, filterFunc func(interface{}) bool) (count int64, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.GetListByFilter">func (c *MemoryPersistence) GetListByFilter(correlationId string, filterFunc func(interface{}) bool, sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (results []interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.GetOneRandom">func (c *MemoryPersistence) GetOneRandom(correlationId string, filterFunc func(interface{}) bool) (result interface{}, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.GetPageByFilter">func (c *MemoryPersistence) GetPageByFilter(correlationId string, filterFunc func(interface{}) bool, paging *cdata.PagingParams, sortFunc func(a, b interface{}) bool, selectFunc func(in interface{}) (out interface{})) (page *cdata.DataPage, err error)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.IsOpen">func (c *MemoryPersistence) IsOpen() bool</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.Open">func (c *MemoryPersistence) Open(correlationId string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.Save">func (c *MemoryPersistence) Save(correlationId string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="index.html#MemoryPersistence.SetReferences">func (c *MemoryPersistence) SetReferences(references refer.IReferences)</a></dd>
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="http://localhost:6060/src/persistence/FilePersistence.go">FilePersistence.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IFilteredPageReader.go">IFilteredPageReader.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IFilteredReader.go">IFilteredReader.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IGetter.go">IGetter.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/ILoader.go">ILoader.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IPartialUpdater.go">IPartialUpdater.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IQuerablePageReader.go">IQuerablePageReader.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IQuerableReader.go">IQuerableReader.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/ISaver.go">ISaver.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/ISetter.go">ISetter.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IWriter.go">IWriter.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IdentifiableFilePersistence.go">IdentifiableFilePersistence.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go">IdentifiableMemoryPersistence.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/JsonFilePersister.go">JsonFilePersister.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/MemoryPersistence.go">MemoryPersistence.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/Sorter.go">Sorter.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/Utilities.go">Utilities.go</a>
+			
+				<a href="http://localhost:6060/src/persistence/doc.go">doc.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		
+
+		
+		
+		
+			
+			
+			<h2 id="CloneObject">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=6014:6080#L221">CloneObject</a>
+				<a class="permalink" href="index.html#CloneObject">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func CloneObject(item interface{}, proto <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>) interface{}</pre>
+			<p>
+CloneObject is clones object function
+Parameters:
+</p>
+<pre>- item interface{}
+an object to clone
+</pre>
+<p>
+Return interface{}
+copy of input item
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="CloneObjectForResult">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=7238:7312#L263">CloneObjectForResult</a>
+				<a class="permalink" href="index.html#CloneObjectForResult">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func CloneObjectForResult(src interface{}, proto <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>) interface{}</pre>
+			<p>
+CloneObjectForResult is clones object for result function
+Parameters:
+</p>
+<pre>- item interface{}
+an object to clone
+-proto reflect.Type
+type of returned value, need for detect object or pointer returned type
+</pre>
+<p>
+Return interface{}
+copy of input item
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="CompareValues">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=8433:8496#L304">CompareValues</a>
+				<a class="permalink" href="index.html#CompareValues">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func CompareValues(value1 interface{}, value2 interface{}) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+			<p>
+CompareValues are ompares two values
+Parameters:
+</p>
+<pre>- value1 interface{}
+an object one for compare
+- value2 interface{}
+an object two for compare
+</pre>
+<p>
+Return bool
+true if value1 equal value2 and false otherwise
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="FromIds">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=8767:8807#L317">FromIds</a>
+				<a class="permalink" href="index.html#FromIds">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func FromIds(ids []<a href="http://localhost:6060/pkg/builtin/#string">string</a>) []interface{}</pre>
+			<p>
+FromIds method convert ids string array to array of interface{} object
+Parameters:
+</p>
+<pre>- ids - []string
+array of ids
+</pre>
+<p>
+Return []interface{}
+array of ids
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GenerateObjectId">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=5573:5613#L202">GenerateObjectId</a>
+				<a class="permalink" href="index.html#GenerateObjectId">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GenerateObjectId(item *interface{})</pre>
+			<p>
+GenerateObjectId is generates a new id value when it&#39;s empty
+Parameters:
+</p>
+<pre>- item *interface{}
+an pointer on object to set id property
+</pre>
+<p>
+Results saved in input object
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetObjectId">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=4555:4601#L171">GetObjectId</a>
+				<a class="permalink" href="index.html#GetObjectId">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GetObjectId(item interface{}) interface{}</pre>
+			<p>
+Get object Id value
+Parameters:
+</p>
+<pre>- item interface{}
+an object to read property from.
+</pre>
+<p>
+Returns interface{}
+the property value or nil if property doesn&#39;t exist or introspection failed.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetProperty">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=1338:1396#L46">GetProperty</a>
+				<a class="permalink" href="index.html#GetProperty">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GetProperty(obj interface{}, name <a href="http://localhost:6060/pkg/builtin/#string">string</a>) interface{}</pre>
+			<p>
+Gets value of object property specified by its name.
+Parameters:
+</p>
+<pre>- obj interface{}
+an object to read property from.
+- name string
+a name of the property to get.
+</pre>
+<p>
+Returns interface{}
+the property value or null if property doesn&#39;t exist or introspection failed.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="SetObjectId">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=4850:4901#L182">SetObjectId</a>
+				<a class="permalink" href="index.html#SetObjectId">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func SetObjectId(item *interface{}, id interface{})</pre>
+			<p>
+SetObjectId is set object Id value
+Parameters:
+</p>
+<pre>- item *interface{}
+an pointer on object to set id property
+- id interface{}
+id value for set
+</pre>
+<p>
+Results saved in input object
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="SetProperty">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=2966:3031#L110">SetProperty</a>
+				<a class="permalink" href="index.html#SetProperty">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func SetProperty(obj interface{}, name <a href="http://localhost:6060/pkg/builtin/#string">string</a>, value interface{})</pre>
+			<p>
+Sets value of object property specified by its name.
+If the property does not exist or introspection fails this method doesn&#39;t do anything and doesn&#39;t any throw errors.
+Parameters:
+</p>
+<pre>- obj interface{}
+an object to write property to.
+name string
+a name of the property to set.
+- value interface{}
+a new value for the property to set.
+</pre>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ToPublicArray">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=9531:9596#L345">ToPublicArray</a>
+				<a class="permalink" href="index.html#ToPublicArray">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ToPublicArray(values []interface{}) []map[<a href="http://localhost:6060/pkg/builtin/#string">string</a>]interface{}</pre>
+			<p>
+ToPublicArray method convert array of interface{} object to array of map[string]interface{}
+Parameters
+</p>
+<pre>- value - []interface{}
+input object to convert
+</pre>
+<p>
+Return []map[string]interface{}
+converted map array
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ToPublicMap">func <a href="http://localhost:6060/src/persistence/Utilities.go?s=9132:9190#L331">ToPublicMap</a>
+				<a class="permalink" href="index.html#ToPublicMap">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ToPublicMap(value interface{}) map[<a href="http://localhost:6060/pkg/builtin/#string">string</a>]interface{}</pre>
+			<p>
+ToPublicMap method convert interface{} object to map[string]interface{}
+Parameters
+</p>
+<pre>- value - interface{}
+input object to convert
+</pre>
+<p>
+Return map[string]interface{}
+converted object to map
+</p>
+
+			
+			
+
+		
+		
+			
+			
+			<h2 id="FilePersistence">type <a href="http://localhost:6060/src/persistence/FilePersistence.go?s=1585:1668#L50">FilePersistence</a>
+				<a class="permalink" href="index.html#FilePersistence">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Abstract persistence component that stores data in flat files
+and caches them in memory.
+</p>
+<p>
+FilePersistence is the most basic persistence component that is only
+able to store data items of any type. Specific CRUD operations
+over the data items must be implemented in child structs by
+accessing fp._items property and calling Save method.
+</p>
+<p>
+see MemoryPersistence
+see JsonFilePersister
+</p>
+<p>
+Configuration parameters
+</p>
+<pre>- path - path to the file where data is stored
+</pre>
+<h3 id="hdr-References">References</h3>
+<p>
+- *:logger:*:*:1.0  (optional) ILogger components to pass log messages
+</p>
+<p>
+Example
+</p>
+<pre>type MyJsonFilePersistence struct {
+	FilePersistence
+}
+    func NewMyJsonFilePersistence(path string) *NewMyJsonFilePersistence {
+		prototype := reflcet.TypeOf(MyData{})
+		return &amp;NewFilePersistence(prototype, NewJsonPersister(prototype, path))
+    }
+
+	func (c * FilePersistence) GetByName(correlationId string, name string) (item MyData, err error){
+		for _,v := range c._items {
+			if v.Name == name {
+				item = v.(MyData)
+				break
+			}
+		}
+        return item, nil
+    }
+
+    func (c *FilePersistence) Set(correlatonId string, item MyData) error {
+		for i,v := range c._items {
+			if v.name == item.name {
+				c._items = append(c._items[:i], c._items[i+1:])
+			}
+		}
+		c._items = append(c._items, item)
+        retrun c.save(correlationId)
+    }
+}
+</pre>
+<p>
+extends MemoryPersistence implements IConfigurable
+</p>
+
+			<pre>type FilePersistence struct {
+    <a href="index.html#MemoryPersistence">MemoryPersistence</a>
+<span id="FilePersistence.Persister"></span>    Persister *<a href="index.html#JsonFilePersister">JsonFilePersister</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewFilePersistence">func <a href="http://localhost:6060/src/persistence/FilePersistence.go?s=1889:1983#L59">NewFilePersistence</a>
+					<a class="permalink" href="index.html#NewFilePersistence">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewFilePersistence(prototype <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>, persister *<a href="index.html#JsonFilePersister">JsonFilePersister</a>) *<a href="index.html#FilePersistence">FilePersistence</a></pre>
+				<p>
+Creates a new instance of the persistence.
+</p>
+<pre>- persister    (optional) a persister component that loads and saves data from/to flat file.
+</pre>
+<p>
+Return *FilePersistence
+Pointer on new FilePersistence instance
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="FilePersistence.Configure">func (*FilePersistence) <a href="http://localhost:6060/src/persistence/FilePersistence.go?s=2377:2439#L74">Configure</a>
+					<a class="permalink" href="index.html#FilePersistence.Configure">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#FilePersistence">FilePersistence</a>) Configure(conf *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/config/">config</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/config/#ConfigParams">ConfigParams</a>)</pre>
+				<p>
+Configures component by passing configuration parameters.
+</p>
+<pre>- config    configuration parameters to be set.
+</pre>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="IFilteredPageReader">type <a href="http://localhost:6060/src/persistence/IFilteredPageReader.go?s=219:786#L1">IFilteredPageReader</a>
+				<a class="permalink" href="index.html#IFilteredPageReader">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+IFilteredPageReader is
+interface for data processing components that can retrieve a page of data items by a filter.
+</p>
+
+			<pre>type IFilteredPageReader interface {
+
+    <span class="comment">// Gets a page of data items using filter</span>
+    <span class="comment">// Parameters</span>
+    <span class="comment">//   - correlation_id</span>
+    <span class="comment">//   transaction id to trace execution through call chain.</span>
+    <span class="comment">//   - filter  data.FilterParams</span>
+    <span class="comment">//   filter parameters</span>
+    <span class="comment">//   - paging data.PagingParams</span>
+    <span class="comment">//   paging parameters</span>
+    <span class="comment">//   - sort data.SortParams</span>
+    <span class="comment">//   sort parameters</span>
+    <span class="comment">// Retrun  interface{}, error</span>
+    <span class="comment">// list of items or error.</span>
+    GetPageByFilter(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, filter *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#FilterParams">FilterParams</a>, paging *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#PagingParams">PagingParams</a>, sort *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#SortParams">SortParams</a>) (page interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="IFilteredReader">type <a href="http://localhost:6060/src/persistence/IFilteredReader.go?s=195:699#L1">IFilteredReader</a>
+				<a class="permalink" href="index.html#IFilteredReader">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Interface for data processing components that can retrieve a list of data items by filter.
+</p>
+
+			<pre>type IFilteredReader interface {
+
+    <span class="comment">// Gets a list of data items using filter</span>
+    <span class="comment">// Parameters:</span>
+    <span class="comment">// 	  - correlation_id string</span>
+    <span class="comment">//	  transaction id to trace execution through call chain.</span>
+    <span class="comment">// 	  - filter data.FilterParams</span>
+    <span class="comment">//    filter parameters</span>
+    <span class="comment">// 	  - sort  data.SortParams</span>
+    <span class="comment">//	  sort parameters</span>
+    <span class="comment">// Returns []interfcace{}, error</span>
+    <span class="comment">// receives list of items or error.</span>
+    GetListByFilter(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, filter *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#FilterParams">FilterParams</a>, sort *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#SortParams">SortParams</a>) (items []interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="IGetter">type <a href="http://localhost:6060/src/persistence/IGetter.go?s=136:510#L1">IGetter</a>
+				<a class="permalink" href="index.html#IGetter">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>Interface for data processing components that can get data items.
+</pre>
+<p>
+&lt;T extends IIdentifiable&lt;K&gt;, K&gt;
+</p>
+
+			<pre>type IGetter interface {
+
+    <span class="comment">//  Gets a data items by its unique id.</span>
+    <span class="comment">//  Parameters:</span>
+    <span class="comment">//    - correlation_id    (optional) transaction id to trace execution through call chain.</span>
+    <span class="comment">//    - id                an id of item to be retrieved.</span>
+    <span class="comment">//  Return interface{}, error</span>
+    <span class="comment">// item or error</span>
+    GetOneById(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, id interface{}) (item interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="ILoader">type <a href="http://localhost:6060/src/persistence/ILoader.go?s=97:391#L1">ILoader</a>
+				<a class="permalink" href="index.html#ILoader">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Interface for data processing components that load data items.
+</p>
+
+			<pre>type ILoader interface {
+
+    <span class="comment">// Loads data items.</span>
+    <span class="comment">// Parameters:</span>
+    <span class="comment">//   - correlation_id string</span>
+    <span class="comment">//   transaction id to trace execution through call chain.</span>
+    <span class="comment">// Retruns []interface{}, error</span>
+    <span class="comment">// a list of data items or error.</span>
+    Load(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (items []interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="IPartialUpdater">type <a href="http://localhost:6060/src/persistence/IPartialUpdater.go?s=187:694#L1">IPartialUpdater</a>
+				<a class="permalink" href="index.html#IPartialUpdater">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>Interface for data processing components to update data items partially.
+</pre>
+<p>
+&lt;T, K&gt;
+</p>
+
+			<pre>type IPartialUpdater interface {
+
+    <span class="comment">// Updates only few selected fields in a data item.</span>
+    <span class="comment">// Parameters:</span>
+    <span class="comment">//   - correlation_id string</span>
+    <span class="comment">//   transaction id to trace execution through call chain.</span>
+    <span class="comment">//   - id interface{}</span>
+    <span class="comment">//   an id of data item to be updated.</span>
+    <span class="comment">//   - data data.AnyValueMap</span>
+    <span class="comment">//   a map with fields to be updated.</span>
+    <span class="comment">// Returns interface{}, error</span>
+    <span class="comment">// updated item or error.</span>
+    UpdatePartially(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, id interface{}, data *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#AnyValueMap">AnyValueMap</a>) (item interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="IQuerablePageReader">type <a href="http://localhost:6060/src/persistence/IQuerablePageReader.go?s=182:751#L1">IQuerablePageReader</a>
+				<a class="permalink" href="index.html#IQuerablePageReader">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Interface for data processing components that can query a page of data items.
+</p>
+
+			<pre>type IQuerablePageReader interface {
+
+    <span class="comment">//  Gets a page of data items using a query string.</span>
+    <span class="comment">//  Parameters:</span>
+    <span class="comment">//   - correlation_id string</span>
+    <span class="comment">//   transaction id to trace execution through call chain.</span>
+    <span class="comment">//   - query string</span>
+    <span class="comment">//    a query string</span>
+    <span class="comment">//   - paging data.PagingParams</span>
+    <span class="comment">//    paging parameters</span>
+    <span class="comment">//   - sort  data.SortParams</span>
+    <span class="comment">//    sort parameters</span>
+    <span class="comment">// Returns interface{}, error</span>
+    <span class="comment">// receives list of items or error.</span>
+    GetPageByQuery(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, query <a href="http://localhost:6060/pkg/builtin/#string">string</a>, paging *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#PagingParams">PagingParams</a>, sort *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#SortParams">SortParams</a>) (page interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="IQuerableReader">type <a href="http://localhost:6060/src/persistence/IQuerableReader.go?s=182:653#L1">IQuerableReader</a>
+				<a class="permalink" href="index.html#IQuerableReader">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Interface for data processing components that can query a list of data items.
+</p>
+
+			<pre>type IQuerableReader interface {
+
+    <span class="comment">//  Gets a list of data items using a query string.</span>
+    <span class="comment">//  Prameters:</span>
+    <span class="comment">//   - correlation_id  string</span>
+    <span class="comment">//   transaction id to trace execution through call chain.</span>
+    <span class="comment">//   - query string</span>
+    <span class="comment">//   a query string</span>
+    <span class="comment">//   - sort data.SortParams</span>
+    <span class="comment">//   sort parameters</span>
+    <span class="comment">// Returns []interface{}, error</span>
+    <span class="comment">// list of items or error.</span>
+    GetListByQuery(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, query <a href="http://localhost:6060/pkg/builtin/#string">string</a>, sort *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">data</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#SortParams">SortParams</a>) (items []interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="ISaver">type <a href="http://localhost:6060/src/persistence/ISaver.go?s=97:417#L1">ISaver</a>
+				<a class="permalink" href="index.html#ISaver">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Interface for data processing components that save data items.
+</p>
+
+			<pre>type ISaver interface {
+
+    <span class="comment">// Saves given data items.</span>
+    <span class="comment">// Parameters:</span>
+    <span class="comment">//  - correlation_id string</span>
+    <span class="comment">//  transaction id to trace execution through call chain.</span>
+    <span class="comment">//  - items []interface{}</span>
+    <span class="comment">//  a list of items to save.</span>
+    <span class="comment">// Retuirns error or nil for success.</span>
+    Save(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, items []interface{}) <a href="http://localhost:6060/pkg/builtin/#error">error</a>
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="ISetter">type <a href="http://localhost:6060/src/persistence/ISetter.go?s=119:551#L1">ISetter</a>
+				<a class="permalink" href="index.html#ISetter">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Interface for data processing components that can set (create or update) data items.
+</p>
+
+			<pre>type ISetter interface {
+
+    <span class="comment">// Sets a data item. If the data item exists it updates it,</span>
+    <span class="comment">// otherwise it create a new data item.</span>
+    <span class="comment">// Parameters:</span>
+    <span class="comment">//   - correlation_id string</span>
+    <span class="comment">//   transaction id to trace execution through call chain.</span>
+    <span class="comment">//   - item  interface{}</span>
+    <span class="comment">//   a item to be set.</span>
+    <span class="comment">// Retruns interface{}, error</span>
+    <span class="comment">// updated item or error.</span>
+    Set(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, item interface{}) (value interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="IWriter">type <a href="http://localhost:6060/src/persistence/IWriter.go?s=122:1191#L1">IWriter</a>
+				<a class="permalink" href="index.html#IWriter">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Interface for data processing components that can create, update and delete data items.
+</p>
+
+			<pre>type IWriter interface {
+
+    <span class="comment">// Creates a data item.</span>
+    <span class="comment">// Parameters:</span>
+    <span class="comment">//   - correlation_id string</span>
+    <span class="comment">//   transaction id to trace execution through call chain.</span>
+    <span class="comment">//   - item interface{}</span>
+    <span class="comment">//   an item to be created.</span>
+    <span class="comment">// Returns  interface{}, error</span>
+    <span class="comment">// created item or error.</span>
+    Create(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, item interface{}) (value interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+
+    <span class="comment">// Updates a data item.</span>
+    <span class="comment">// Parameters:</span>
+    <span class="comment">// 	  - correlation_id  string</span>
+    <span class="comment">//    transaction id to trace execution through call chain.</span>
+    <span class="comment">// 	  - item interface{}</span>
+    <span class="comment">//    an item to be updated.</span>
+    <span class="comment">// Returns: interface{}, error</span>
+    <span class="comment">// updated item or error.</span>
+    Update(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, item interface{}) (value interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+
+    <span class="comment">//  Deleted a data item by it&#39;s unique id.</span>
+    <span class="comment">//	Parameters:</span>
+    <span class="comment">//    - correlation_id string</span>
+    <span class="comment">//	  transaction id to trace execution through call chain.</span>
+    <span class="comment">//    - id interface{}</span>
+    <span class="comment">//	  an id of the item to be deleted</span>
+    <span class="comment">//  Returns: interface{}, error</span>
+    <span class="comment">//  deleted item or error.</span>
+    DeleteById(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>, id interface{}) (value interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)
+}</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="IdentifiableFilePersistence">type <a href="http://localhost:6060/src/persistence/IdentifiableFilePersistence.go?s=2728:2835#L75">IdentifiableFilePersistence</a>
+				<a class="permalink" href="index.html#IdentifiableFilePersistence">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Abstract persistence component that stores data in flat files
+and implements a number of CRUD operations over data items with unique ids.
+The data items must implement
+</p>
+<pre>IIdentifiable interface
+</pre>
+<p>
+In basic scenarios child classes shall only override GetPageByFilter,
+GetListByFilter or DeleteByFilter operations with specific filter function.
+All other operations can be used out of the box.
+</p>
+<p>
+In complex scenarios child classes can implement additional operations by
+accessing cached items via IdentifiableFilePersistence._items property and calling Save method
+on updates.
+</p>
+<p>
+See JsonFilePersister
+See MemoryPersistence
+</p>
+<p>
+Configuration parameters
+</p>
+<pre> - path:                    path to the file where data is stored
+ - options:
+     - max_page_size:       Maximum number of items returned in a single page (default: 100)
+
+References
+</pre>
+<p>
+- *:logger:*:*:1.0      (optional)  ILogger components to pass log messages
+</p>
+<p>
+Examples
+</p>
+<pre>type MyFilePersistence  struct {
+	IdentifiableFilePersistence
+}
+    func NewMyFilePersistence(path string)(mfp *MyFilePersistence) {
+		mfp = MyFilePersistence{}
+		prototype := reflect.TypeOf(MyData{})
+		mfp.IdentifiableFilePersistence = *NewJsonPersister(prototype,path)
+		return mfp
+    }
+
+    func composeFilter(filter cdata.FilterParams)(func (item interface{})bool) {
+		if filter == nil {
+			filter = NewFilterParams()
+		}
+        name := filter.GetAsNullableString(&#34;name&#34;);
+        return func (item interface) bool {
+            dummy, ok := item.(MyData)
+			if *name != &#34;&#34; &amp;&amp; ok &amp;&amp; dummy.Name != *name {
+				return false
+			}
+            return true
+        }
+    }
+
+    func (c *MyFilePersistence ) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams)(page cdata.MyDataPage, err error){
+		tempPage, err := c.GetPageByFilter(correlationId, composeFilter(filter), paging, nil, nil)
+		dataLen := int64(len(tempPage.Data))
+		data := make([]MyData, dataLen)
+		for i, v := range tempPage.Data {
+			data[i] = v.(MyData)
+		}
+		page = *NewMyDataPage(&amp;dataLen, data)
+		return page, err
+    }
+
+    persistence := NewMyFilePersistence(&#34;./data/data.json&#34;)
+
+	_, errc := persistence.Create(&#34;123&#34;, { Id: &#34;1&#34;, Name: &#34;ABC&#34; })
+	if (errc != nil) {
+		panic()
+	}
+    page, errg := persistence.GetPageByFilter(&#34;123&#34;, NewFilterParamsFromTuples(&#34;Name&#34;, &#34;ABC&#34;), nil)
+    if errg != nil {
+		panic(&#34;Error&#34;)
+	}
+    fmt.Println(page.Data)         // Result: { Id: &#34;1&#34;, Name: &#34;ABC&#34; )
+    persistence.DeleteById(&#34;123&#34;, &#34;1&#34;)
+</pre>
+
+			<pre>type IdentifiableFilePersistence struct {
+    <a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>
+<span id="IdentifiableFilePersistence.Persister"></span>    Persister *<a href="index.html#JsonFilePersister">JsonFilePersister</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewIdentifiableFilePersistence">func <a href="http://localhost:6060/src/persistence/IdentifiableFilePersistence.go?s=3148:3266#L87">NewIdentifiableFilePersistence</a>
+					<a class="permalink" href="index.html#NewIdentifiableFilePersistence">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewIdentifiableFilePersistence(prototype <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>, persister *<a href="index.html#JsonFilePersister">JsonFilePersister</a>) *<a href="index.html#IdentifiableFilePersistence">IdentifiableFilePersistence</a></pre>
+				<p>
+Creates a new instance of the persistence.
+Parameters:
+</p>
+<pre>- prototype reflect.Type
+type of contained data
+- persister    (optional) a persister component that loads and saves data from/to flat file.
+</pre>
+<p>
+Return *IdentifiableFilePersistence
+pointer on new IdentifiableFilePersistence
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="IdentifiableFilePersistence.Configure">func (*IdentifiableFilePersistence) <a href="http://localhost:6060/src/persistence/IdentifiableFilePersistence.go?s=3687:3763#L102">Configure</a>
+					<a class="permalink" href="index.html#IdentifiableFilePersistence.Configure">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableFilePersistence">IdentifiableFilePersistence</a>) Configure(config *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/config/">config</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/config/#ConfigParams">ConfigParams</a>)</pre>
+				<p>
+Configures component by passing configuration parameters.
+Parameters:
+</p>
+<pre>- config    configuration parameters to be set.
+</pre>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="IdentifiableMemoryPersistence">type <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=2611:2677#L68">IdentifiableMemoryPersistence</a>
+				<a class="permalink" href="index.html#IdentifiableMemoryPersistence">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Abstract persistence component that stores data in memory
+and implements a number of CRUD operations over data items with unique ids.
+The data items must have Id field.
+</p>
+<p>
+In basic scenarios child structs shall only override GetPageByFilter,
+GetListByFilter or DeleteByFilter operations with specific filter function.
+All other operations can be used out of the box.
+</p>
+<p>
+In complex scenarios child structes can implement additional operations by
+accessing cached items via c.Items property and calling Save method
+on updates.
+</p>
+<h3 id="hdr-See_MemoryPersistence">See MemoryPersistence</h3>
+<p>
+Configuration parameters
+</p>
+<p>
+- options:
+</p>
+<pre>   - max_page_size:       Maximum number of items returned in a single page (default: 100)
+
+References
+</pre>
+<p>
+- *:logger:*:*:1.0     (optional) ILogger components to pass log messages
+</p>
+<pre>Examples
+
+ type MyMemoryPersistence struct{
+ 	IdentifiableMemoryPersistence
+ }
+     func composeFilter(filter: FilterParams) (func (item interface{}) bool ) {
+         if filter == nil {
+ 			filter = NewFilterParams()
+ 		}
+         name := filter.getAsNullableString(&#34;Name&#34;);
+         return func(item interface{}) bool {
+ 			dummy, ok := item.(MyData)
+             if (*name != &#34;&#34; &amp;&amp; ok &amp;&amp; item.Name != *name)
+                 return false;
+             return true;
+         };
+     }
+
+     func (mmp * MyMemoryPersistence) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams) (page DataPage, err error) {
+         tempPage, err := c.GetPageByFilter(correlationId, composeFilter(filter), paging, nil, nil)
+ 		dataLen := int64(len(tempPage.Data))
+ 		data := make([]MyData, dataLen)
+ 		for i, v := range tempPage.Data {
+ 			data[i] = v.(MyData)
+ 		}
+ 		page = *NewMyDataPage(&amp;dataLen, data)
+ 		return page, err}
+
+     persistence := NewMyMemoryPersistence();
+
+ 	item, err := persistence.Create(&#34;123&#34;, { Id: &#34;1&#34;, Name: &#34;ABC&#34; })
+ 	...
+ 	page, err := persistence.GetPageByFilter(&#34;123&#34;, NewFilterParamsFromTuples(&#34;Name&#34;, &#34;ABC&#34;), nil)
+ 	if err != nil {
+ 		panic(&#34;Error can&#39;t get data&#34;)
+ 	}
+     fmt.Prnitln(page.data)         // Result: { Id: &#34;1&#34;, Name: &#34;ABC&#34; }
+ 	item, err := persistence.DeleteById(&#34;123&#34;, &#34;1&#34;)
+ 	...
+</pre>
+<p>
+extends MemoryPersistence  implements IConfigurable, IWriter, IGetter, ISetter
+</p>
+
+			<pre>type IdentifiableMemoryPersistence struct {
+    <a href="index.html#MemoryPersistence">MemoryPersistence</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewIdentifiableMemoryPersistence">func <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=2904:3000#L78">NewIdentifiableMemoryPersistence</a>
+					<a class="permalink" href="index.html#NewIdentifiableMemoryPersistence">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewIdentifiableMemoryPersistence(prototype <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>) (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>)</pre>
+				<p>
+Creates a new empty instance of the persistence.
+Parameters:
+</p>
+<pre>- prototype reflect.Type
+data type of contains items
+</pre>
+<p>
+Return * IdentifiableMemoryPersistence
+created empty IdentifiableMemoryPersistence
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.Configure">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=3331:3409#L90">Configure</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.Configure">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) Configure(config *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/config/">config</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/config/#ConfigParams">ConfigParams</a>)</pre>
+				<p>
+Configures component by passing configuration parameters.
+Parameters:
+</p>
+<pre>- config  *config.ConfigParams
+configuration parameters to be set.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.Create">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=5709:5827#L173">Create</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.Create">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) Create(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, item interface{}) (result interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Creates a data item.
+Returns:
+</p>
+<pre>- correlation_id string
+(optional) transaction id to trace execution through call chain.
+- item  string
+an item to be created.
+</pre>
+<p>
+Returns:  interface{}, error
+created item or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.DeleteById">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=9579:9699#L303">DeleteById</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.DeleteById">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) DeleteById(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, id interface{}) (result interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Deleted a data item by it&#39;s unique id.
+Parameters:
+</p>
+<pre>- correlation_id string
+(optional) transaction id to trace execution through call chain.
+- id interface{}
+an id of the item to be deleted
+</pre>
+<p>
+Retruns:  interface{}, error
+deleted item or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.DeleteByIds">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=10556:10660#L338">DeleteByIds</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.DeleteByIds">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) DeleteByIds(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, ids []interface{}) (err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Deletes multiple data items by their unique ids.
+Parameters:
+</p>
+<pre>- correlationId  string
+(optional) transaction id to trace execution through call chain.
+- ids []interface{}
+ids of data items to be deleted.
+</pre>
+<p>
+Returns: error
+error or null for success.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.GetIndexById">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=5224:5296#L153">GetIndexById</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.GetIndexById">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) GetIndexById(id interface{}) <a href="http://localhost:6060/pkg/builtin/#int">int</a></pre>
+				<p>
+Get index by &#34;Id&#34; field
+return index number
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.GetListByIds">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=3809:3936#L102">GetListByIds</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.GetListByIds">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) GetListByIds(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, ids []interface{}) (result []interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Gets a list of data items retrieved by given unique ids.
+Parameters:
+</p>
+<pre>- correlationId string
+(optional) transaction id to trace execution through call chain.
+- ids  []interface{}
+ids of data items to be retrieved
+</pre>
+<p>
+Returns  []interface{}, error
+data list or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.GetOneById">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=4530:4650#L126">GetOneById</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.GetOneById">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) GetOneById(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, id interface{}) (result interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Gets a data item by its unique id.
+Parameters:
+</p>
+<pre>- correlationId  string
+(optional) transaction id to trace execution through call chain.
+- id interface{}
+an id of data item to be retrieved.
+</pre>
+<p>
+Returns:  interface{}, error
+data item or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.Set">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=6515:6630#L199">Set</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.Set">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) Set(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, item interface{}) (result interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Sets a data item. If the data item exists it updates it,
+otherwise it create a new data item.
+Parameters:
+</p>
+<pre>- correlation_id string
+(optional) transaction id to trace execution through call chain.
+- item  interface{}
+a item to be set.
+</pre>
+<p>
+Returns:  interface{}, error
+updated item or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.Update">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=7331:7449#L230">Update</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.Update">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) Update(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, item interface{}) (result interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Updates a data item.
+Parameters:
+</p>
+<pre>- correlation_id string
+(optional) transaction id to trace execution through call chain.
+- item  interface{}
+an item to be updated.
+</pre>
+<p>
+Returns:   interface{}, error
+updated item or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="IdentifiableMemoryPersistence.UpdatePartially">func (*IdentifiableMemoryPersistence) <a href="http://localhost:6060/src/persistence/IdentifiableMemoryPersistence.go?s=8287:8437#L262">UpdatePartially</a>
+					<a class="permalink" href="index.html#IdentifiableMemoryPersistence.UpdatePartially">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#IdentifiableMemoryPersistence">IdentifiableMemoryPersistence</a>) UpdatePartially(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, id interface{}, data *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">cdata</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#AnyValueMap">AnyValueMap</a>) (result interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Updates only few selectFuncected fields in a data item.
+Parameters:
+</p>
+<pre>- correlation_id string
+(optional) transaction id to trace execution through call chain.
+- id interface{}
+an id of data item to be updated.
+- data  cdata.AnyValueMap
+a map with fields to be updated.
+</pre>
+<p>
+Returns: interface{}, error
+updated item or error.
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="JsonFilePersister">type <a href="http://localhost:6060/src/persistence/JsonFilePersister.go?s=842:920#L24">JsonFilePersister</a>
+				<a class="permalink" href="index.html#JsonFilePersister">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Persistence component that loads and saves data from/to flat file.
+</p>
+<p>
+It is used by FilePersistence, but can be useful on its own.
+</p>
+<pre>Configuration parameters
+
+ - path:          path to the file where data is stored
+
+Example
+
+ persister := NewJsonFilePersister(reflect.TypeOf(MyData{}), &#34;./data/data.json&#34;);
+
+ err_sav := persister.Save(&#34;123&#34;, [&#34;A&#34;, &#34;B&#34;, &#34;C&#34;])
+ if err_sav == nil {
+ 	items, err_lod := persister.Load(&#34;123&#34;)
+ 	if err_lod == nil {
+ 		fmt.Println(items);// Result: [&#34;A&#34;, &#34;B&#34;, &#34;C&#34;]
+ 	}
+</pre>
+<p>
+implements ILoader, ISaver, IConfigurable
+</p>
+
+			<pre>type JsonFilePersister struct {
+<span id="JsonFilePersister.Prototype"></span>    Prototype <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>
+    <span class="comment">// contains filtered or unexported fields</span>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewJsonFilePersister">func <a href="http://localhost:6060/src/persistence/JsonFilePersister.go?s=1064:1145#L33">NewJsonFilePersister</a>
+					<a class="permalink" href="index.html#NewJsonFilePersister">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewJsonFilePersister(prototype <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>, path <a href="http://localhost:6060/pkg/builtin/#string">string</a>) *<a href="index.html#JsonFilePersister">JsonFilePersister</a></pre>
+				<p>
+Creates a new instance of the persistence.
+Parameters:
+</p>
+<pre>- path  string
+(optional) a path to the file where data is stored.
+</pre>
+
+				
+				
+			
+
+			
+				
+				<h3 id="JsonFilePersister.Configure">func (*JsonFilePersister) <a href="http://localhost:6060/src/persistence/JsonFilePersister.go?s=1725:1791#L56">Configure</a>
+					<a class="permalink" href="index.html#JsonFilePersister.Configure">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#JsonFilePersister">JsonFilePersister</a>) Configure(config *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/config/">config</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/config/#ConfigParams">ConfigParams</a>)</pre>
+				<p>
+Configures component by passing configuration parameters.
+Parameters:
+</p>
+<pre>- config  config.ConfigParams
+parameters to be set.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="JsonFilePersister.Load">func (*JsonFilePersister) <a href="http://localhost:6060/src/persistence/JsonFilePersister.go?s=2068:2155#L66">Load</a>
+					<a class="permalink" href="index.html#JsonFilePersister.Load">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#JsonFilePersister">JsonFilePersister</a>) Load(correlation_id <a href="http://localhost:6060/pkg/builtin/#string">string</a>) (data []interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Loads data items from external JSON file.
+Parameters:
+</p>
+<pre>- correlation_id  string
+transaction id to trace execution through call chain.
+</pre>
+<p>
+Returns []interface{}, error
+loaded items or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="JsonFilePersister.Path">func (*JsonFilePersister) <a href="http://localhost:6060/src/persistence/JsonFilePersister.go?s=1321:1362#L40">Path</a>
+					<a class="permalink" href="index.html#JsonFilePersister.Path">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#JsonFilePersister">JsonFilePersister</a>) Path() <a href="http://localhost:6060/pkg/builtin/#string">string</a></pre>
+				<p>
+Gets the file path where data is stored.
+Returns the file path where data is stored.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="JsonFilePersister.Save">func (*JsonFilePersister) <a href="http://localhost:6060/src/persistence/JsonFilePersister.go?s=3140:3221#L109">Save</a>
+					<a class="permalink" href="index.html#JsonFilePersister.Save">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#JsonFilePersister">JsonFilePersister</a>) Save(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, items []interface{}) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>
+Saves given data items to external JSON file.
+Parameters:
+</p>
+<pre> - correlation_id string
+ transaction id to trace execution through call chain.
+ - items []interface[]
+ list of data items to save
+Retruns error
+error or nil for success.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="JsonFilePersister.SetPath">func (*JsonFilePersister) <a href="http://localhost:6060/src/persistence/JsonFilePersister.go?s=1510:1559#L48">SetPath</a>
+					<a class="permalink" href="index.html#JsonFilePersister.SetPath">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#JsonFilePersister">JsonFilePersister</a>) SetPath(value <a href="http://localhost:6060/pkg/builtin/#string">string</a>)</pre>
+				<p>
+Sets the file path where data is stored.
+Parameters:
+</p>
+<pre>- value  string
+the file path where data is stored.
+</pre>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="MemoryPersistence">type <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=1792:2023#L50">MemoryPersistence</a>
+				<a class="permalink" href="index.html#MemoryPersistence">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+Abstract persistence component that stores data in memory.
+</p>
+<p>
+This is the most basic persistence component that is only
+able to store data items of any type. Specific CRUD operations
+over the data items must be implemented in child struct by
+accessing Items property and calling Save method.
+</p>
+<p>
+The component supports loading and saving items from another data source.
+That allows to use it as a base struct for file and other types
+of persistence components that cache all data in memory.
+</p>
+<h3 id="hdr-References">References</h3>
+<p>
+- *:logger:*:*:1.0    ILogger components to pass log messages
+</p>
+<p>
+Example
+</p>
+<pre>type MyMemoryPersistence struct {
+    MemoryPersistence
+
+}
+ func (c * MyMemoryPersistence) GetByName(correlationId string, name string)(item interface{}, err error) {
+    for _, v := range c.Items {
+        if v.name == name {
+            item = v
+            break
+        }
+    }
+    return item, nil
+});
+
+func (c * MyMemoryPersistence) Set(correlatonId: string, item: MyData, callback: (err) =&gt; void): void {
+    c.Items = append(c.Items, item);
+    c.Save(correlationId);
+}
+
+persistence := NewMyMemoryPersistence();
+err := persistence.Set(&#34;123&#34;, MyData{ name: &#34;ABC&#34; })
+item, err := persistence.GetByName(&#34;123&#34;, &#34;ABC&#34;)
+fmt.Println(item)   // Result: { name: &#34;ABC&#34; }
+</pre>
+<p>
+implements IReferenceable, IOpenable, ICleanable
+</p>
+
+			<pre>type MemoryPersistence struct {
+<span id="MemoryPersistence.Logger"></span>    Logger *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-components-go/log/">log</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-components-go/log/#CompositeLogger">CompositeLogger</a>
+<span id="MemoryPersistence.Items"></span>    Items  []interface{}
+<span id="MemoryPersistence.Loader"></span>    Loader <a href="index.html#ILoader">ILoader</a>
+<span id="MemoryPersistence.Saver"></span>    Saver  <a href="index.html#ISaver">ISaver</a>
+
+<span id="MemoryPersistence.Prototype"></span>    Prototype   <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>
+<span id="MemoryPersistence.Lock"></span>    Lock        <a href="http://localhost:6060/pkg/sync/">sync</a>.<a href="http://localhost:6060/pkg/sync/#RWMutex">RWMutex</a>
+<span id="MemoryPersistence.MaxPageSize"></span>    MaxPageSize <a href="http://localhost:6060/pkg/builtin/#int">int</a>
+    <span class="comment">// contains filtered or unexported fields</span>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewMemoryPersistence">func <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=2208:2276#L67">NewMemoryPersistence</a>
+					<a class="permalink" href="index.html#NewMemoryPersistence">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func NewMemoryPersistence(prototype <a href="http://localhost:6060/pkg/reflect/">reflect</a>.<a href="http://localhost:6060/pkg/reflect/#Type">Type</a>) *<a href="index.html#MemoryPersistence">MemoryPersistence</a></pre>
+				<p>
+Creates a new instance of the MemoryPersistence
+Parameters:
+</p>
+<pre>- prototype reflect.Type
+ type of contained data
+</pre>
+<p>
+Return *MemoryPersistence
+a MemoryPersistence
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="MemoryPersistence.Clear">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=5168:5229#L170">Clear</a>
+					<a class="permalink" href="index.html#MemoryPersistence.Clear">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) Clear(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>
+Clears component state.
+Parameters:
+</p>
+<pre>- correlationId string
+(optional) transaction id to trace execution through call chain.
+Returns error or null no errors occured.
+</pre>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.Close">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=4298:4359#L138">Close</a>
+					<a class="permalink" href="index.html#MemoryPersistence.Close">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) Close(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>
+Closes component and frees used resources.
+Parameters:
+</p>
+<pre>- correlationId string
+(optional) transaction id to trace execution through call chain.
+</pre>
+<p>
+Retruns: error or nil if no errors occured.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.Create">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=11148:11254#L365">Create</a>
+					<a class="permalink" href="index.html#MemoryPersistence.Create">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) Create(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, item interface{}) (result interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Creates a data item.
+Returns:
+</p>
+<pre>- correlation_id string
+(optional) transaction id to trace execution through call chain.
+- item  string
+an item to be created.
+</pre>
+<p>
+Returns:  interface{}, error
+created item or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.DeleteByFilter">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=12055:12166#L390">DeleteByFilter</a>
+					<a class="permalink" href="index.html#MemoryPersistence.DeleteByFilter">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) DeleteByFilter(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, filterFunc func(interface{}) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>) (err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Deletes data items that match to a given filter.
+this method shall be called by a func (c* IdentifiableMemoryPersistence) DeleteByFilter method from child struct that
+receives FilterParams and converts them into a filter function.
+Parameters:
+</p>
+<pre>- correlationId  string
+(optional) transaction id to trace execution through call chain.
+- filter  filter func(interface{}) bool
+(optional) a filter function to filter items.
+</pre>
+<p>
+Retruns: error
+error or nil for success.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.GetCountByFilter">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=13110:13236#L428">GetCountByFilter</a>
+					<a class="permalink" href="index.html#MemoryPersistence.GetCountByFilter">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) GetCountByFilter(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, filterFunc func(interface{}) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>) (count <a href="http://localhost:6060/pkg/builtin/#int64">int64</a>, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Gets a count of data items retrieved by a given filter.
+this method shall be called by a func (imp* IdentifiableMemoryPersistence) getCountByFilter method from child struct that
+receives FilterParams and converts them into a filter function.
+Parameters:
+</p>
+<pre>- correlationId string
+transaction id to trace execution through call chain.
+- filter func(interface{}) bool
+(optional) a filter function to filter items
+</pre>
+<p>
+Return int, error
+data count or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.GetListByFilter">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=8558:8784#L274">GetListByFilter</a>
+					<a class="permalink" href="index.html#MemoryPersistence.GetListByFilter">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) GetListByFilter(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, filterFunc func(interface{}) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>,
+    sortFunc func(a, b interface{}) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>, selectFunc func(in interface{}) (out interface{})) (results []interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Gets a list of data items retrieved by a given filter and sorted according to sort parameters.
+This method shall be called by a func (c * IdentifiableMemoryPersistence) GetListByFilter method from child struct that
+receives FilterParams and converts them into a filter function.
+Parameters:
+</p>
+<pre>- correlationId string
+(optional) transaction id to trace execution through call chain.
+- filter func(interface{}) bool
+(optional) a filter function to filter items
+- sortFunc func(a, b interface{}) bool
+(optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
+- selectFunc func(in interface{}) (out interface{})
+(optional) projection parameters
+</pre>
+<p>
+Returns  []interface{},  error
+array of items and error
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.GetOneRandom">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=10113:10242#L324">GetOneRandom</a>
+					<a class="permalink" href="index.html#MemoryPersistence.GetOneRandom">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) GetOneRandom(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, filterFunc func(interface{}) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>) (result interface{}, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Gets a random item from items that match to a given filter.
+This method shall be called by a func (c* IdentifiableMemoryPersistence) GetOneRandom method from child type that
+receives FilterParams and converts them into a filter function.
+Parameters:
+</p>
+<pre>- correlationId string
+(optional) transaction id to trace execution through call chain.
+- filter   func(interface{}) bool
+(optional) a filter function to filter items.
+</pre>
+<p>
+Returns: interface{}, error
+random item or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.GetPageByFilter">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=6253:6506#L196">GetPageByFilter</a>
+					<a class="permalink" href="index.html#MemoryPersistence.GetPageByFilter">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) GetPageByFilter(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>, filterFunc func(interface{}) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>,
+    paging *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">cdata</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#PagingParams">PagingParams</a>, sortFunc func(a, b interface{}) <a href="http://localhost:6060/pkg/builtin/#bool">bool</a>, selectFunc func(in interface{}) (out interface{})) (page *<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/">cdata</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/data/#DataPage">DataPage</a>, err <a href="http://localhost:6060/pkg/builtin/#error">error</a>)</pre>
+				<p>
+Gets a page of data items retrieved by a given filter and sorted according to sort parameters.
+cmethod shall be called by a func (imp* IdentifiableMemoryPersistence) getPageByFilter method from child struct that
+receives FilterParams and converts them into a filter function.
+Parameters:
+</p>
+<pre>- correlationId string
+transaction id to trace execution through call chain.
+- filter func(interface{}) bool
+(optional) a filter function to filter items
+- paging *cdata.PagingParams
+(optional) paging parameters
+- sortFunc func(a, b interface{}) bool
+(optional) sorting compare function func Less (a, b interface{}) bool  see sort.Interface Less function
+- selectFunc func(in interface{}) (out interface{})
+</pre>
+<p>
+(optional) projection parameters
+Return cdata.DataPage, error
+data page or error.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.IsOpen">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=2875:2916#L88">IsOpen</a>
+					<a class="permalink" href="index.html#MemoryPersistence.IsOpen">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) IsOpen() <a href="http://localhost:6060/pkg/builtin/#bool">bool</a></pre>
+				<p>
+Checks if the component is opened.
+Returns true if the component has been opened and false otherwise.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.Open">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=3131:3191#L97">Open</a>
+					<a class="permalink" href="index.html#MemoryPersistence.Open">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) Open(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>
+Opens the component.
+Parameters:
+</p>
+<pre>- correlationId  string
+(optional) transaction id to trace execution through call chain.
+</pre>
+<p>
+Returns  error or null no errors occured.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.Save">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=4659:4719#L149">Save</a>
+					<a class="permalink" href="index.html#MemoryPersistence.Save">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) Save(correlationId <a href="http://localhost:6060/pkg/builtin/#string">string</a>) <a href="http://localhost:6060/pkg/builtin/#error">error</a></pre>
+				<p>
+Saves items to external data source using configured saver component.
+Parameters:
+</p>
+<pre>- correlationId string
+(optional) transaction id to trace execution through call chain.
+</pre>
+<p>
+Return error or null for success.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="MemoryPersistence.SetReferences">func (*MemoryPersistence) <a href="http://localhost:6060/src/persistence/MemoryPersistence.go?s=2646:2717#L82">SetReferences</a>
+					<a class="permalink" href="index.html#MemoryPersistence.SetReferences">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (c *<a href="index.html#MemoryPersistence">MemoryPersistence</a>) SetReferences(references <a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/refer/">refer</a>.<a href="http://localhost:6060/pkg/github.com/pip-services3-go/pip-services3-commons-go/refer/#IReferences">IReferences</a>)</pre>
+				<p>
+Sets references to dependent components.
+Parameters:
+</p>
+<pre>- references refer.IReferences
+references to locate the component dependencies.
+</pre>
+
+				
+				
+				
+			
+		
+	
+
+	
+
+
+
+
+
+
+
+<div id="footer">
+Build version go1.16.15.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="http://localhost:6060/LICENSE">BSD license</a>.<br>
+<a href="https://golang.org/doc/tos.html">Terms of Service</a> |
+<a href="https://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+</body>
+</html>

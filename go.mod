@@ -3,8 +3,8 @@ module github.com/pip-services3-go/pip-services3-data-go
 go 1.16
 
 require (
-	github.com/jinzhu/copier v0.2.8
-	github.com/pip-services3-go/pip-services3-commons-go v1.1.3-25
-	github.com/pip-services3-go/pip-services3-components-go v1.2.0
-	github.com/stretchr/testify v1.7.0
+	github.com/jinzhu/copier v0.3.5
+	github.com/pip-services3-go/pip-services3-commons-go v1.1.6
+	github.com/pip-services3-go/pip-services3-components-go v1.3.2
+	github.com/stretchr/testify v1.8.1
 )

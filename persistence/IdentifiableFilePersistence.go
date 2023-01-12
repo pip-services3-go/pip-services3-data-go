@@ -1,8 +1,9 @@
 package persistence
 
 import (
-	"github.com/pip-services3-go/pip-services3-commons-go/config"
 	"reflect"
+
+	"github.com/pip-services3-go/pip-services3-commons-go/config"
 )
 
 /*
@@ -42,9 +43,9 @@ Examples
   		mfp.IdentifiableFilePersistence = *NewJsonPersister(prototype,path)
   		return mfp
       }
-  
+
       func composeFilter(filter cdata.FilterParams)(func (item interface{})bool) {
-  		if &filter == nil {
+  		if filter == nil {
   			filter = NewFilterParams()
   		}
           name := filter.GetAsNullableString("name");
@@ -56,7 +57,7 @@ Examples
               return true
           }
       }
-  
+
       func (c *MyFilePersistence ) GetPageByFilter(correlationId string, filter FilterParams, paging PagingParams)(page cdata.MyDataPage, err error){
   		tempPage, err := c.GetPageByFilter(correlationId, composeFilter(filter), paging, nil, nil)
   		dataLen := int64(len(tempPage.Data))
@@ -67,9 +68,9 @@ Examples
   		page = *NewMyDataPage(&dataLen, data)
   		return page, err
       }
-  
+
       persistence := NewMyFilePersistence("./data/data.json")
-  
+
   	_, errc := persistence.Create("123", { Id: "1", Name: "ABC" })
   	if (errc != nil) {
   		panic()

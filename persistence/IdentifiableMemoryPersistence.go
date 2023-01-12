@@ -39,7 +39,7 @@ Configuration parameters
   	IdentifiableMemoryPersistence
   }
       func composeFilter(filter: FilterParams) (func (item interface{}) bool ) {
-          if &filter == nil {
+          if filter == nil {
   			filter = NewFilterParams()
   		}
           name := filter.getAsNullableString("Name");

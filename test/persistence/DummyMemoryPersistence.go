@@ -88,7 +88,7 @@ func (c *DummyMemoryPersistence) DeleteByIds(correlationId string, ids []string)
 
 func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter *cdata.FilterParams, paging *cdata.PagingParams) (page *DummyPage, err error) {
 
-	if &filter == nil {
+	if filter == nil {
 		filter = cdata.NewEmptyFilterParams()
 	}
 
@@ -96,7 +96,7 @@ func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter *c
 
 	tempPage, err := c.IdentifiableMemoryPersistence.GetPageByFilter(correlationId, func(item interface{}) bool {
 		dummy, ok := item.(Dummy)
-		if *key != "" && ok && dummy.Key != *key {
+		if key != nil && ok && dummy.Key != *key {
 			return false
 		}
 		return true
@@ -117,7 +117,7 @@ func (c *DummyMemoryPersistence) GetPageByFilter(correlationId string, filter *c
 
 func (c *DummyMemoryPersistence) GetCountByFilter(correlationId string, filter *cdata.FilterParams) (count int64, err error) {
 
-	if &filter == nil {
+	if filter == nil {
 		filter = cdata.NewEmptyFilterParams()
 	}
 
@@ -125,7 +125,7 @@ func (c *DummyMemoryPersistence) GetCountByFilter(correlationId string, filter *
 
 	count, err = c.IdentifiableMemoryPersistence.GetCountByFilter(correlationId, func(item interface{}) bool {
 		dummy, ok := item.(Dummy)
-		if *key != "" && ok && dummy.Key != *key {
+		if key != nil && ok && dummy.Key != *key {
 			return false
 		}
 		return true
