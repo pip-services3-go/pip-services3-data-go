@@ -9,4 +9,5 @@ type IItemPersistence interface {
 	Update(correlationId string, item Item) (result Item, err error)
 	UpdatePartially(correlationId string, id string, data *cdata.AnyValueMap) (item Item, err error)
 	DeleteById(correlationId string, id string) (item Item, err error)
+	GetPageByFilter(correlationId string, filter *cdata.FilterParams, paging *cdata.PagingParams, sort bool) (page *ItemPage, err error)
 }

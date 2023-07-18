@@ -13,4 +13,8 @@ func TestItemMemoryPersistence(t *testing.T) {
 	fixture := NewItemPersistenceFixture(persister)
 
 	t.Run("ItemMemoryPersistence:CRUD", fixture.TestCrudOperations)
+
+	persister.Clear("Test")
+
+	t.Run("ItemMemoryPersistence:Sort", fixture.TestSortOperations)
 }
